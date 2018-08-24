@@ -3,16 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/user"
+
+	"github.com/tomocy/monkey/repl"
 )
 
 func main() {
-	var char byte = 0
-	fmt.Println(char)
-	fmt.Printf("%#v\n", string(char))
-	fmt.Println("\x00" == string(char))
-	// sayHelloToUser()
-	// repl.Start(os.Stdin, os.Stdout)
+	sayHelloToUser()
+	repl.Start(os.Stdin, os.Stdout)
 }
 
 func sayHelloToUser() {
