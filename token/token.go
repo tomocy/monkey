@@ -1,41 +1,40 @@
 package token
 
 const (
-	_ TokenType = iota
-	Illegal
-	EOF
+	Illegal = "Illegal"
+	EOF     = "EOF"
 
-	Ident
-	Int
+	Ident = "Ident"
+	Int   = "Int"
 
-	Assign
-	Plus
-	Minus
-	Asterrisk
-	Slash
-	Bang
+	Assign    = "Assign"
+	Plus      = "Plus"
+	Minus     = "Minus"
+	Asterrisk = "Asterrisk"
+	Slash     = "Slash"
+	Bang      = "Bang"
 
-	Equal
-	NotEqual
+	Equal    = "Equal"
+	NotEqual = "NotEqual"
 
-	LessThan
-	GreaterThan
+	LessThan    = "LessThan"
+	GreaterThan = "GreaterThan"
 
-	Comma
-	Semicolon
+	Comma     = "Comma"
+	Semicolon = "Semicolon"
 
-	LParen
-	RParen
-	LBrace
-	RBrace
+	LParen = "LParen"
+	RParen = "RParen"
+	LBrace = "LBrace"
+	RBrace = "RBrace"
 
-	Function
-	Let
-	If
-	Else
-	Return
-	True
-	False
+	Function = "Function"
+	Let      = "Let"
+	If       = "If"
+	Else     = "Else"
+	Return   = "Return"
+	True     = "True"
+	False    = "False"
 )
 
 var tokenTypes = map[string]TokenType{
@@ -68,27 +67,7 @@ var keywordTypes = map[string]TokenType{
 	"false":  False,
 }
 
-type TokenType int
-
-func (tt TokenType) String() string {
-	for k, v := range tokenTypes {
-		if v == tt {
-			return k
-		}
-	}
-
-	for k, v := range keywordTypes {
-		if v == tt {
-			return k
-		}
-	}
-
-	if tt == Illegal {
-		return "Illegal"
-	}
-
-	return "Ident"
-}
+type TokenType string
 
 func LookUpTokenType(s string) TokenType {
 	if tokenType, ok := tokenTypes[s]; ok {
