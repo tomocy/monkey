@@ -26,44 +26,44 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.EQ
+			t.Type = token.Eq
 			t.Literal = string(prevChar) + string(l.char)
 		} else {
-			t = newToken(token.ASSIGN, l.char)
+			t = newToken(token.Assign, l.char)
 		}
 	case '+':
-		t = newToken(token.PLUS, l.char)
+		t = newToken(token.Plus, l.char)
 	case '-':
-		t = newToken(token.MINUS, l.char)
+		t = newToken(token.Minus, l.char)
 	case '*':
-		t = newToken(token.ASTERRISK, l.char)
+		t = newToken(token.Asterrisk, l.char)
 	case '/':
-		t = newToken(token.SLASH, l.char)
+		t = newToken(token.Slash, l.char)
 	case '!':
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.NOT_EQ
+			t.Type = token.NotEq
 			t.Literal = string(prevChar) + string(l.char)
 		} else {
-			t = newToken(token.BANG, l.char)
+			t = newToken(token.Bang, l.char)
 		}
 	case '<':
 		t = newToken(token.LT, l.char)
 	case '>':
 		t = newToken(token.GT, l.char)
 	case ',':
-		t = newToken(token.COMMA, l.char)
+		t = newToken(token.Comma, l.char)
 	case ';':
-		t = newToken(token.SEMICOLON, l.char)
+		t = newToken(token.Semicolon, l.char)
 	case '(':
-		t = newToken(token.LPAREN, l.char)
+		t = newToken(token.LParen, l.char)
 	case ')':
-		t = newToken(token.RPAREN, l.char)
+		t = newToken(token.RParen, l.char)
 	case '{':
-		t = newToken(token.LBRACE, l.char)
+		t = newToken(token.LBrace, l.char)
 	case '}':
-		t = newToken(token.RBRACE, l.char)
+		t = newToken(token.RBrace, l.char)
 	case 0:
 		t.Type = token.EOF
 		t.Literal = ""
@@ -76,11 +76,11 @@ func (l *Lexer) NextToken() token.Token {
 
 		if isDigit(l.char) {
 			t.Literal = l.readNumber()
-			t.Type = token.INT
+			t.Type = token.Int
 			return t
 		}
 
-		t = newToken(token.ILLEGAL, l.char)
+		t = newToken(token.Illegal, l.char)
 	}
 
 	l.readChar()

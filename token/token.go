@@ -1,50 +1,50 @@
 package token
 
 const (
-	ILLEGAL = "ILLEGAL"
+	Illegal = "ILLEGAL"
 	EOF     = "EOF"
 
-	IDENT = "IDENT"
-	INT   = "INT"
+	Ident = "IDENT"
+	Int   = "INT"
 
-	ASSIGN    = "="
-	PLUS      = "+"
-	MINUS     = "-"
-	ASTERRISK = "*"
-	SLASH     = "/"
-	BANG      = "!"
+	Assign    = "="
+	Plus      = "+"
+	Minus     = "-"
+	Asterrisk = "*"
+	Slash     = "/"
+	Bang      = "!"
 
-	EQ     = "=="
-	NOT_EQ = "!="
+	Eq    = "=="
+	NotEq = "!="
 
 	LT = "<"
 	GT = ">"
 
-	COMMA     = ","
-	SEMICOLON = ";"
+	Comma     = ","
+	Semicolon = ";"
 
-	LPAREN = "("
-	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
+	LParen = "("
+	RParen = ")"
+	LBrace = "{"
+	RBrace = "}"
 
-	FUNCTION = "FUNCTION"
-	LET      = "LET"
-	IF       = "if"
-	ELSE     = "else"
-	RETURN   = "return"
-	TRUE     = "true"
-	FALSE    = "false"
+	Function = "FUNCTION"
+	Let      = "LET"
+	If       = "if"
+	Else     = "else"
+	Return   = "return"
+	True     = "true"
+	False    = "false"
 )
 
 var keywordTypes = map[string]TokenType{
-	"fn":     FUNCTION,
-	"let":    LET,
-	"if":     IF,
-	"else":   ELSE,
-	"return": RETURN,
-	"true":   TRUE,
-	"false":  FALSE,
+	"fn":     Function,
+	"let":    Let,
+	"if":     If,
+	"else":   Else,
+	"return": Return,
+	"true":   True,
+	"false":  False,
 }
 
 type TokenType string
@@ -59,5 +59,5 @@ func LookUpIdentifier(ident string) TokenType {
 		return keywordType
 	}
 
-	return IDENT
+	return Ident
 }
