@@ -17,10 +17,17 @@ func Start(in io.Reader, w io.Writer) {
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		sourceCode := scanner.Text()
-		lexer := lexer.New(sourceCode)
-		for t := lexer.NextToken(); t.Type != token.EOF; t = lexer.NextToken() {
-			fmt.Printf("%+v\n", t)
-		}
+		fmt.Print(tokens(sourceCode))
 		fmt.Print(prompt)
 	}
+}
+
+func tokens(input string) string {
+	b := make([]byte, 0, 10)
+	lexer := lexer.New(input)
+	for t := lexer.NextToken(); t.Type != token.EOF; t = lexer.NextToken() {
+		b = append(b, fmt.Sprintf("%+v\n", t)...)
+	}
+
+	return string(b)
 }
