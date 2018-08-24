@@ -55,10 +55,15 @@ type Token struct {
 	Literal string
 }
 
-func LookUpIdentifier(ident string) TokenType {
-	if keywordType, ok := keywordTypes[ident]; ok {
+func IsKeyword(s string) bool {
+	_, ok := keywordTypes[s]
+	return ok
+}
+
+func LookUpKeywordType(keyword string) TokenType {
+	if keywordType, ok := keywordTypes[keyword]; ok {
 		return keywordType
 	}
 
-	return Ident
+	return Illegal
 }

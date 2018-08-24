@@ -70,7 +70,11 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		if isLetter(l.char) {
 			t.Literal = l.readKeywordOrIdentifier()
-			t.Type = token.LookUpIdentifier(t.Literal)
+			if token.IsKeyword(t.Literal) {
+				t.Type = token.LookUpKeywordType(t.Literal)
+			} else {
+				t.Type = token.Ident
+			}
 			return t
 		}
 
