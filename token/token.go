@@ -18,8 +18,8 @@ const (
 	Equal
 	NotEqual
 
-	LT
-	GT
+	LessThan
+	GreaterThan
 
 	Comma
 	Semicolon

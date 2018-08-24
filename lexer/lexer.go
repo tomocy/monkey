@@ -49,9 +49,9 @@ func (l *Lexer) NextToken() token.Token {
 			t = newToken(token.Bang, l.char)
 		}
 	case '<':
-		t = newToken(token.LT, l.char)
+		t = newToken(token.LessThan, l.char)
 	case '>':
-		t = newToken(token.GT, l.char)
+		t = newToken(token.GreaterThan, l.char)
 	case ',':
 		t = newToken(token.Comma, l.char)
 	case ';':
