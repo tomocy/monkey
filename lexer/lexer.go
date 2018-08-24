@@ -69,7 +69,7 @@ func (l *Lexer) NextToken() token.Token {
 		t.Literal = ""
 	default:
 		if isLetter(l.char) {
-			t.Literal = l.readIdentifier()
+			t.Literal = l.readKeywordOrIdentifier()
 			t.Type = token.LookUpIdentifier(t.Literal)
 			return t
 		}
@@ -118,7 +118,7 @@ func newToken(tokenType token.TokenType, char byte) token.Token {
 	}
 }
 
-func (l *Lexer) readIdentifier() string {
+func (l *Lexer) readKeywordOrIdentifier() string {
 	beginPosition := l.position
 	for isLetter(l.char) {
 		l.readCharacter()
