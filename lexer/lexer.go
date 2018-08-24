@@ -1,6 +1,8 @@
 package lexer
 
-import "github.com/tomocy/monkey/token"
+import (
+	"github.com/tomocy/monkey/token"
+)
 
 type Lexer struct {
 	input           string
@@ -26,8 +28,7 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.Equal
-			t.Literal = string(prevChar) + string(l.char)
+			t = newMultipleToken(token.Equal, prevChar, l.char)
 		} else {
 			t = newToken(token.Assign, l.char)
 		}
@@ -43,8 +44,7 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.NotEqual
-			t.Literal = string(prevChar) + string(l.char)
+			t = newMultipleToken(token.NotEqual, prevChar, l.char)
 		} else {
 			t = newToken(token.Bang, l.char)
 		}
@@ -102,6 +102,13 @@ func (l *Lexer) peekChar() byte {
 		return 0
 	}
 	return l.input[l.readingPosition]
+}
+
+func newMultipleToken(tokenType token.TokenType, chars ...byte) token.Token {
+	return token.Token{
+		Type:    tokenType,
+		Literal: string(chars),
+	}
 }
 
 func newToken(tokenType token.TokenType, char byte) token.Token {
