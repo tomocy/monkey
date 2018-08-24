@@ -70,9 +70,24 @@ var keywordTypes = map[string]TokenType{
 
 type TokenType int
 
-type Token struct {
-	Type    TokenType
-	Literal string
+func (tt TokenType) String() string {
+	for k, v := range tokenTypes {
+		if v == tt {
+			return k
+		}
+	}
+
+	for k, v := range keywordTypes {
+		if v == tt {
+			return k
+		}
+	}
+
+	if tt == Illegal {
+		return "Illegal"
+	}
+
+	return "Ident"
 }
 
 func LookUpTokenType(s string) TokenType {
@@ -94,4 +109,9 @@ func LookUpKeywordType(keyword string) TokenType {
 	}
 
 	return Illegal
+}
+
+type Token struct {
+	Type    TokenType
+	Literal string
 }

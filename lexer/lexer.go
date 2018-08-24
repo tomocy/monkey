@@ -12,12 +12,9 @@ type Lexer struct {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{
+	return &Lexer{
 		input: input,
 	}
-	l.readCharacter()
-
-	return l
 }
 
 func (l *Lexer) NextToken() token.Token {
