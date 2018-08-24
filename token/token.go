@@ -14,8 +14,8 @@ const (
 	Slash     = "/"
 	Bang      = "!"
 
-	Eq    = "=="
-	NotEq = "!="
+	Equal    = "=="
+	NotEqual = "!="
 
 	LT = "<"
 	GT = ">"

@@ -26,7 +26,7 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.Eq
+			t.Type = token.Equal
 			t.Literal = string(prevChar) + string(l.char)
 		} else {
 			t = newToken(token.Assign, l.char)
@@ -43,7 +43,7 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == '=' {
 			prevChar := l.char
 			l.readChar()
-			t.Type = token.NotEq
+			t.Type = token.NotEqual
 			t.Literal = string(prevChar) + string(l.char)
 		} else {
 			t = newToken(token.Bang, l.char)

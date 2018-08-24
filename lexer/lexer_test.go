@@ -40,8 +40,8 @@ func TestNextToken(t *testing.T) {
 		{token.If, "if"}, {token.LParen, "("}, {token.Int, "5"}, {token.LT, "<"}, {token.Int, "10"}, {token.RParen, ")"},
 		{token.LBrace, "{"}, {token.Return, "return"}, {token.True, "true"}, {token.Semicolon, ";"}, {token.RBrace, "}"},
 		{token.Else, "else"}, {token.LBrace, "{"}, {token.Return, "return"}, {token.False, "false"}, {token.Semicolon, ";"}, {token.RBrace, "}"},
-		{token.Int, "10"}, {token.Eq, "=="}, {token.Int, "10"}, {token.Semicolon, ";"},
-		{token.Int, "10"}, {token.NotEq, "!="}, {token.Int, "10"}, {token.Semicolon, ";"},
+		{token.Int, "10"}, {token.Equal, "=="}, {token.Int, "10"}, {token.Semicolon, ";"},
+		{token.Int, "10"}, {token.NotEqual, "!="}, {token.Int, "10"}, {token.Semicolon, ";"},
 		{token.EOF, ""},
 	}
 
