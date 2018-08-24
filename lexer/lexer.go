@@ -38,7 +38,7 @@ func (l *Lexer) NextToken() token.Token {
 	if tokenType != token.Assign && tokenType != token.Bang {
 		return l.expressAsSingleToken()
 	}
-	peekTokenType := token.LookUpTokenType(string(l.peekChar()))
+	peekTokenType := token.LookUpTokenType(string(l.peekCharacter()))
 	if peekTokenType != token.Assign {
 		return l.expressAsSingleToken()
 	}
@@ -80,7 +80,7 @@ func (l *Lexer) expressAsKeywordOrIdentifier() token.Token {
 
 func (l *Lexer) readKeywordOrIdentifier() string {
 	beginPosition := l.position
-	for isLetter(l.peekChar()) {
+	for isLetter(l.peekCharacter()) {
 		l.readCharacter()
 	}
 
@@ -100,7 +100,7 @@ func (l *Lexer) expressAsNumber() token.Token {
 
 func (l *Lexer) readNumber() string {
 	beginPosition := l.position
-	for isDigit(l.peekChar()) {
+	for isDigit(l.peekCharacter()) {
 		l.readCharacter()
 	}
 
@@ -133,7 +133,7 @@ func (l *Lexer) expressAsMultipleToken() token.Token {
 	return t
 }
 
-func (l *Lexer) peekChar() byte {
+func (l *Lexer) peekCharacter() byte {
 	if len(l.input) <= l.readingPosition {
 		return 0
 	}
