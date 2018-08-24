@@ -38,6 +38,26 @@ const (
 	False
 )
 
+var tokenTypes = map[string]TokenType{
+	"=":    Assign,
+	"+":    Plus,
+	"-":    Minus,
+	"*":    Asterrisk,
+	"/":    Slash,
+	"!":    Bang,
+	"==":   Equal,
+	"!=":   NotEqual,
+	"<":    LessThan,
+	">":    GreaterThan,
+	",":    Comma,
+	";":    Semicolon,
+	"(":    LParen,
+	")":    RParen,
+	"{":    LBrace,
+	"}":    RBrace,
+	"\x00": EOF,
+}
+
 var keywordTypes = map[string]TokenType{
 	"fn":     Function,
 	"let":    Let,
@@ -53,6 +73,14 @@ type TokenType int
 type Token struct {
 	Type    TokenType
 	Literal string
+}
+
+func LookUpTokenType(s string) TokenType {
+	if tokenType, ok := tokenTypes[s]; ok {
+		return tokenType
+	}
+
+	return Illegal
 }
 
 func IsKeyword(s string) bool {
