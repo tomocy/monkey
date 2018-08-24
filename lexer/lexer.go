@@ -15,7 +15,7 @@ func New(input string) *Lexer {
 	l := &Lexer{
 		input: input,
 	}
-	l.readChar()
+	l.readCharacter()
 
 	return l
 }
@@ -27,7 +27,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '=':
 		if l.peekChar() == '=' {
 			prevChar := l.char
-			l.readChar()
+			l.readCharacter()
 			t = newMultipleToken(token.Equal, prevChar, l.char)
 		} else {
 			t = newToken(token.Assign, l.char)
@@ -43,7 +43,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '!':
 		if l.peekChar() == '=' {
 			prevChar := l.char
-			l.readChar()
+			l.readCharacter()
 			t = newMultipleToken(token.NotEqual, prevChar, l.char)
 		} else {
 			t = newToken(token.Bang, l.char)
@@ -83,13 +83,13 @@ func (l *Lexer) NextToken() token.Token {
 		t = newToken(token.Illegal, l.char)
 	}
 
-	l.readChar()
+	l.readCharacter()
 	return t
 }
 
 func (l *Lexer) skipWhitespace() {
 	for isWhitespace(l.char) {
-		l.readChar()
+		l.readCharacter()
 	}
 }
 
@@ -121,7 +121,7 @@ func newToken(tokenType token.TokenType, char byte) token.Token {
 func (l *Lexer) readIdentifier() string {
 	beginPosition := l.position
 	for isLetter(l.char) {
-		l.readChar()
+		l.readCharacter()
 	}
 
 	return l.input[beginPosition:l.position]
@@ -134,7 +134,7 @@ func isLetter(char byte) bool {
 func (l *Lexer) readNumber() string {
 	beginPosition := l.position
 	for isDigit(l.char) {
-		l.readChar()
+		l.readCharacter()
 	}
 
 	return l.input[beginPosition:l.position]
@@ -144,7 +144,7 @@ func isDigit(char byte) bool {
 	return '0' <= char && char <= '9'
 }
 
-func (l *Lexer) readChar() {
+func (l *Lexer) readCharacter() {
 	if len(l.input) <= l.readingPosition {
 		l.char = 0
 	} else {
