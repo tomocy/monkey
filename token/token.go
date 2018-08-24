@@ -1,40 +1,41 @@
 package token
 
 const (
-	Illegal = "ILLEGAL"
-	EOF     = "EOF"
+	_ TokenType = iota
+	Illegal
+	EOF
 
-	Ident = "IDENT"
-	Int   = "INT"
+	Ident
+	Int
 
-	Assign    = "="
-	Plus      = "+"
-	Minus     = "-"
-	Asterrisk = "*"
-	Slash     = "/"
-	Bang      = "!"
+	Assign
+	Plus
+	Minus
+	Asterrisk
+	Slash
+	Bang
 
-	Equal    = "=="
-	NotEqual = "!="
+	Equal
+	NotEqual
 
-	LT = "<"
-	GT = ">"
+	LT
+	GT
 
-	Comma     = ","
-	Semicolon = ";"
+	Comma
+	Semicolon
 
-	LParen = "("
-	RParen = ")"
-	LBrace = "{"
-	RBrace = "}"
+	LParen
+	RParen
+	LBrace
+	RBrace
 
-	Function = "FUNCTION"
-	Let      = "LET"
-	If       = "if"
-	Else     = "else"
-	Return   = "return"
-	True     = "true"
-	False    = "false"
+	Function
+	Let
+	If
+	Else
+	Return
+	True
+	False
 )
 
 var keywordTypes = map[string]TokenType{
@@ -47,7 +48,7 @@ var keywordTypes = map[string]TokenType{
 	"false":  False,
 }
 
-type TokenType string
+type TokenType int
 
 type Token struct {
 	Type    TokenType
