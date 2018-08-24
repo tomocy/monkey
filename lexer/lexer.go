@@ -21,6 +21,7 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) NextToken() token.Token {
+	l.readCharacter()
 	l.skipWhitespace()
 	if isLetter(l.char) {
 		return l.expressAsKeywordOrIdentifier()
@@ -79,11 +80,11 @@ func (l *Lexer) expressAsKeywordOrIdentifier() token.Token {
 
 func (l *Lexer) readKeywordOrIdentifier() string {
 	beginPosition := l.position
-	for isLetter(l.char) {
+	for isLetter(l.peekChar()) {
 		l.readCharacter()
 	}
 
-	return l.input[beginPosition:l.position]
+	return l.input[beginPosition:l.readingPosition]
 }
 
 func isLetter(char byte) bool {
@@ -99,11 +100,11 @@ func (l *Lexer) expressAsNumber() token.Token {
 
 func (l *Lexer) readNumber() string {
 	beginPosition := l.position
-	for isDigit(l.char) {
+	for isDigit(l.peekChar()) {
 		l.readCharacter()
 	}
 
-	return l.input[beginPosition:l.position]
+	return l.input[beginPosition:l.readingPosition]
 }
 
 func isDigit(char byte) bool {
@@ -117,8 +118,6 @@ func (l *Lexer) expressAsSingleToken() token.Token {
 		Literal: literal,
 	}
 
-	l.readCharacter()
-
 	return t
 }
 
@@ -130,8 +129,6 @@ func (l *Lexer) expressAsMultipleToken() token.Token {
 		Type:    token.LookUpTokenType(literal),
 		Literal: literal,
 	}
-
-	l.readCharacter()
 
 	return t
 }
