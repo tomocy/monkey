@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/lexer"
 	"github.com/tomocy/monkey/token"
@@ -10,16 +12,27 @@ type Parser struct {
 	lexer        *lexer.Lexer
 	currentToken token.Token
 	peekToken    token.Token
+	errors       []string
 }
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{
-		lexer: l,
+		lexer:  l,
+		errors: make([]string, 0),
 	}
 	p.nextToken()
 	p.nextToken()
 
 	return p
+}
+
+func (p Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
+	msg := fmt.Sprintf("expected peek token to be %s, but got %s instead\n", tokenType, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
 }
 
 func (p *Parser) nextToken() {
