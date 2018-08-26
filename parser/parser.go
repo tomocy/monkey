@@ -20,6 +20,17 @@ const (
 	Call
 )
 
+var precedences = map[token.TokenType]precedence{
+	token.Equal:       Equal,
+	token.NotEqual:    Equal,
+	token.LessThan:    Relational,
+	token.GreaterThan: Relational,
+	token.Plus:        Additive,
+	token.Minus:       Additive,
+	token.Asterrisk:   Multiplicative,
+	token.Slash:       Multiplicative,
+}
+
 type precedence int
 
 type Parser struct {
