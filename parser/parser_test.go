@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/tomocy/monkey/ast"
@@ -164,6 +165,60 @@ func TestIntegerLiteral(t *testing.T) {
 	}
 	if intLiteral.Value != 5 {
 		t.Errorf("intLiteral.Value was wrong: expected 5, but got %d\n", intLiteral.Value)
+	}
+}
+
+func TestPrefixIntegerLiteral(t *testing.T) {
+	input := `
+	!5;
+	-15;
+	`
+	tests := []struct {
+		expectedOperator string
+		expectedValue    int64
+	}{
+		{"!", 5},
+		{"-", 15},
+	}
+
+	parser := New(lexer.New(input))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	if program == nil {
+		t.Fatal("program was nil")
+	}
+	if len(program.Statements) != 2 {
+		t.Errorf("len(program.Statements) returned wrong value: expected 2, but got %d\n", len(program.Statements))
+	}
+
+	for i, test := range tests {
+		stmt := program.Statements[i]
+		expressionStmt, ok := stmt.(*ast.ExpressionStatement)
+		if !ok {
+			t.Error("faild to assert stmt as *ast.ExpressionStatement")
+		}
+		prefix, ok := expressionStmt.Expression.(*ast.Prefix)
+		if !ok {
+			t.Error("faild to assert expressionStmt as prefix")
+		}
+		if prefix.Operator != test.expectedOperator {
+			t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", test.expectedOperator, prefix.Operator)
+		}
+		testIntegerLiteral(t, prefix.RightValue, test.expectedValue)
+	}
+}
+
+func testIntegerLiteral(t *testing.T, e ast.Expression, value int64) {
+	il, ok := e.(*ast.IntegerLiteral)
+	if !ok {
+		t.Error("faild to assert e as *ast.IntegerLiteral")
+	}
+	expectedTokenLiteral := fmt.Sprintf("%d", value)
+	if il.TokenLiteral() != expectedTokenLiteral {
+		t.Errorf("il.TokenLiteral() returned wrong value: expected %s, but got %s", expectedTokenLiteral, il.TokenLiteral())
+	}
+	if il.Value != value {
+		t.Errorf("il.Value was wrong: expected %d, but got %d", value, il.Value)
 	}
 }
 
