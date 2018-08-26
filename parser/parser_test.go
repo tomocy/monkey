@@ -222,6 +222,60 @@ func testIntegerLiteral(t *testing.T, e ast.Expression, value int64) {
 	}
 }
 
+func TestInfixIntegerLiteral(t *testing.T) {
+	input := `
+	5 + 5;
+	5 - 5;
+	5 * 5;
+	5 / 5;
+	5 < 5;
+	5 > 5;
+	5 == 5;
+	5 != ;
+	`
+	tests := []struct {
+		expectedLeftValue  int64
+		expectedOperator   string
+		expectedRightValue int64
+	}{
+		{5, "+", 5},
+		{5, "-", 5},
+		{5, "*", 5},
+		{5, "?", 5},
+		{5, "<", 5},
+		{5, ">", 5},
+		{5, "==", 5},
+		{5, "!=", 5},
+	}
+	parser := New(lexer.New(input))
+	program := parser.ParseProgram()
+	if program == nil {
+		t.Fatal("program was nil")
+	}
+	if len(program.Statements) != len(tests) {
+		t.Errorf("len(program.Statements) return wrong value: expected %d, but got %d", len(tests), len(program.Statements))
+	}
+	testParserHasNoErrors(t, parser)
+
+	for i, test := range tests {
+		stmt := program.Statements[i]
+		expressionStmt, ok := stmt.(*ast.ExpressionStatement)
+		if !ok {
+			t.Error("faild to assert stmt as *ast.ExpressionStatement")
+		}
+		infix, ok := expressionStmt.Expression(*ast.Infix)
+		if !ok {
+			t.Error("faild to assert expressionStmt as infix")
+		}
+		if infix.Operator != test.expectedOperator {
+			t.Errorf("infix.Operator was wrong: expected %s, but got %s\n", test.expectedOperator, infix.Operator)
+		}
+
+		testIntegerLiteral(t, infix.LeftValue, test.expectedLeftValue)
+		testIntegerLiteral(t, infix.RightValue, test.expectedRightValue)
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
