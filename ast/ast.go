@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"strconv"
+
 	"github.com/tomocy/monkey/token"
 )
 
@@ -125,4 +127,20 @@ func (s ExpressionStatement) String() string {
 	}
 
 	return ""
+}
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il IntegerLiteral) expression() {
+}
+
+func (il IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+
+func (il IntegerLiteral) String() string {
+	return strconv.FormatInt(il.Value, 10)
 }
