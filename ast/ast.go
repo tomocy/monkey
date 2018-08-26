@@ -144,3 +144,26 @@ func (il IntegerLiteral) TokenLiteral() string {
 func (il IntegerLiteral) String() string {
 	return strconv.FormatInt(il.Value, 10)
 }
+
+type Prefix struct {
+	Token      token.Token
+	Operator   string
+	RightValue Expression
+}
+
+func (p Prefix) expression() {
+}
+
+func (p Prefix) TokenLiteral() string {
+	return p.Token.Literal
+}
+
+func (p Prefix) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '(')
+	b = append(b, p.Operator...)
+	b = append(b, p.RightValue.String()...)
+	b = append(b, ')')
+
+	return string(b)
+}
