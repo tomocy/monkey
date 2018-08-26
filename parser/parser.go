@@ -68,6 +68,10 @@ func (p *Parser) registerPrefixParseFunction(tokenType token.TokenType, fn prefi
 	p.prefixParseFns[tokenType] = fn
 }
 
+func (p *Parser) registerInfixParseFucntion(tokenType token.TokenType, fn infixParseFunction) {
+	p.infixParseFns[tokenType] = fn
+}
+
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{
 		Token: p.currentToken,
