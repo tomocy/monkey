@@ -65,7 +65,7 @@ func TestLetStatement(t *testing.T) {
 func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
-		t.Error("faild to assert stmt as *ast.LetStatement\n")
+		t.Error("faild to assert stmt as *ast.LetStatement")
 	}
 
 	if stmt.TokenLiteral() != "let" {
@@ -89,20 +89,20 @@ func TestReturnStatement(t *testing.T) {
 	program := parser.ParseProgram()
 	testParserHasNoErrors(t, parser)
 	if program == nil {
-		t.Fatal("parser.ParseProgram returned nil\n")
+		t.Fatal("parser.ParseProgram returned nil")
 	}
 	if len(program.Statements) != 3 {
-		t.Fatalf("the number of program.Statement was wrong: expected 3, but got %d\n", len(program.Statements))
+		t.Fatalf("len(program.Statement) was wrong: expected 3, but got %d\n", len(program.Statements))
 	}
 
 	for _, stmt := range program.Statements {
 		returnStmt, ok := stmt.(*ast.ReturnStatement)
 		if !ok {
-			t.Error("faild to assert stmt as *ast.ReturnStatement\n")
+			t.Error("faild to assert stmt as *ast.ReturnStatement")
 		}
 
 		if returnStmt.TokenLiteral() != "return" {
-			t.Errorf("the token literal of returnStmt was wrong: expected return, but got %s\n", returnStmt.TokenLiteral())
+			t.Errorf("returnStmt.TokenLiteral() returned wrong value: expected return, but got %s\n", returnStmt.TokenLiteral())
 		}
 	}
 }
@@ -113,27 +113,27 @@ func TestIdentifier(t *testing.T) {
 	program := parser.ParseProgram()
 	testParserHasNoErrors(t, parser)
 	if program == nil {
-		t.Fatal("parser.ParseProgram returned nil\n")
+		t.Fatal("parser.ParseProgram returned nil")
 	}
 	if len(program.Statements) != 1 {
-		t.Fatalf("the number of program.Statements was wrong: expected 1, but got %d\n", len(program.Statements))
+		t.Fatalf("len(program.Statements) was wrong: expected 1, but got %d\n", len(program.Statements))
 	}
 
 	stmt := program.Statements[0]
 	expressionStmt, ok := stmt.(*ast.ExpressionStatement)
 	if !ok {
-		t.Error("faild to assert stmt as *ast.ExpressionStatement\n")
+		t.Error("faild to assert stmt as *ast.ExpressionStatement")
 	}
 
 	ident, ok := expressionStmt.Expression.(*ast.Identifier)
 	if !ok {
-		t.Error("faild to assert expressionStmt as *ast.Identifier\n")
+		t.Error("faild to assert expressionStmt as *ast.Identifier")
 	}
 	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("the token literal of ident was wrong: expected foobar, but got %s", ident.TokenLiteral())
+		t.Errorf("ident.TokenLiteral returned wrong value: expected foobar, but got %s\n", ident.TokenLiteral())
 	}
 	if ident.Value != "foobar" {
-		t.Errorf("the value of ident was wrong: expected foobar, but got %s\n", ident.Value)
+		t.Errorf("ident.Value was wrong: expected foobar, but got %s\n", ident.Value)
 	}
 }
 

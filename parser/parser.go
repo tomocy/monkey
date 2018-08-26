@@ -60,10 +60,6 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	}
 }
 
-func (p Parser) Errors() []string {
-	return p.errors
-}
-
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{
 		Statements: make([]ast.Statement, 0),
@@ -168,4 +164,8 @@ func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
 func (p *Parser) nextToken() {
 	p.currentToken = p.peekToken
 	p.peekToken = p.lexer.NextToken()
+}
+
+func (p Parser) Errors() []string {
+	return p.errors
 }
