@@ -167,3 +167,28 @@ func (p Prefix) String() string {
 
 	return string(b)
 }
+
+type Infix struct {
+	Token      token.Token
+	LeftValue  Expression
+	Operator   string
+	RightValue Expression
+}
+
+func (i Infix) expression() {
+}
+
+func (i Infix) TokenLiteral() string {
+	return i.Token.Literal
+}
+
+func (i Infix) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '(')
+	b = append(b, i.LeftValue.String()...)
+	b = append(b, " "+i.Operator+" "...)
+	b = append(b, i.RightValue.String()...)
+	b = append(b, ')')
+
+	return string(b)
+}
