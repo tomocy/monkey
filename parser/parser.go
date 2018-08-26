@@ -103,6 +103,20 @@ func (p *Parser) parsePrefix() ast.Expression {
 	return exp
 }
 
+func (p *Parser) parseInfix(leftValue ast.Expression) ast.Expression {
+	exp := &ast.Infix{
+		Token:     p.currentToken,
+		LeftValue: leftValue,
+		Operator:  p.currentToken.Literal,
+	}
+	prec := p.currentPrecedence()
+
+	p.nextToken()
+	exp.RightValue = p.parseExpression(prec)
+
+	return exp
+}
+
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{
 		Statements: make([]ast.Statement, 0),
