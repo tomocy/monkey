@@ -211,8 +211,19 @@ func (p *Parser) parseExpression(precedence precedence) ast.Expression {
 		p.reportNoPrefixParseFunction(p.currentToken.Type)
 		return nil
 	}
+	leftValue := prefixParseFn()
 
-	return prefixParseFn()
+	for !p.isPeekToken(token.Semicolon) && precedence < p.peekPrecedence() {
+		infixParseFn := p.infixParseFns[p.peekToken.Type]
+		if infixParseFn == nil {
+			return leftValue
+		}
+
+		p.nextToken()
+		leftValue = infixParseFn(leftValue)
+	}
+
+	return leftValue
 }
 
 func (p Parser) isPeekToken(tokenType token.TokenType) bool {

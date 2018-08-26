@@ -231,7 +231,7 @@ func TestInfixIntegerLiteral(t *testing.T) {
 	5 < 5;
 	5 > 5;
 	5 == 5;
-	5 != ;
+	5 != 5;
 	`
 	tests := []struct {
 		expectedLeftValue  int64
@@ -241,7 +241,7 @@ func TestInfixIntegerLiteral(t *testing.T) {
 		{5, "+", 5},
 		{5, "-", 5},
 		{5, "*", 5},
-		{5, "?", 5},
+		{5, "/", 5},
 		{5, "<", 5},
 		{5, ">", 5},
 		{5, "==", 5},
