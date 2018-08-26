@@ -8,6 +8,19 @@ import (
 	"github.com/tomocy/monkey/token"
 )
 
+const (
+	_ precedence = iota
+	Lowest
+	Equal
+	Relational
+	Additive
+	Multiplicative
+	Prefix
+	Call
+)
+
+type precedence int
+
 type Parser struct {
 	lexer          *lexer.Lexer
 	currentToken   token.Token
@@ -27,10 +40,24 @@ func New(l *lexer.Lexer) *Parser {
 		infixParseFns:  make(map[token.TokenType]infixParseFunction),
 		errors:         make([]string, 0),
 	}
+
+	p.registerPrefixParseFunction(token.Ident, p.parseIdentifier)
+
 	p.nextToken()
 	p.nextToken()
 
 	return p
+}
+
+func (p *Parser) registerPrefixParseFunction(tokenType token.TokenType, fn prefixParseFunction) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{
+		Token: p.currentToken,
+		Value: p.currentToken.Literal,
+	}
 }
 
 func (p Parser) Errors() []string {
@@ -59,7 +86,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.Return:
 		return p.parseReturnStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
@@ -101,6 +128,28 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseExpressionStatement() ast.Statement {
+	stmt := &ast.ExpressionStatement{
+		Token:      p.currentToken,
+		Expression: p.parseExpression(Lowest),
+	}
+
+	if p.isPeekToken(token.Semicolon) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence precedence) ast.Expression {
+	prefixParseFn := p.prefixParseFns[p.currentToken.Type]
+	if prefixParseFn == nil {
+		return nil
+	}
+
+	return prefixParseFn()
 }
 
 func (p Parser) isPeekToken(tokenType token.TokenType) bool {

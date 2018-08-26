@@ -120,9 +120,9 @@ func TestIdentifier(t *testing.T) {
 	}
 
 	stmt := program.Statements[0]
-	expressionStmt, ok := stmt.(ast.ExpressionStatement)
+	expressionStmt, ok := stmt.(*ast.ExpressionStatement)
 	if !ok {
-		t.Error("faild to assert stmt as ast.ExpressionStatement\n")
+		t.Error("faild to assert stmt as *ast.ExpressionStatement\n")
 	}
 
 	ident, ok := expressionStmt.Expression.(*ast.Identifier)
