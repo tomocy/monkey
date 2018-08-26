@@ -24,9 +24,11 @@ func TestLetStatement(t *testing.T) {
 	lexer := lexer.New(input)
 	parser := New(lexer)
 	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
 	if program == nil {
 		t.Fatalf("ParseProgram returned nil\n")
 	}
+
 	if len(program.Statements) != 3 {
 		t.Fatalf("program.Statements does not contain expected number of statements: expected %d, but got %d\n", 3, len(program.Statements))
 	}
@@ -34,6 +36,18 @@ func TestLetStatement(t *testing.T) {
 	for i, test := range tests {
 		stmt := program.Statements[i]
 		testLetStatement(t, stmt, test.expectedIdentifier)
+	}
+}
+
+func testParserHasNoErrors(t *testing.T, p *Parser) {
+	errs := p.Errors()
+	if len(errs) == 0 {
+		return
+	}
+
+	t.Errorf("parser has %d errors\n", len(errs))
+	for _, msg := range errs {
+		t.Errorf("- %s\n", msg)
 	}
 }
 
