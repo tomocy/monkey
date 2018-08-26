@@ -107,7 +107,7 @@ func TestReturnStatement(t *testing.T) {
 	}
 }
 
-func TestIdentifierExpression(t *testing.T) {
+func TestIdentifier(t *testing.T) {
 	input := "foobar;"
 	parser := New(lexer.New(input))
 	program := parser.ParseProgram()
