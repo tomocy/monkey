@@ -52,3 +52,15 @@ func (i Identifier) expression() {
 func (i Identifier) TokenLiteral() string {
 	return i.Token.Literal
 }
+
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
+
+func (s ReturnStatement) statement() {
+}
+
+func (s ReturnStatement) TokenLiteral() string {
+	return s.Token.Literal
+}
