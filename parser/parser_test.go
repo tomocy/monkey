@@ -137,6 +137,36 @@ func TestIdentifier(t *testing.T) {
 	}
 }
 
+func TestIntegerLiteral(t *testing.T) {
+	input := "5;"
+	parser := New(lexer.New(input))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	if program == nil {
+		t.Fatal("program was nil")
+	}
+	if len(program.Statements) != 1 {
+		t.Errorf("len(program.Statements) returned wrong vaue: expected 1, but got %d\n", len(program.Statements))
+	}
+
+	stmt := program.Statements[0]
+	expressionStmt, ok := stmt.(*ast.ExpressionStatement)
+	if !ok {
+		t.Error("faild to assert stmt as *ast.ExpressionStatement")
+	}
+
+	intLiteral, ok := expressionStmt.Expression.(*ast.IntegerLiteral)
+	if !ok {
+		t.Error("faild to assert expressionStmt as *ast.IntegerLiteral")
+	}
+	if intLiteral.TokenLiteral() != "5" {
+		t.Errorf("intLiteral.TokenLiteral() returned wrong value: expected 5, but got %s\n", intLiteral.TokenLiteral())
+	}
+	if intLiteral.Value != "5" {
+		t.Errorf("intLiteral.Value was wrong: expected 5, but got %s\n", intLiteral.Value)
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
