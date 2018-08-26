@@ -30,16 +30,6 @@ func (p Parser) Errors() []string {
 	return p.errors
 }
 
-func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
-	msg := fmt.Sprintf("expected peek token to be %s, but got %s instead\n", tokenType, p.peekToken.Type)
-	p.errors = append(p.errors, msg)
-}
-
-func (p *Parser) nextToken() {
-	p.currentToken = p.peekToken
-	p.peekToken = p.lexer.NextToken()
-}
-
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{
 		Statements: make([]ast.Statement, 0),
@@ -112,4 +102,14 @@ func (p Parser) isPeekToken(tokenType token.TokenType) bool {
 
 func (p Parser) isCurrentToken(tokenType token.TokenType) bool {
 	return p.currentToken.Type == tokenType
+}
+
+func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
+	msg := fmt.Sprintf("expected peek token to be %s, but got %s instead\n", tokenType, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
+}
+
+func (p *Parser) nextToken() {
+	p.currentToken = p.peekToken
+	p.peekToken = p.lexer.NextToken()
 }
