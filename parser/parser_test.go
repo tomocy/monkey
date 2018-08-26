@@ -162,7 +162,7 @@ func TestIntegerLiteral(t *testing.T) {
 	if intLiteral.TokenLiteral() != "5" {
 		t.Errorf("intLiteral.TokenLiteral() returned wrong value: expected 5, but got %s\n", intLiteral.TokenLiteral())
 	}
-	if intLiteral.Value != "5" {
+	if intLiteral.Value != 5 {
 		t.Errorf("intLiteral.Value was wrong: expected 5, but got %s\n", intLiteral.Value)
 	}
 }
