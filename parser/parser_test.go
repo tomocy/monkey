@@ -9,9 +9,9 @@ import (
 
 func TestLetStatement(t *testing.T) {
 	input := `
-	let x 5;
-	let = 10;
-	let 838383;
+	let x = 5;
+	let y = 10;
+	let foobar = 838383;
 	`
 	tests := []struct {
 		expectedIdentifier string
@@ -66,5 +66,33 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	}
 	if letStmt.Name.TokenLiteral() != identName {
 		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Name.TokenLiteral())
+	}
+}
+
+func TestReturnStatement(t *testing.T) {
+	input := `
+	return 5;
+	return 10;
+	return 996633;
+	`
+	parser := New(lexer.New(input))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	if program == nil {
+		t.Fatal("parser.ParseProgram returned nil\n")
+	}
+	if len(program.Statements) != 3 {
+		t.Fatalf("the number of program.Statement was wrong: expected 3, but got %d\n", len(program.Statements))
+	}
+
+	for _, stmt := range program.Statements {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Error("faild to assert stmt as *ast.ReturnStatement\n")
+		}
+
+		if returnStmt.TokenLiteral() != "return" {
+			t.Errorf("the token literal of returnStmt was wrong: expected return, but got %s\n", returnStmt.TokenLiteral())
+		}
 	}
 }
