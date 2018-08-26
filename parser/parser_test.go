@@ -276,6 +276,37 @@ func TestInfixIntegerLiteral(t *testing.T) {
 	}
 }
 
+func TestPrefixAndInfixString(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect string
+	}{
+		{"-a * b;", "((-a) * b)"},
+		{"!-a;", "(!(-a))"},
+		{"a + b + c;", "((a + b) + c)"},
+		{"a + b - c;", "((a + b) - c)"},
+		{"a * b * c;", "((a * b) * c)"},
+		{"a * b / c;", "((a * b) / c)"},
+		{"a + b / c;", "(a + (b / c))"},
+		{"a + b * c + d / e - f;", "(((a + (b * c)) + (d / e)) - f)"},
+		{"3 + 4; -5 * 5;", "(3 + 4)((-5) * 5)"},
+		{"5 > 4 == 3 < 4;", "((5 > 4) == (3 < 4))"},
+		{"5 < 4 != 3 > 4;", "((5 < 4) != (3 > 4))"},
+		{"3 + 4 * 5 == 3 + 4 * 5;", "((3 + (4 * 5)) == (3 + (4 * 5)))"},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		if program == nil {
+			t.Error("program was nil")
+		}
+		if program.String() != test.expect {
+			t.Errorf("program.String() returned wrong value: expected %s, but got %s\n", test.expect, program.String())
+		}
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
