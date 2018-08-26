@@ -58,6 +58,15 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.Bang, p.parsePrefix)
 	p.registerPrefixParseFunction(token.Minus, p.parsePrefix)
 
+	p.registerInfixParseFucntion(token.Equal, p.parseInfix)
+	p.registerInfixParseFucntion(token.NotEqual, p.parseInfix)
+	p.registerInfixParseFucntion(token.LessThan, p.parseInfix)
+	p.registerInfixParseFucntion(token.GreaterThan, p.parseInfix)
+	p.registerInfixParseFucntion(token.Plus, p.parseInfix)
+	p.registerInfixParseFucntion(token.Minus, p.parseInfix)
+	p.registerInfixParseFucntion(token.Asterrisk, p.parseInfix)
+	p.registerInfixParseFucntion(token.Slash, p.parseInfix)
+
 	p.nextToken()
 	p.nextToken()
 
