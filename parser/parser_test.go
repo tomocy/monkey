@@ -21,14 +21,12 @@ func TestLetStatement(t *testing.T) {
 		{"foobar"},
 	}
 
-	lexer := lexer.New(input)
-	parser := New(lexer)
+	parser := New(lexer.New(input))
 	program := parser.ParseProgram()
 	testParserHasNoErrors(t, parser)
 	if program == nil {
 		t.Fatalf("ParseProgram returned nil\n")
 	}
-
 	if len(program.Statements) != 3 {
 		t.Fatalf("program.Statements does not contain expected number of statements: expected %d, but got %d\n", 3, len(program.Statements))
 	}
@@ -39,28 +37,15 @@ func TestLetStatement(t *testing.T) {
 	}
 }
 
-func testParserHasNoErrors(t *testing.T, p *Parser) {
-	errs := p.Errors()
-	if len(errs) == 0 {
-		return
-	}
-
-	t.Errorf("parser has %d errors\n", len(errs))
-	for _, msg := range errs {
-		t.Errorf("- %s", msg)
-	}
-}
-
 func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
-	if stmt.TokenLiteral() != "let" {
-		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
-	}
-
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
 		t.Error("faild to assert stmt as *ast.LetStatement\n")
 	}
 
+	if stmt.TokenLiteral() != "let" {
+		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
+	}
 	if letStmt.Name.Value != identName {
 		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Name.Value)
 	}
@@ -94,5 +79,17 @@ func TestReturnStatement(t *testing.T) {
 		if returnStmt.TokenLiteral() != "return" {
 			t.Errorf("the token literal of returnStmt was wrong: expected return, but got %s\n", returnStmt.TokenLiteral())
 		}
+	}
+}
+
+func testParserHasNoErrors(t *testing.T, p *Parser) {
+	errs := p.Errors()
+	if len(errs) == 0 {
+		return
+	}
+
+	t.Errorf("parser has %d errors\n", len(errs))
+	for _, msg := range errs {
+		t.Errorf("- %s", msg)
 	}
 }
