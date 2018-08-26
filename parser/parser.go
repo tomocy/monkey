@@ -200,6 +200,22 @@ func (p Parser) isCurrentToken(tokenType token.TokenType) bool {
 	return p.currentToken.Type == tokenType
 }
 
+func (p Parser) peekPrecedence() precedence {
+	if p, ok := precedences[p.peekToken.Type]; ok {
+		return p
+	}
+
+	return Lowest
+}
+
+func (p Parser) currentPrecedence() precedence {
+	if p, ok := precedences[p.currentToken.Type]; ok {
+		return p
+	}
+
+	return Lowest
+}
+
 func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
 	msg := fmt.Sprintf("expected peek token to be %s, but got %s instead\n", tokenType, p.peekToken.Type)
 	p.errors = append(p.errors, msg)
