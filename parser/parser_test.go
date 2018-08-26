@@ -9,9 +9,9 @@ import (
 
 func TestLetStatement(t *testing.T) {
 	input := `
-	let x = 5;
-	let y = 10;
-	let foobar = 838383;
+	let x 5;
+	let = 10;
+	let 838383;
 	`
 	tests := []struct {
 		expectedIdentifier string
@@ -47,7 +47,7 @@ func testParserHasNoErrors(t *testing.T, p *Parser) {
 
 	t.Errorf("parser has %d errors\n", len(errs))
 	for _, msg := range errs {
-		t.Errorf("- %s\n", msg)
+		t.Errorf("- %s", msg)
 	}
 }
 

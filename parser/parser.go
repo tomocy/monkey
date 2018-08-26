@@ -70,6 +70,7 @@ func (p *Parser) parseLetStatement() ast.Statement {
 	}
 
 	if !p.isPeekToken(token.Ident) {
+		p.reportPeekTokenError(token.Ident)
 		return nil
 	}
 	p.nextToken()
@@ -80,6 +81,7 @@ func (p *Parser) parseLetStatement() ast.Statement {
 	}
 
 	if !p.isPeekToken(token.Assign) {
+		p.reportPeekTokenError(token.Assign)
 		return nil
 	}
 
