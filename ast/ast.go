@@ -1,5 +1,7 @@
 package ast
 
+import "github.com/tomocy/monkey/token"
+
 type Node interface {
 	TokenLiteral() string
 }
@@ -24,4 +26,16 @@ func (p Program) TokenLiteral() string {
 	}
 
 	return ""
+}
+
+type Identifier struct {
+	Token token.Token
+	Value string
+}
+
+func (i Identifier) expression() {
+}
+
+func (i Identifier) TokenLiteral() string {
+	return i.Token.Literal
 }
