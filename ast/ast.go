@@ -64,3 +64,15 @@ func (s ReturnStatement) statement() {
 func (s ReturnStatement) TokenLiteral() string {
 	return s.Token.Literal
 }
+
+type ExpressionStatement struct {
+	Token      token.Token
+	Expression Expression
+}
+
+func (s ExpressionStatement) statement() {
+}
+
+func (s ExpressionStatement) TokenLiteral() string {
+	return s.Token.Literal
+}
