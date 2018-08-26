@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/lexer"
@@ -42,6 +43,7 @@ func New(l *lexer.Lexer) *Parser {
 	}
 
 	p.registerPrefixParseFunction(token.Ident, p.parseIdentifier)
+	p.registerPrefixParseFunction(token.Int, p.parseIntergerLiteral)
 
 	p.nextToken()
 	p.nextToken()
@@ -57,6 +59,19 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{
 		Token: p.currentToken,
 		Value: p.currentToken.Literal,
+	}
+}
+
+func (p *Parser) parseIntergerLiteral() ast.Expression {
+	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
+	if err != nil {
+		p.errors = append(p.errors, fmt.Sprintf("could not parse %s as int64\n", p.currentToken.Literal))
+		return nil
+	}
+
+	return &ast.IntegerLiteral{
+		Token: p.currentToken,
+		Value: value,
 	}
 }
 
