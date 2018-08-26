@@ -263,7 +263,7 @@ func TestInfixIntegerLiteral(t *testing.T) {
 		if !ok {
 			t.Error("faild to assert stmt as *ast.ExpressionStatement")
 		}
-		infix, ok := expressionStmt.Expression(*ast.Infix)
+		infix, ok := expressionStmt.Expression.(*ast.Infix)
 		if !ok {
 			t.Error("faild to assert expressionStmt as infix")
 		}
