@@ -5,7 +5,32 @@ import (
 
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/lexer"
+	"github.com/tomocy/monkey/token"
 )
+
+func TestString(t *testing.T) {
+	program := &ast.Program{
+		Statements: []ast.Statement{
+			&ast.LetStatement{
+				Token: token.Token{Type: token.Let, Literal: "let"},
+				Name: &ast.Identifier{
+					Token: token.Token{Type: token.Ident, Literal: "foo"},
+					Value: "foo",
+				},
+				Value: &ast.Identifier{
+					Token: token.Token{Type: token.Ident, Literal: "bar"},
+					Value: "bar",
+				},
+			},
+		},
+	}
+
+	expected := "let foo = bar;"
+	got := program.String()
+	if got != expected {
+		t.Errorf("the output as string from program was wrong: expected %s, but got %s\n", expected, got)
+	}
+}
 
 func TestLetStatement(t *testing.T) {
 	input := `

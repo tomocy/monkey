@@ -58,6 +58,7 @@ func (s LetStatement) String() string {
 	b = append(b, s.TokenLiteral()...)
 	b = append(b, ' ')
 	b = append(b, s.Name.String()...)
+	b = append(b, " = "...)
 	if s.Value != nil {
 		b = append(b, s.Value.String()...)
 	}
