@@ -148,32 +148,41 @@ func testExpressionStatement(t *testing.T, stmt ast.Statement) {
 	}
 }
 func TestIntegerLiteral(t *testing.T) {
-	input := "5;"
-	parser := New(lexer.New(input))
-	program := parser.ParseProgram()
-	testParserHasNoErrors(t, parser)
-	if program == nil {
-		t.Fatal("program was nil")
+	type expect struct {
+		tokenLiteral string
+		value        int64
 	}
-	if len(program.Statements) != 1 {
-		t.Errorf("len(program.Statements) returned wrong vaue: expected 1, but got %d\n", len(program.Statements))
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{"5;", expect{"5", 5}},
 	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		testIntegerLiteral2(t, expStmt.Expression, test.expect)
+	}
+}
 
-	stmt := program.Statements[0]
-	expressionStmt, ok := stmt.(*ast.ExpressionStatement)
+func testIntegerLiteral2(t *testing.T, exp ast.Expression, expect struct {
+	tokenLiteral string
+	value        int64
+}) {
+	integer, ok := exp.(*ast.IntegerLiteral)
 	if !ok {
-		t.Error("faild to assert stmt as *ast.ExpressionStatement")
+		t.Fatal("faild to assert exp as *ast.IntegerLiteral")
 	}
-
-	intLiteral, ok := expressionStmt.Expression.(*ast.IntegerLiteral)
-	if !ok {
-		t.Error("faild to assert expressionStmt as *ast.IntegerLiteral")
+	if integer.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("integer.TokenLiteral() returned wrong value: expect %s, bot got %s\n", expect.tokenLiteral, integer.TokenLiteral())
 	}
-	if intLiteral.TokenLiteral() != "5" {
-		t.Errorf("intLiteral.TokenLiteral() returned wrong value: expected 5, but got %s\n", intLiteral.TokenLiteral())
-	}
-	if intLiteral.Value != 5 {
-		t.Errorf("intLiteral.Value was wrong: expected 5, but got %d\n", intLiteral.Value)
+	if integer.Value != expect.value {
+		t.Errorf("integer.Value was wrong: expect %d, but got %d\n", expect.value, integer.Value)
 	}
 }
 
