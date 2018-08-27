@@ -307,6 +307,74 @@ func TestPrefixAndInfixString(t *testing.T) {
 	}
 }
 
+func TestBoolean(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect struct {
+			tokenLiteral string
+			value        bool
+		}
+	}{
+		{
+			"true;",
+			struct {
+				tokenLiteral string
+				value        bool
+			}{
+				"true",
+				true,
+			},
+		},
+		{
+			"false;",
+			struct {
+				tokenLiteral string
+				value        bool
+			}{
+				"fale",
+				false,
+			},
+		},
+		{
+			"lex x = true;",
+			struct {
+				tokenLiteral string
+				value        bool
+			}{
+				"true",
+				true,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		if program == nil {
+			t.Fatal("program was nil")
+		}
+		if len(program.Statements) != 1 {
+			t.Fatalf("len(program.Statements) returned wrong value: expected 1, but got %d\n", len(program.Statements))
+		}
+		stmt := program.Statements[0]
+		expressionStmt, ok := stmt.(*ast.ExpressionStatement)
+		if !ok {
+			t.Error("faild to assert stmt as *ast.ExpressionStatement")
+		}
+		boolean, ok := expressionStmt.Expression.(*ast.Boolean)
+		if !ok {
+			t.Error("faild to assert expressionStmt as *ast.Boolean")
+		}
+		if boolean.TokenLiteral() != test.expect.tokenLiteral {
+			t.Errorf("boolean.TokenLiteral() returned wrong value: expect %s, but got %s\n", test.expect.tokenLiteral, boolean.TokenLiteral())
+		}
+		if boolean.Value != test.expect.value {
+			t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", test.expect.value, boolean.Value)
+		}
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
