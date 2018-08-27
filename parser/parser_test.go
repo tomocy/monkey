@@ -70,12 +70,6 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	}
 }
 
-func testExpressionStatement(t *testing.T, stmt ast.Statement) {
-	if _, ok := stmt.(*ast.ExpressionStatement); !ok {
-		t.Error("faild to assert expStmt as *ast.ExpressionStatement")
-	}
-}
-
 func TestReturnStatement(t *testing.T) {
 	type expect struct {
 		tokenLiteral string
@@ -107,42 +101,52 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, tokenLiteral string) 
 	}
 }
 
+func TestIdentifier(t *testing.T) {
+	type expect struct {
+		name string
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{"foobar;", expect{"foobar"}},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		testIdentifier(t, expStmt.Expression, test.expect.name)
+	}
+}
+
+func testIdentifier(t *testing.T, exp ast.Expression, name string) {
+	ident, ok := exp.(*ast.Identifier)
+	if !ok {
+		t.Error("faild to assert exp as *ast.Identifier")
+	}
+	if ident.TokenLiteral() != name {
+		t.Errorf("ident.TokenLiteral retuned wrong value: expect %s, but got %s\n", name, ident.TokenLiteral())
+	}
+	if ident.Value != name {
+		t.Errorf("ident.Value was wrong: expect %s, but got %s\n", name, ident.TokenLiteral())
+	}
+}
+
 func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
 	if len(stmts) != stmtLen {
 		t.Fatalf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
 	}
 }
 
-func TestIdentifier(t *testing.T) {
-	input := "foobar;"
-	parser := New(lexer.New(input))
-	program := parser.ParseProgram()
-	testParserHasNoErrors(t, parser)
-	if program == nil {
-		t.Fatal("parser.ParseProgram returned nil")
-	}
-	if len(program.Statements) != 1 {
-		t.Fatalf("len(program.Statements) was wrong: expected 1, but got %d\n", len(program.Statements))
-	}
-
-	stmt := program.Statements[0]
-	expressionStmt, ok := stmt.(*ast.ExpressionStatement)
-	if !ok {
-		t.Error("faild to assert stmt as *ast.ExpressionStatement")
-	}
-
-	ident, ok := expressionStmt.Expression.(*ast.Identifier)
-	if !ok {
-		t.Error("faild to assert expressionStmt as *ast.Identifier")
-	}
-	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("ident.TokenLiteral returned wrong value: expected foobar, but got %s\n", ident.TokenLiteral())
-	}
-	if ident.Value != "foobar" {
-		t.Errorf("ident.Value was wrong: expected foobar, but got %s\n", ident.Value)
+func testExpressionStatement(t *testing.T, stmt ast.Statement) {
+	if _, ok := stmt.(*ast.ExpressionStatement); !ok {
+		t.Fatal("faild to assert expStmt as *ast.ExpressionStatement")
 	}
 }
-
 func TestIntegerLiteral(t *testing.T) {
 	input := "5;"
 	parser := New(lexer.New(input))
