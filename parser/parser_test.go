@@ -34,32 +34,26 @@ func TestString(t *testing.T) {
 }
 
 func TestLetStatement(t *testing.T) {
-	input := `
-	let x = 5;
-	let y = 10;
-	let foobar = 838383;
-	`
+	type expect struct {
+		identName string
+	}
 	tests := []struct {
-		expectedIdentifier string
+		in     string
+		expect expect
 	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
+		{"let x = 5;", expect{"x"}},
+		{"let y = 10;", expect{"y"}},
+		{"let foobar = foo + bar;", expect{"foobar"}},
 	}
-
-	parser := New(lexer.New(input))
-	program := parser.ParseProgram()
-	testParserHasNoErrors(t, parser)
-	if program == nil {
-		t.Fatalf("ParseProgram returned nil\n")
-	}
-	if len(program.Statements) != 3 {
-		t.Fatalf("program.Statements does not contain expected number of statements: expected %d, but got %d\n", 3, len(program.Statements))
-	}
-
-	for i, test := range tests {
-		stmt := program.Statements[i]
-		testLetStatement(t, stmt, test.expectedIdentifier)
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain expected number of statements: expected 1, but got %d\n", len(program.Statements))
+		}
+		stmt := program.Statements[0]
+		testLetStatement(t, stmt, test.expect.identName)
 	}
 }
 
@@ -72,11 +66,17 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
 	}
+	if letStmt.Name.TokenLiteral() != identName {
+		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Name.TokenLiteral())
+	}
 	if letStmt.Name.Value != identName {
 		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Name.Value)
 	}
-	if letStmt.Name.TokenLiteral() != identName {
-		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Name.TokenLiteral())
+}
+
+func testExpressionStatement(t *testing.T, stmt ast.Statement) {
+	if _, ok := stmt.(*ast.ExpressionStatement); !ok {
+		t.Error("faild to assert expStmt as *ast.ExpressionStatement")
 	}
 }
 
