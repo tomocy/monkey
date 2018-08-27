@@ -331,18 +331,8 @@ func TestBoolean(t *testing.T) {
 				tokenLiteral string
 				value        bool
 			}{
-				"fale",
+				"false",
 				false,
-			},
-		},
-		{
-			"lex x = true;",
-			struct {
-				tokenLiteral string
-				value        bool
-			}{
-				"true",
-				true,
 			},
 		},
 	}
