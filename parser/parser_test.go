@@ -187,42 +187,42 @@ func testIntegerLiteral2(t *testing.T, exp ast.Expression, expect struct {
 }
 
 func TestPrefixIntegerLiteral(t *testing.T) {
-	input := `
-	!5;
-	-15;
-	`
+	type integerLiteral struct {
+		tokenLiteral string
+		value        int64
+	}
+	type expect struct {
+		operator       string
+		integerLiteral integerLiteral
+	}
 	tests := []struct {
-		expectedOperator string
-		expectedValue    int64
+		in     string
+		expect expect
 	}{
-		{"!", 5},
-		{"-", 15},
+		{"!5;", expect{"!", integerLiteral{"5", 5}}},
+		{"-5;", expect{"-", integerLiteral{"5", 5}}},
 	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		testPrefix(t, expStmt.Expression, test.expect.operator)
+		prefix := expStmt.Expression.(*ast.Prefix)
+		testIntegerLiteral2(t, prefix.RightValue, test.expect.integerLiteral)
+	}
+}
 
-	parser := New(lexer.New(input))
-	program := parser.ParseProgram()
-	testParserHasNoErrors(t, parser)
-	if program == nil {
-		t.Fatal("program was nil")
+func testPrefix(t *testing.T, exp ast.Expression, operator string) {
+	prefix, ok := exp.(*ast.Prefix)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Prefix")
 	}
-	if len(program.Statements) != 2 {
-		t.Errorf("len(program.Statements) returned wrong value: expected 2, but got %d\n", len(program.Statements))
-	}
-
-	for i, test := range tests {
-		stmt := program.Statements[i]
-		expressionStmt, ok := stmt.(*ast.ExpressionStatement)
-		if !ok {
-			t.Error("faild to assert stmt as *ast.ExpressionStatement")
-		}
-		prefix, ok := expressionStmt.Expression.(*ast.Prefix)
-		if !ok {
-			t.Error("faild to assert expressionStmt as prefix")
-		}
-		if prefix.Operator != test.expectedOperator {
-			t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", test.expectedOperator, prefix.Operator)
-		}
-		testIntegerLiteral(t, prefix.RightValue, test.expectedValue)
+	if prefix.Operator != operator {
+		t.Errorf("prefix.Operator was wrong: expect %s, but got %s\n", operator, prefix.Operator)
 	}
 }
 
