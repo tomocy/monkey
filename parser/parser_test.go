@@ -49,11 +49,8 @@ func TestLetStatement(t *testing.T) {
 		parser := New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		testParserHasNoErrors(t, parser)
-		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain expected number of statements: expected 1, but got %d\n", len(program.Statements))
-		}
-		stmt := program.Statements[0]
-		testLetStatement(t, stmt, test.expect.identName)
+		testProgramStatements(t, program.Statements, 1)
+		testLetStatement(t, program.Statements[0], test.expect.identName)
 	}
 }
 
@@ -62,7 +59,6 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	if !ok {
 		t.Error("faild to assert stmt as *ast.LetStatement")
 	}
-
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
 	}
@@ -113,7 +109,7 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, tokenLiteral string) 
 
 func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
 	if len(stmts) != stmtLen {
-		t.Errorf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
+		t.Fatalf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
 	}
 }
 
