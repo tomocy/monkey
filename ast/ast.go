@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/tomocy/monkey/token"
 )
@@ -142,7 +142,7 @@ func (il IntegerLiteral) TokenLiteral() string {
 }
 
 func (il IntegerLiteral) String() string {
-	return strconv.FormatInt(il.Value, 10)
+	return fmt.Sprint(il.Value)
 }
 
 type Prefix struct {
