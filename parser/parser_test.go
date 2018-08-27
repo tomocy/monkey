@@ -81,30 +81,39 @@ func testExpressionStatement(t *testing.T, stmt ast.Statement) {
 }
 
 func TestReturnStatement(t *testing.T) {
-	input := `
-	return 5;
-	return 10;
-	return 996633;
-	`
-	parser := New(lexer.New(input))
-	program := parser.ParseProgram()
-	testParserHasNoErrors(t, parser)
-	if program == nil {
-		t.Fatal("parser.ParseProgram returned nil")
+	type expect struct {
+		tokenLiteral string
 	}
-	if len(program.Statements) != 3 {
-		t.Fatalf("len(program.Statement) was wrong: expected 3, but got %d\n", len(program.Statements))
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{"return 5;", expect{"return"}},
+		{"return 10;", expect{"return"}},
+		{"return foo;", expect{"return"}},
 	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		testReturnStatement(t, program.Statements[0], test.expect.tokenLiteral)
+	}
+}
 
-	for _, stmt := range program.Statements {
-		returnStmt, ok := stmt.(*ast.ReturnStatement)
-		if !ok {
-			t.Error("faild to assert stmt as *ast.ReturnStatement")
-		}
+func testReturnStatement(t *testing.T, stmt ast.Statement, tokenLiteral string) {
+	returnStmt, ok := stmt.(*ast.ReturnStatement)
+	if !ok {
+		t.Error("faild to assert stmt as *ast.ReturnStatement")
+	}
+	if returnStmt.TokenLiteral() != tokenLiteral {
+		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", tokenLiteral, returnStmt.TokenLiteral())
+	}
+}
 
-		if returnStmt.TokenLiteral() != "return" {
-			t.Errorf("returnStmt.TokenLiteral() returned wrong value: expected return, but got %s\n", returnStmt.TokenLiteral())
-		}
+func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
+	if len(stmts) != stmtLen {
+		t.Errorf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
 	}
 }
 
