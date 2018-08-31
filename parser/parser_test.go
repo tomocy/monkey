@@ -5,32 +5,7 @@ import (
 
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/lexer"
-	"github.com/tomocy/monkey/token"
 )
-
-func TestString(t *testing.T) {
-	program := &ast.Program{
-		Statements: []ast.Statement{
-			&ast.LetStatement{
-				Token: token.Token{Type: token.Let, Literal: "let"},
-				Name: &ast.Identifier{
-					Token: token.Token{Type: token.Ident, Literal: "foo"},
-					Value: "foo",
-				},
-				Value: &ast.Identifier{
-					Token: token.Token{Type: token.Ident, Literal: "bar"},
-					Value: "bar",
-				},
-			},
-		},
-	}
-
-	expected := "let foo = bar;"
-	got := program.String()
-	if got != expected {
-		t.Errorf("the output as string from program was wrong: expected %s, but got %s\n", expected, got)
-	}
-}
 
 func TestLetStatement(t *testing.T) {
 	type expect struct {
@@ -311,7 +286,7 @@ func testBoolean(t *testing.T, e ast.Expression, value bool) {
 	}
 }
 
-func TestPrefixAndInfixString(t *testing.T) {
+func TestString(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect string
@@ -342,9 +317,6 @@ func TestPrefixAndInfixString(t *testing.T) {
 		parser := New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		testParserHasNoErrors(t, parser)
-		if program == nil {
-			t.Error("program was nil")
-		}
 		if program.String() != test.expect {
 			t.Errorf("program.String() returned wrong value: expected %s, but got %s\n", test.expect, program.String())
 		}
