@@ -237,6 +237,7 @@ func (p *Parser) parseExpression(precedence precedence) ast.Expression {
 	for !p.isPeekToken(token.Semicolon) && precedence < p.peekPrecedence() {
 		infixParseFn := p.infixParseFns[p.peekToken.Type]
 		if infixParseFn == nil {
+			p.reportNoInfixParseFunction(p.peekToken.Type)
 			return leftValue
 		}
 
@@ -278,6 +279,11 @@ func (p *Parser) reportPeekTokenError(tokenType token.TokenType) {
 
 func (p *Parser) reportNoPrefixParseFunction(tokenType token.TokenType) {
 	msg := fmt.Sprintf("no prefix parse function for %s found", tokenType)
+	p.errors = append(p.errors, msg)
+}
+
+func (p *Parser) reportNoInfixParseFunction(tokenType token.TokenType) {
+	msg := fmt.Sprintf("no infix parse function for %s found", tokenType)
 	p.errors = append(p.errors, msg)
 }
 
