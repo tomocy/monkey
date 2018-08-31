@@ -12,6 +12,11 @@ type expectedIntegerLiteral struct {
 	value        int64
 }
 
+type expectedBoolean struct {
+	tokenLiteral string
+	value        bool
+}
+
 func TestLetStatement(t *testing.T) {
 	type expect struct {
 		identName string
@@ -215,16 +220,16 @@ func testInfixIntegerLiteral(t *testing.T, exp ast.Expression, expect struct {
 }
 func TestInfixBoolean(t *testing.T) {
 	type expect struct {
-		leftValue  bool
+		leftValue  expectedBoolean
 		operator   string
-		rightValue bool
+		rightValue expectedBoolean
 	}
 	tests := []struct {
 		in     string
 		expect expect
 	}{
-		{"true == true;", expect{true, "==", true}},
-		{"true != false;", expect{true, "!=", false}},
+		{"true == true;", expect{expectedBoolean{"true", true}, "==", expectedBoolean{"true", true}}},
+		{"true != false;", expect{expectedBoolean{"true", true}, "!=", expectedBoolean{"false", false}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -234,17 +239,14 @@ func TestInfixBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfix(t, expStmt.Expression, test.expect)
-		infix := expStmt.Expression.(*ast.Infix)
-		testBoolean(t, infix.LeftValue, test.expect.leftValue)
-		testBoolean(t, infix.RightValue, test.expect.rightValue)
+		testInfixBoolean(t, expStmt.Expression, test.expect)
 	}
 }
 
-func testInfix(t *testing.T, exp ast.Expression, expect struct {
-	leftValue  bool
+func testInfixBoolean(t *testing.T, exp ast.Expression, expect struct {
+	leftValue  expectedBoolean
 	operator   string
-	rightValue bool
+	rightValue expectedBoolean
 }) {
 	infix, ok := exp.(*ast.Infix)
 	if !ok {
@@ -293,16 +295,12 @@ func TestString(t *testing.T) {
 	}
 }
 func TestBoolean(t *testing.T) {
-	type expect struct {
-		tokenLiteral string
-		value        bool
-	}
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedBoolean
 	}{
-		{"true;", expect{"true", true}},
-		{"false;", expect{"false", false}},
+		{"true;", expectedBoolean{"true", true}},
+		{"false;", expectedBoolean{"false", false}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -312,7 +310,7 @@ func TestBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testBoolean(t, expStmt.Expression, test.expect.value)
+		testBoolean(t, expStmt.Expression, test.expect)
 	}
 }
 
@@ -353,12 +351,15 @@ func testIntegerLiteral(t *testing.T, exp ast.Expression, expect expectedInteger
 	}
 }
 
-func testBoolean(t *testing.T, e ast.Expression, value bool) {
+func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 	boolean, ok := e.(*ast.Boolean)
 	if !ok {
 		t.Error("faild to assert e as *ast.Boolean")
 	}
-	if boolean.Value != value {
-		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", value, boolean.Value)
+	if boolean.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, boolean.TokenLiteral())
+	}
+	if boolean.Value != expect.value {
+		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", expect.value, boolean.Value)
 	}
 }
