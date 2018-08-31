@@ -129,20 +129,20 @@ func (s ExpressionStatement) String() string {
 	return ""
 }
 
-type IntegerLiteral struct {
+type Integer struct {
 	Token token.Token
 	Value int64
 }
 
-func (il IntegerLiteral) expression() {
+func (i Integer) expression() {
 }
 
-func (il IntegerLiteral) TokenLiteral() string {
-	return il.Token.Literal
+func (i Integer) TokenLiteral() string {
+	return i.Token.Literal
 }
 
-func (il IntegerLiteral) String() string {
-	return fmt.Sprint(il.Value)
+func (i Integer) String() string {
+	return fmt.Sprint(i.Value)
 }
 
 type Prefix struct {

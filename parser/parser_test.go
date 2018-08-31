@@ -339,7 +339,7 @@ func testExpressionStatement(t *testing.T, stmt ast.Statement) {
 }
 
 func testIntegerLiteral(t *testing.T, exp ast.Expression, expect expectedIntegerLiteral) {
-	integer, ok := exp.(*ast.IntegerLiteral)
+	integer, ok := exp.(*ast.Integer)
 	if !ok {
 		t.Fatal("faild to assert exp as *ast.IntegerLiteral")
 	}

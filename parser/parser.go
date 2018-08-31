@@ -98,7 +98,7 @@ func (p *Parser) parseIntergerLiteral() ast.Expression {
 		return nil
 	}
 
-	return &ast.IntegerLiteral{
+	return &ast.Integer{
 		Token: p.currentToken,
 		Value: value,
 	}
