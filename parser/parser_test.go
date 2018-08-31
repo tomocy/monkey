@@ -172,6 +172,44 @@ func testPrefixInteger(t *testing.T, exp ast.Expression, expect struct {
 	}
 	testInteger(t, prefix.RightValue, expect.rightValue)
 }
+
+func TestPrefixBoolean(t *testing.T) {
+	type expect struct {
+		operator   string
+		rightValue expectedBoolean
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{"!true", expect{"!", expectedBoolean{"true", true}}},
+		{"!false", expect{"!", expectedBoolean{"false", false}}},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		testPrefixBoolean(t, expStmt.Expression, test.expect)
+	}
+}
+
+func testPrefixBoolean(t *testing.T, exp ast.Expression, expect struct {
+	operator   string
+	rightValue expectedBoolean
+}) {
+	prefix, ok := exp.(*ast.Prefix)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Prefix")
+	}
+	if prefix.Operator != expect.operator {
+		t.Errorf("prefix.Operator was wrong: expected %s, but got %s", expect.operator, prefix.Operator)
+	}
+	testBoolean(t, prefix.RightValue, expect.rightValue)
+}
 func TestInfixInteger(t *testing.T) {
 	type expect struct {
 		leftValue  expectedInteger
