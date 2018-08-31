@@ -86,8 +86,8 @@ func (i Identifier) String() string {
 }
 
 type ReturnStatement struct {
-	Token       token.Token
-	ReturnValue Expression
+	Token token.Token
+	Value Expression
 }
 
 func (s ReturnStatement) statement() {
@@ -101,8 +101,8 @@ func (s ReturnStatement) String() string {
 	b := make([]byte, 0, 10)
 	b = append(b, s.TokenLiteral()...)
 	b = append(b, ' ')
-	if s.ReturnValue != nil {
-		b = append(b, s.ReturnValue.String()...)
+	if s.Value != nil {
+		b = append(b, s.Value.String()...)
 	}
 	b = append(b, ';')
 
