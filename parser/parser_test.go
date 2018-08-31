@@ -101,7 +101,7 @@ func TestIdentifier(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testIdentifier(t, expStmt.Expression, test.expect.name)
+		testIdentifier(t, expStmt.Value, test.expect.name)
 	}
 }
 
@@ -132,7 +132,7 @@ func TestInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInteger(t, expStmt.Expression, test.expect)
+		testInteger(t, expStmt.Value, test.expect)
 	}
 }
 func TestPrefixInteger(t *testing.T) {
@@ -155,7 +155,7 @@ func TestPrefixInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testPrefixInteger(t, expStmt.Expression, test.expect)
+		testPrefixInteger(t, expStmt.Value, test.expect)
 	}
 }
 
@@ -193,7 +193,7 @@ func TestPrefixBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testPrefixBoolean(t, expStmt.Expression, test.expect)
+		testPrefixBoolean(t, expStmt.Value, test.expect)
 	}
 }
 
@@ -237,7 +237,7 @@ func TestInfixInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfixInteger(t, expStmt.Expression, test.expect)
+		testInfixInteger(t, expStmt.Value, test.expect)
 	}
 }
 
@@ -277,7 +277,7 @@ func TestInfixBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfixBoolean(t, expStmt.Expression, test.expect)
+		testInfixBoolean(t, expStmt.Value, test.expect)
 	}
 }
 
@@ -348,7 +348,7 @@ func TestBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testBoolean(t, expStmt.Expression, test.expect)
+		testBoolean(t, expStmt.Value, test.expect)
 	}
 }
 

@@ -110,8 +110,8 @@ func (s ReturnStatement) String() string {
 }
 
 type ExpressionStatement struct {
-	Token      token.Token
-	Expression Expression
+	Token token.Token
+	Value Expression
 }
 
 func (s ExpressionStatement) statement() {
@@ -122,8 +122,8 @@ func (s ExpressionStatement) TokenLiteral() string {
 }
 
 func (s ExpressionStatement) String() string {
-	if s.Expression != nil {
-		return s.Expression.String()
+	if s.Value != nil {
+		return s.Value.String()
 	}
 
 	return ""

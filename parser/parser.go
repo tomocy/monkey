@@ -215,8 +215,8 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 
 func (p *Parser) parseExpressionStatement() ast.Statement {
 	stmt := &ast.ExpressionStatement{
-		Token:      p.currentToken,
-		Expression: p.parseExpression(Lowest),
+		Token: p.currentToken,
+		Value: p.parseExpression(Lowest),
 	}
 
 	if p.isPeekToken(token.Semicolon) {
