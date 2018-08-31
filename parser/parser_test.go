@@ -272,6 +272,7 @@ func testInfix(t *testing.T, exp ast.Expression, operator string) {
 		t.Errorf("infix.Operator was wrong: expected %s, but got %s", operator, infix.Operator)
 	}
 }
+
 func TestInfixBoolean(t *testing.T) {
 	type expect struct {
 		leftValue  bool
@@ -282,37 +283,19 @@ func TestInfixBoolean(t *testing.T) {
 		in     string
 		expect expect
 	}{
-		{
-			"true == true;",
-			expect{true, "==", true},
-		},
-		{
-			"true != false;",
-			expect{true, "!=", false},
-		},
+		{"true == true;", expect{true, "==", true}},
+		{"true != false;", expect{true, "!=", false}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
 		program := parser.ParseProgram()
-		if program == nil {
-			t.Fatal("program was nil")
-		}
-		if len(program.Statements) != 1 {
-			t.Fatalf("len(program.Statements) returned wrong value: expect 1, but got %d\n", len(program.Statements))
-		}
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
 		stmt := program.Statements[0]
-		expressionStmt, ok := stmt.(*ast.ExpressionStatement)
-		if !ok {
-			t.Error("falid to assert stmt as *ast.ExpressionStatement")
-		}
-		infix, ok := expressionStmt.Expression.(*ast.Infix)
-		if !ok {
-			t.Error("faild to assert expressionStmt as *ast.Infix")
-		}
-		if infix.Operator != test.expect.operator {
-			t.Errorf("infix.Operator was wrong: expect %s, but got %s\n", test.expect.operator, infix.Operator)
-		}
-
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		testInfix(t, expStmt.Expression, test.expect.operator)
+		infix := expStmt.Expression.(*ast.Infix)
 		testBoolean(t, infix.LeftValue, test.expect.leftValue)
 		testBoolean(t, infix.RightValue, test.expect.rightValue)
 	}
