@@ -43,7 +43,6 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Name.Value)
 	}
 }
-
 func TestReturnStatement(t *testing.T) {
 	type expect struct {
 		tokenLiteral string
@@ -74,7 +73,6 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, tokenLiteral string) 
 		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", tokenLiteral, returnStmt.TokenLiteral())
 	}
 }
-
 func TestIdentifier(t *testing.T) {
 	type expect struct {
 		name string
@@ -109,18 +107,6 @@ func testIdentifier(t *testing.T, exp ast.Expression, name string) {
 		t.Errorf("ident.Value was wrong: expect %s, but got %s\n", name, ident.TokenLiteral())
 	}
 }
-
-func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
-	if len(stmts) != stmtLen {
-		t.Fatalf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
-	}
-}
-
-func testExpressionStatement(t *testing.T, stmt ast.Statement) {
-	if _, ok := stmt.(*ast.ExpressionStatement); !ok {
-		t.Fatal("faild to assert expStmt as *ast.ExpressionStatement")
-	}
-}
 func TestIntegerLiteral(t *testing.T) {
 	type expect struct {
 		tokenLiteral string
@@ -143,23 +129,6 @@ func TestIntegerLiteral(t *testing.T) {
 		testIntegerLiteral(t, expStmt.Expression, test.expect)
 	}
 }
-
-func testIntegerLiteral(t *testing.T, exp ast.Expression, expect struct {
-	tokenLiteral string
-	value        int64
-}) {
-	integer, ok := exp.(*ast.IntegerLiteral)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.IntegerLiteral")
-	}
-	if integer.TokenLiteral() != expect.tokenLiteral {
-		t.Errorf("integer.TokenLiteral() returned wrong value: expect %s, bot got %s\n", expect.tokenLiteral, integer.TokenLiteral())
-	}
-	if integer.Value != expect.value {
-		t.Errorf("integer.Value was wrong: expect %d, but got %d\n", expect.value, integer.Value)
-	}
-}
-
 func TestPrefixIntegerLiteral(t *testing.T) {
 	type integerLiteral struct {
 		tokenLiteral string
@@ -199,7 +168,6 @@ func testPrefix(t *testing.T, exp ast.Expression, operator string) {
 		t.Errorf("prefix.Operator was wrong: expect %s, but got %s\n", operator, prefix.Operator)
 	}
 }
-
 func TestInfixIntegerLiteral(t *testing.T) {
 	type integerLiteral struct {
 		tokenLiteral string
@@ -247,7 +215,6 @@ func testInfix(t *testing.T, exp ast.Expression, operator string) {
 		t.Errorf("infix.Operator was wrong: expected %s, but got %s", operator, infix.Operator)
 	}
 }
-
 func TestInfixBoolean(t *testing.T) {
 	type expect struct {
 		leftValue  bool
@@ -275,17 +242,6 @@ func TestInfixBoolean(t *testing.T) {
 		testBoolean(t, infix.RightValue, test.expect.rightValue)
 	}
 }
-
-func testBoolean(t *testing.T, e ast.Expression, value bool) {
-	boolean, ok := e.(*ast.Boolean)
-	if !ok {
-		t.Error("faild to assert e as *ast.Boolean")
-	}
-	if boolean.Value != value {
-		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", value, boolean.Value)
-	}
-}
-
 func TestString(t *testing.T) {
 	tests := []struct {
 		in     string
@@ -322,7 +278,6 @@ func TestString(t *testing.T) {
 		}
 	}
 }
-
 func TestBoolean(t *testing.T) {
 	type expect struct {
 		tokenLiteral string
@@ -356,5 +311,43 @@ func testParserHasNoErrors(t *testing.T, p *Parser) {
 	t.Errorf("parser has %d errors\n", len(errs))
 	for _, msg := range errs {
 		t.Errorf("- %s", msg)
+	}
+}
+
+func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
+	if len(stmts) != stmtLen {
+		t.Fatalf("len(stmts) returned wrong value: expect %d, but got %d\n", stmtLen, len(stmts))
+	}
+}
+
+func testExpressionStatement(t *testing.T, stmt ast.Statement) {
+	if _, ok := stmt.(*ast.ExpressionStatement); !ok {
+		t.Fatal("faild to assert expStmt as *ast.ExpressionStatement")
+	}
+}
+
+func testIntegerLiteral(t *testing.T, exp ast.Expression, expect struct {
+	tokenLiteral string
+	value        int64
+}) {
+	integer, ok := exp.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.IntegerLiteral")
+	}
+	if integer.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("integer.TokenLiteral() returned wrong value: expect %s, bot got %s\n", expect.tokenLiteral, integer.TokenLiteral())
+	}
+	if integer.Value != expect.value {
+		t.Errorf("integer.Value was wrong: expect %d, but got %d\n", expect.value, integer.Value)
+	}
+}
+
+func testBoolean(t *testing.T, e ast.Expression, value bool) {
+	boolean, ok := e.(*ast.Boolean)
+	if !ok {
+		t.Error("faild to assert e as *ast.Boolean")
+	}
+	if boolean.Value != value {
+		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", value, boolean.Value)
 	}
 }
