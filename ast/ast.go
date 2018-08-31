@@ -44,7 +44,7 @@ func (p Program) String() string {
 
 type LetStatement struct {
 	Token token.Token
-	Name  *Identifier
+	Ident *Identifier
 	Value Expression
 }
 
@@ -59,7 +59,7 @@ func (s LetStatement) String() string {
 	b := make([]byte, 0, 10)
 	b = append(b, s.TokenLiteral()...)
 	b = append(b, ' ')
-	b = append(b, s.Name.String()...)
+	b = append(b, s.Ident.String()...)
 	b = append(b, " = "...)
 	if s.Value != nil {
 		b = append(b, s.Value.String()...)

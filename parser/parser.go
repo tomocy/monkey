@@ -184,7 +184,7 @@ func (p *Parser) parseLetStatement() ast.Statement {
 	}
 	p.nextToken()
 
-	stmt.Name = &ast.Identifier{
+	stmt.Ident = &ast.Identifier{
 		Token: p.currentToken,
 		Value: p.currentToken.Literal,
 	}

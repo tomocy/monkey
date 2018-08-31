@@ -46,11 +46,11 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
 	}
-	if letStmt.Name.TokenLiteral() != identName {
-		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Name.TokenLiteral())
+	if letStmt.Ident.TokenLiteral() != identName {
+		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Ident.TokenLiteral())
 	}
-	if letStmt.Name.Value != identName {
-		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Name.Value)
+	if letStmt.Ident.Value != identName {
+		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Ident.Value)
 	}
 }
 func TestReturnStatement(t *testing.T) {
