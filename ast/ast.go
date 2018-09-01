@@ -209,6 +209,35 @@ func (b Boolean) String() string {
 	return fmt.Sprint(b.Value)
 }
 
+type If struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (i If) expression() {
+}
+
+func (i If) TokenLiteral() string {
+	return i.Token.Literal
+}
+
+func (i If) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, "if"...)
+	b = append(b, ' ')
+	b = append(b, i.Condition.String()...)
+	b = append(b, ' ')
+	b = append(b, i.Consequence.String()...)
+	if i.Alternative != nil {
+		b = append(b, " else "...)
+		b = append(b, i.Alternative.String()...)
+	}
+
+	return string(b)
+}
+
 type BlockStatement struct {
 	Token      token.Token
 	Statements []Statement
