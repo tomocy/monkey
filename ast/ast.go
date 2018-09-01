@@ -208,3 +208,24 @@ func (b Boolean) TokenLiteral() string {
 func (b Boolean) String() string {
 	return fmt.Sprint(b.Value)
 }
+
+type BlockStatement struct {
+	Token      token.Token
+	Statements []Statement
+}
+
+func (s BlockStatement) statement() {
+}
+
+func (s BlockStatement) TokenLiteral() string {
+	return s.Token.Literal
+}
+
+func (s BlockStatement) String() string {
+	b := make([]byte, 0, 10)
+	for _, stmt := range s.Statements {
+		b = append(b, stmt.String()...)
+	}
+
+	return string(b)
+}
