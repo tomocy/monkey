@@ -158,6 +158,7 @@ func (p *Parser) parseIf() ast.Expression {
 	}
 	p.nextToken()
 	p.nextToken()
+	
 	exp.Condition = p.parseExpression(Lowest)
 	if !p.isPeekToken(token.RParen) {
 		p.reportPeekTokenError(token.RParen)
