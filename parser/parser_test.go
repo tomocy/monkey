@@ -254,10 +254,10 @@ func TestBoolean(t *testing.T) {
 		testBoolean(t, expStmt.Value, test.expect)
 	}
 }
-func TestIf(t *testing.T) {
+func TestIfReturn(t *testing.T) {
 	type expect struct {
 		condition   expectedInfix
-		consequence expectedLiteral
+		consequence []expectedLiteral
 	}
 	tests := []struct {
 		in     string
@@ -267,7 +267,7 @@ func TestIf(t *testing.T) {
 			in: "if (x < y) { return x; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: expectedLiteral{"return", "return"},
+				consequence: []expectedLiteral{{"return", "return"}},
 			},
 		},
 	}
@@ -284,14 +284,19 @@ func TestIf(t *testing.T) {
 			t.Fatal("faild to assert expStmt.Value as *ast.If")
 		}
 		testInfix(t, ifExp.Condition, test.expect.condition)
-		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
+		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
+		for i, consequenceStmt := range ifExp.Consequence.Statements {
+			expectedConsequenceStmt := test.expect.consequence[i]
+			testReturnStatement(t, consequenceStmt, expectedConsequenceStmt.tokenLiteral)
+		}
 	}
 }
-func TestIfElse(t *testing.T) {
+
+func TestIfElseReturn(t *testing.T) {
 	type expect struct {
 		condition   expectedInfix
-		consequence expectedLiteral
-		alternative expectedLiteral
+		consequence []expectedLiteral
+		alternative []expectedLiteral
 	}
 	tests := []struct {
 		in     string
@@ -301,8 +306,8 @@ func TestIfElse(t *testing.T) {
 			in: "if (x < y) { return x; } else { return y; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: expectedLiteral{"return", "return"},
-				alternative: expectedLiteral{"return", "return"},
+				consequence: []expectedLiteral{{"return", "return"}},
+				alternative: []expectedLiteral{{"return", "return"}},
 			},
 		},
 	}
@@ -319,8 +324,15 @@ func TestIfElse(t *testing.T) {
 			t.Fatal("faild to assert expStmt.Value as *ast.If")
 		}
 		testInfix(t, ifExp.Condition, test.expect.condition)
-		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
-		testReturnStatement(t, ifExp.Alternative.Statements[0], test.expect.alternative.tokenLiteral)
+		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
+		for i, consequenceStmt := range ifExp.Consequence.Statements {
+			expectedConsequenceStmt := test.expect.consequence[i]
+			testReturnStatement(t, consequenceStmt, expectedConsequenceStmt.tokenLiteral)
+		}
+		for i, alternativeStmt := range ifExp.Consequence.Statements {
+			expectedAlternativeStmt := test.expect.alternative[i]
+			testReturnStatement(t, alternativeStmt, expectedAlternativeStmt.tokenLiteral)
+		}
 	}
 }
 
