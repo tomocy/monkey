@@ -60,6 +60,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.True, p.parseBoolean)
 	p.registerPrefixParseFunction(token.False, p.parseBoolean)
 	p.registerPrefixParseFunction(token.LParen, p.parseGroupedExpression)
+	p.registerPrefixParseFunction(token.If, p.parseIf)
 
 	p.registerInfixParseFucntion(token.Equal, p.parseInfix)
 	p.registerInfixParseFucntion(token.NotEqual, p.parseInfix)
@@ -147,14 +148,52 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	return exp
 }
 
-func (p *Parser) parseBlockStatement() ast.Statement {
-	blockStmt := ast.BlockStatement{
+func (p *Parser) parseIf() ast.Expression {
+	exp := &ast.If{
+		Token: p.currentToken,
+	}
+	if !p.isPeekToken(token.LParen) {
+		p.reportPeekTokenError(token.LParen)
+		return nil
+	}
+	p.nextToken()
+	p.nextToken()
+	exp.Condition = p.parseExpression(Lowest)
+	if !p.isPeekToken(token.RParen) {
+		p.reportPeekTokenError(token.RParen)
+		return nil
+	}
+	p.nextToken()
+
+	if !p.isPeekToken(token.LBrace) {
+		p.reportPeekTokenError(token.LBrace)
+		return nil
+	}
+	p.nextToken()
+
+	exp.Consequence = p.parseBlockStatement()
+
+	if p.isPeekToken(token.Else) {
+		p.nextToken()
+		if !p.isPeekToken(token.LBrace) {
+			p.reportPeekTokenError(token.LBrace)
+			return nil
+		}
+		p.nextToken()
+		exp.Alternative = p.parseBlockStatement()
+	}
+
+	return exp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	blockStmt := &ast.BlockStatement{
 		Token:      p.currentToken,
 		Statements: make([]ast.Statement, 0),
 	}
 	p.nextToken()
 
-	for !p.isCurrentToken(token.RBrace) || !p.isCurrentToken(token.EOF) {
+	for !p.isCurrentToken(token.RBrace) && !p.isCurrentToken(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
 			blockStmt.Statements = append(blockStmt.Statements, stmt)

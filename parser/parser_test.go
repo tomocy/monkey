@@ -375,7 +375,7 @@ func TestIf(t *testing.T) {
 			in: "if (x < y) { return x; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: expectedLiteral{"", ""},
+				consequence: expectedLiteral{"return", "return"},
 			},
 		},
 	}
@@ -395,6 +395,7 @@ func TestIf(t *testing.T) {
 		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
 	}
 }
+
 func TestIfElse(t *testing.T) {
 	type expect struct {
 		condition   expectedInfix
@@ -409,8 +410,8 @@ func TestIfElse(t *testing.T) {
 			in: "if (x < y) { return x; } else { return y; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: expectedLiteral{"x", "x"},
-				alternative: expectedLiteral{"y", "y"},
+				consequence: expectedLiteral{"return", "return"},
+				alternative: expectedLiteral{"return", "return"},
 			},
 		},
 	}
