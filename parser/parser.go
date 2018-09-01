@@ -147,6 +147,24 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	return exp
 }
 
+func (p *Parser) parseBlockStatement() ast.Statement {
+	blockStmt := ast.BlockStatement{
+		Token:      p.currentToken,
+		Statements: make([]ast.Statement, 0),
+	}
+	p.nextToken()
+
+	for !p.isCurrentToken(token.RBrace) || !p.isCurrentToken(token.EOF) {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			blockStmt.Statements = append(blockStmt.Statements, stmt)
+		}
+		p.nextToken()
+	}
+
+	return blockStmt
+}
+
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{
 		Statements: make([]ast.Statement, 0),
