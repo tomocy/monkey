@@ -362,7 +362,6 @@ func TestBoolean(t *testing.T) {
 		testBoolean(t, expStmt.Value, test.expect)
 	}
 }
-
 func TestIf(t *testing.T) {
 	type expect struct {
 		condition   expectedInfix
@@ -394,6 +393,42 @@ func TestIf(t *testing.T) {
 		}
 		testInfix(t, ifExp.Condition, test.expect.condition)
 		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
+	}
+}
+func TestIfElse(t *testing.T) {
+	type expect struct {
+		condition   expectedInfix
+		consequence expectedLiteral
+		alternative expectedLiteral
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{
+			in: "if (x < y) { return x; } else { return y; }",
+			expect: expect{
+				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
+				consequence: expectedLiteral{"x", "x"},
+				alternative: expectedLiteral{"y", "y"},
+			},
+		},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		ifExp, ok := expStmt.Value.(*ast.If)
+		if !ok {
+			t.Fatal("faild to assert expStmt.Value as *ast.If")
+		}
+		testInfix(t, ifExp.Condition, test.expect.condition)
+		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
+		testReturnStatement(t, ifExp.Alternative.Statements[0], test.expect.alternative.tokenLiteral)
 	}
 }
 
