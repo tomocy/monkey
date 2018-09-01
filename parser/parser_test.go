@@ -172,17 +172,6 @@ func TestPrefix(t *testing.T) {
 		testPrefix(t, expStmt.Value, test.expect)
 	}
 }
-
-func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
-	prefix, ok := exp.(*ast.Prefix)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.Prefix")
-	}
-	if prefix.Operator != expect.operator {
-		t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", expect.operator, prefix.Operator)
-	}
-	testLiteral(t, prefix.RightValue, expect.rightValue)
-}
 func TestInfix(t *testing.T) {
 	tests := []struct {
 		in     string
@@ -298,7 +287,6 @@ func TestIf(t *testing.T) {
 		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
 	}
 }
-
 func TestIfElse(t *testing.T) {
 	type expect struct {
 		condition   expectedInfix
@@ -333,29 +321,6 @@ func TestIfElse(t *testing.T) {
 		testInfix(t, ifExp.Condition, test.expect.condition)
 		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
 		testReturnStatement(t, ifExp.Alternative.Statements[0], test.expect.alternative.tokenLiteral)
-	}
-}
-
-func testInfix(t *testing.T, exp ast.Expression, expect expectedInfix) {
-	infix, ok := exp.(*ast.Infix)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.Infix")
-	}
-	if infix.Operator != expect.operator {
-		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
-	}
-	testLiteral(t, infix.LeftValue, expect.leftValue)
-	testLiteral(t, infix.RightValue, expect.rightValue)
-}
-
-func testLiteral(t *testing.T, exp ast.Expression, expect expectedLiteral) {
-	switch v := expect.value.(type) {
-	case int64:
-		testInteger(t, exp, expectedInteger{expect.tokenLiteral, v})
-	case bool:
-		testBoolean(t, exp, expectedBoolean{expect.tokenLiteral, v})
-	case string:
-		testIdentifier(t, exp, v)
 	}
 }
 
@@ -406,5 +371,39 @@ func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 	}
 	if boolean.Value != expect.value {
 		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", expect.value, boolean.Value)
+	}
+}
+
+func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
+	prefix, ok := exp.(*ast.Prefix)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Prefix")
+	}
+	if prefix.Operator != expect.operator {
+		t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", expect.operator, prefix.Operator)
+	}
+	testLiteral(t, prefix.RightValue, expect.rightValue)
+}
+
+func testInfix(t *testing.T, exp ast.Expression, expect expectedInfix) {
+	infix, ok := exp.(*ast.Infix)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Infix")
+	}
+	if infix.Operator != expect.operator {
+		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
+	}
+	testLiteral(t, infix.LeftValue, expect.leftValue)
+	testLiteral(t, infix.RightValue, expect.rightValue)
+}
+
+func testLiteral(t *testing.T, exp ast.Expression, expect expectedLiteral) {
+	switch v := expect.value.(type) {
+	case int64:
+		testInteger(t, exp, expectedInteger{expect.tokenLiteral, v})
+	case bool:
+		testBoolean(t, exp, expectedBoolean{expect.tokenLiteral, v})
+	case string:
+		testIdentifier(t, exp, v)
 	}
 }
