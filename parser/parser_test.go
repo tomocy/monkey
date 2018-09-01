@@ -183,24 +183,21 @@ func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
 	}
 	testLiteral(t, prefix.RightValue, expect.rightValue)
 }
-func TestInfixInteger(t *testing.T) {
-	type expect struct {
-		leftValue  expectedInteger
-		operator   string
-		rightValue expectedInteger
-	}
+func TestInfix(t *testing.T) {
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedInfix
 	}{
-		{"5 + 5;", expect{expectedInteger{"5", 5}, "+", expectedInteger{"5", 5}}},
-		{"5 - 5;", expect{expectedInteger{"5", 5}, "-", expectedInteger{"5", 5}}},
-		{"5 * 5;", expect{expectedInteger{"5", 5}, "*", expectedInteger{"5", 5}}},
-		{"5 / 5;", expect{expectedInteger{"5", 5}, "/", expectedInteger{"5", 5}}},
-		{"5 < 5;", expect{expectedInteger{"5", 5}, "<", expectedInteger{"5", 5}}},
-		{"5 > 5;", expect{expectedInteger{"5", 5}, ">", expectedInteger{"5", 5}}},
-		{"5 == 5;", expect{expectedInteger{"5", 5}, "==", expectedInteger{"5", 5}}},
-		{"5 != 5;", expect{expectedInteger{"5", 5}, "!=", expectedInteger{"5", 5}}},
+		{"5 + 5;", expectedInfix{expectedLiteral{"5", 5}, "+", expectedLiteral{"5", 5}}},
+		{"5 - 5;", expectedInfix{expectedLiteral{"5", 5}, "-", expectedLiteral{"5", 5}}},
+		{"5 * 5;", expectedInfix{expectedLiteral{"5", 5}, "*", expectedLiteral{"5", 5}}},
+		{"5 / 5;", expectedInfix{expectedLiteral{"5", 5}, "/", expectedLiteral{"5", 5}}},
+		{"5 < 5;", expectedInfix{expectedLiteral{"5", 5}, "<", expectedLiteral{"5", 5}}},
+		{"5 > 5;", expectedInfix{expectedLiteral{"5", 5}, ">", expectedLiteral{"5", 5}}},
+		{"5 == 5;", expectedInfix{expectedLiteral{"5", 5}, "==", expectedLiteral{"5", 5}}},
+		{"5 != 5;", expectedInfix{expectedLiteral{"5", 5}, "!=", expectedLiteral{"5", 5}}},
+		{"true == true;", expectedInfix{expectedLiteral{"true", true}, "==", expectedLiteral{"true", true}}},
+		{"true != false;", expectedInfix{expectedLiteral{"true", true}, "!=", expectedLiteral{"false", false}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -210,64 +207,8 @@ func TestInfixInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfixInteger(t, expStmt.Value, test.expect)
+		testInfix(t, expStmt.Value, test.expect)
 	}
-}
-
-func testInfixInteger(t *testing.T, exp ast.Expression, expect struct {
-	leftValue  expectedInteger
-	operator   string
-	rightValue expectedInteger
-}) {
-	infix, ok := exp.(*ast.Infix)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.Infix")
-	}
-	if infix.Operator != expect.operator {
-		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
-	}
-	testInteger(t, infix.LeftValue, expect.leftValue)
-	testInteger(t, infix.RightValue, expect.rightValue)
-}
-func TestInfixBoolean(t *testing.T) {
-	type expect struct {
-		leftValue  expectedBoolean
-		operator   string
-		rightValue expectedBoolean
-	}
-	tests := []struct {
-		in     string
-		expect expect
-	}{
-		{"true == true;", expect{expectedBoolean{"true", true}, "==", expectedBoolean{"true", true}}},
-		{"true != false;", expect{expectedBoolean{"true", true}, "!=", expectedBoolean{"false", false}}},
-	}
-	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfixBoolean(t, expStmt.Value, test.expect)
-	}
-}
-
-func testInfixBoolean(t *testing.T, exp ast.Expression, expect struct {
-	leftValue  expectedBoolean
-	operator   string
-	rightValue expectedBoolean
-}) {
-	infix, ok := exp.(*ast.Infix)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.Infix")
-	}
-	if infix.Operator != expect.operator {
-		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
-	}
-	testBoolean(t, infix.LeftValue, expect.leftValue)
-	testBoolean(t, infix.RightValue, expect.rightValue)
 }
 func TestString(t *testing.T) {
 	tests := []struct {
