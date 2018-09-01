@@ -54,7 +54,7 @@ func New(l *lexer.Lexer) *Parser {
 	}
 
 	p.registerPrefixParseFunction(token.Ident, p.parseIdentifier)
-	p.registerPrefixParseFunction(token.Int, p.parseIntergerLiteral)
+	p.registerPrefixParseFunction(token.Int, p.parseInterger)
 	p.registerPrefixParseFunction(token.Bang, p.parsePrefix)
 	p.registerPrefixParseFunction(token.Minus, p.parsePrefix)
 	p.registerPrefixParseFunction(token.True, p.parseBoolean)
@@ -92,7 +92,7 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	}
 }
 
-func (p *Parser) parseIntergerLiteral() ast.Expression {
+func (p *Parser) parseInterger() ast.Expression {
 	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
 	if err != nil {
 		p.errors = append(p.errors, fmt.Sprintf("could not parse %s as int64\n", p.currentToken.Literal))
@@ -158,7 +158,7 @@ func (p *Parser) parseIf() ast.Expression {
 	}
 	p.nextToken()
 	p.nextToken()
-	
+
 	exp.Condition = p.parseExpression(Lowest)
 	if !p.isPeekToken(token.RParen) {
 		p.reportPeekTokenError(token.RParen)
