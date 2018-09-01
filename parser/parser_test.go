@@ -17,6 +17,11 @@ type expectedBoolean struct {
 	value        bool
 }
 
+type expectedPrefix struct {
+	operator   string
+	rightValue expectedLiteral
+}
+
 type expectedInfix struct {
 	leftValue  expectedLiteral
 	operator   string
@@ -146,17 +151,15 @@ func TestInteger(t *testing.T) {
 		testInteger(t, expStmt.Value, test.expect)
 	}
 }
-func TestPrefixInteger(t *testing.T) {
-	type expect struct {
-		operator   string
-		rightValue expectedInteger
-	}
+func TestPrefix(t *testing.T) {
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedPrefix
 	}{
-		{"!5;", expect{"!", expectedInteger{"5", 5}}},
-		{"-5;", expect{"-", expectedInteger{"5", 5}}},
+		{"!5;", expectedPrefix{"!", expectedLiteral{"5", 5}}},
+		{"-5;", expectedPrefix{"-", expectedLiteral{"5", 5}}},
+		{"!true", expectedPrefix{"!", expectedLiteral{"true", true}}},
+		{"!false", expectedPrefix{"!", expectedLiteral{"false", false}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -166,60 +169,19 @@ func TestPrefixInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testPrefixInteger(t, expStmt.Value, test.expect)
+		testPrefix(t, expStmt.Value, test.expect)
 	}
 }
 
-func testPrefixInteger(t *testing.T, exp ast.Expression, expect struct {
-	operator   string
-	rightValue expectedInteger
-}) {
+func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
 	prefix, ok := exp.(*ast.Prefix)
 	if !ok {
 		t.Fatal("faild to assert exp as *ast.Prefix")
 	}
 	if prefix.Operator != expect.operator {
-		t.Errorf("prefix.Operator was wrong: expect %s, but got %s\n", expect.operator, prefix.Operator)
+		t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", expect.operator, prefix.Operator)
 	}
-	testInteger(t, prefix.RightValue, expect.rightValue)
-}
-
-func TestPrefixBoolean(t *testing.T) {
-	type expect struct {
-		operator   string
-		rightValue expectedBoolean
-	}
-	tests := []struct {
-		in     string
-		expect expect
-	}{
-		{"!true", expect{"!", expectedBoolean{"true", true}}},
-		{"!false", expect{"!", expectedBoolean{"false", false}}},
-	}
-	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testPrefixBoolean(t, expStmt.Value, test.expect)
-	}
-}
-
-func testPrefixBoolean(t *testing.T, exp ast.Expression, expect struct {
-	operator   string
-	rightValue expectedBoolean
-}) {
-	prefix, ok := exp.(*ast.Prefix)
-	if !ok {
-		t.Fatal("faild to assert exp as *ast.Prefix")
-	}
-	if prefix.Operator != expect.operator {
-		t.Errorf("prefix.Operator was wrong: expected %s, but got %s", expect.operator, prefix.Operator)
-	}
-	testBoolean(t, prefix.RightValue, expect.rightValue)
+	testLiteral(t, prefix.RightValue, expect.rightValue)
 }
 func TestInfixInteger(t *testing.T) {
 	type expect struct {
@@ -447,6 +409,10 @@ func testInfix(t *testing.T, exp ast.Expression, expect expectedInfix) {
 
 func testLiteral(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 	switch v := expect.value.(type) {
+	case int64:
+		testInteger(t, exp, expectedInteger{expect.tokenLiteral, v})
+	case bool:
+		testBoolean(t, exp, expectedBoolean{expect.tokenLiteral, v})
 	case string:
 		testIdentifier(t, exp, v)
 	}
