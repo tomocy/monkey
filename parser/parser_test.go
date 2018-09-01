@@ -17,6 +17,17 @@ type expectedBoolean struct {
 	value        bool
 }
 
+type expectedInfix struct {
+	leftValue  expectedLiteral
+	operator   string
+	rightValue expectedLiteral
+}
+
+type expectedLiteral struct {
+	tokenLiteral string
+	value        interface{}
+}
+
 func TestLetStatement(t *testing.T) {
 	type expect struct {
 		identName string
@@ -349,6 +360,59 @@ func TestBoolean(t *testing.T) {
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
 		testBoolean(t, expStmt.Value, test.expect)
+	}
+}
+
+func TestIf(t *testing.T) {
+	type expect struct {
+		condition   expectedInfix
+		consequence expectedLiteral
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{
+			in: "if (x < y) { return x; }",
+			expect: expect{
+				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
+				consequence: expectedLiteral{"", ""},
+			},
+		},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		ifExp, ok := expStmt.Value.(*ast.If)
+		if !ok {
+			t.Fatal("faild to assert expStmt.Value as *ast.If")
+		}
+		testInfix(t, ifExp.Condition, test.expect.condition)
+		testReturnStatement(t, ifExp.Consequence.Statements[0], test.expect.consequence.tokenLiteral)
+	}
+}
+
+func testInfix(t *testing.T, exp ast.Expression, expect expectedInfix) {
+	infix, ok := exp.(*ast.Infix)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Infix")
+	}
+	if infix.Operator != expect.operator {
+		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
+	}
+	testLiteral(t, infix.LeftValue, expect.leftValue)
+	testLiteral(t, infix.RightValue, expect.rightValue)
+}
+
+func testLiteral(t *testing.T, exp ast.Expression, expect expectedLiteral) {
+	switch v := expect.value.(type) {
+	case string:
+		testIdentifier(t, exp, v)
 	}
 }
 
