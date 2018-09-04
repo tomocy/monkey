@@ -404,6 +404,38 @@ func TestFunction(t *testing.T) {
 	}
 }
 
+func TestFunctionCall(t *testing.T) {
+	in := "add(1, 2 * 3, 4 + 5);"
+	parser := New(lexer.New(in))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	testProgramStatements(t, program.Statements, 1)
+	stmt := program.Statements[0]
+	testExpressionStatement(t, stmt)
+	expStmt := stmt.(*ast.ExpressionStatement)
+	funcCall, ok := expStmt.Value.(*ast.FunctionCall)
+	if !ok {
+		t.Fatal("faild to assert expStmt as *ast.FunctionCall")
+	}
+
+	testIdentifier(t, funcCall.Function, "add")
+
+	if len(funcCall.Arguments) != 3 {
+		t.Errorf("len(funcCall.Arguments) retuned wrong value: expected 3, but got %d\n", len(funcCall.Arguments))
+	}
+	testInteger(t, funcCall.Arguments[0], expectedInteger{"1", 1})
+	testInfix(t, funcCall.Arguments[1], expectedInfix{
+		expectedLiteral{"2", 2},
+		"*",
+		expectedLiteral{"3", 3},
+	})
+	testInfix(t, funcCall.Arguments[2], expectedInfix{
+		expectedLiteral{"4", 4},
+		"+",
+		expectedLiteral{"5", 5},
+	})
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
