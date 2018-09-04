@@ -194,12 +194,14 @@ func (p *Parser) parseFunction() ast.Expression {
 	}
 
 	if !p.isPeekToken(token.LParen) {
+		p.reportPeekTokenError(token.LParen)
 		return nil
 	}
 	p.nextToken()
 	exp.Parameters = p.parseFunctionParameters()
 
 	if !p.isPeekToken(token.LBrace) {
+		p.reportPeekTokenError(token.LBrace)
 		return nil
 	}
 	p.nextToken()
@@ -231,6 +233,7 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	}
 
 	if !p.isPeekToken(token.RParen) {
+		p.reportPeekTokenError(token.RParen)
 		return nil
 	}
 
