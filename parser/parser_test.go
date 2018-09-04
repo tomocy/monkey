@@ -339,7 +339,7 @@ func TestIfElseReturn(t *testing.T) {
 func TestFunction(t *testing.T) {
 	type expect struct {
 		parameters []expectedLiteral
-		body       expectedInfix
+		body       []expectedInfix
 	}
 	tests := []struct {
 		in     string
@@ -352,10 +352,12 @@ func TestFunction(t *testing.T) {
 					{"x", "x"},
 					{"y", "y"},
 				},
-				body: expectedInfix{
-					leftValue:  expectedLiteral{"x", "x"},
-					operator:   "+",
-					rightValue: expectedLiteral{"y", "y"},
+				body: []expectedInfix{
+					{
+						leftValue:  expectedLiteral{"x", "x"},
+						operator:   "+",
+						rightValue: expectedLiteral{"y", "y"},
+					},
 				},
 			},
 		},
@@ -363,10 +365,12 @@ func TestFunction(t *testing.T) {
 			in: "fn() { 5 + 5; }",
 			expect: expect{
 				parameters: make([]expectedLiteral, 0),
-				body: expectedInfix{
-					leftValue:  expectedLiteral{"5", 5},
-					operator:   "+",
-					rightValue: expectedLiteral{"5", 5},
+				body: []expectedInfix{
+					{
+						leftValue:  expectedLiteral{"5", 5},
+						operator:   "+",
+						rightValue: expectedLiteral{"5", 5},
+					},
 				},
 			},
 		},
@@ -390,11 +394,13 @@ func TestFunction(t *testing.T) {
 			testLiteral(t, fn.Parameters[i], param)
 		}
 
-		testProgramStatements(t, fn.Body.Statements, 1)
-		bodyStmt := fn.Body.Statements[0]
-		testExpressionStatement(t, bodyStmt)
-		bodyExpStmt := bodyStmt.(*ast.ExpressionStatement)
-		testInfix(t, bodyExpStmt.Value, test.expect.body)
+		testProgramStatements(t, fn.Body.Statements, len(test.expect.body))
+		for i, body := range test.expect.body {
+			bodyStmt := fn.Body.Statements[i]
+			testExpressionStatement(t, bodyStmt)
+			bodyExpStmt := bodyStmt.(*ast.ExpressionStatement)
+			testInfix(t, bodyExpStmt.Value, body)
+		}
 	}
 }
 
