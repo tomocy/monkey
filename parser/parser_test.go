@@ -44,7 +44,6 @@ func TestLetStatement(t *testing.T) {
 	}{
 		{"let x = 5;", expect{"x", expectedLiteral{"5", 5}}},
 		{"let y = 10;", expect{"y", expectedLiteral{"10", 10}}},
-		{"let foobar = foo + bar;", expect{"foobar", expectedLiteral{"foo+bar", "foo+bar"}}},
 		{"let isOK = true;", expect{"isOK", expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
@@ -279,7 +278,7 @@ func TestIfReturn(t *testing.T) {
 			in: "if (x < y) { return x; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: []expectedLiteral{{"return", "return"}},
+				consequence: []expectedLiteral{{"x", "x"}},
 			},
 		},
 	}
@@ -323,8 +322,8 @@ func TestIfElseReturn(t *testing.T) {
 			in: "if (x < y) { return x; } else { return y; }",
 			expect: expect{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: []expectedLiteral{{"return", "return"}},
-				alternative: []expectedLiteral{{"return", "return"}},
+				consequence: []expectedLiteral{{"x", "x"}},
+				alternative: []expectedLiteral{{"y", "y"}},
 			},
 		},
 	}
@@ -351,7 +350,7 @@ func TestIfElseReturn(t *testing.T) {
 				"return", expectedConsequenceStmt,
 			})
 		}
-		for i, alternativeStmt := range ifExp.Consequence.Statements {
+		for i, alternativeStmt := range ifExp.Alternative.Statements {
 			expectedAlternativeStmt := test.expect.alternative[i]
 			testReturnStatement(t, alternativeStmt, struct {
 				tokenLiteral string
