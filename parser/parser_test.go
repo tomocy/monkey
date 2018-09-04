@@ -36,25 +36,30 @@ type expectedLiteral struct {
 func TestLetStatement(t *testing.T) {
 	type expect struct {
 		identName string
+		value     expectedLiteral
 	}
 	tests := []struct {
 		in     string
 		expect expect
 	}{
-		{"let x = 5;", expect{"x"}},
-		{"let y = 10;", expect{"y"}},
-		{"let foobar = foo + bar;", expect{"foobar"}},
+		{"let x = 5;", expect{"x", expectedLiteral{"5", 5}}},
+		{"let y = 10;", expect{"y", expectedLiteral{"10", 10}}},
+		{"let foobar = foo + bar;", expect{"foobar", expectedLiteral{"foo+bar", "foo+bar"}}},
+		{"let isOK = true;", expect{"isOK", expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		testParserHasNoErrors(t, parser)
 		testProgramStatements(t, program.Statements, 1)
-		testLetStatement(t, program.Statements[0], test.expect.identName)
+		testLetStatement(t, program.Statements[0], test.expect)
 	}
 }
 
-func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
+func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
+	identName string
+	value     expectedLiteral
+}) {
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
 		t.Error("faild to assert stmt as *ast.LetStatement")
@@ -62,42 +67,48 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identName string) {
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
 	}
-	if letStmt.Ident.TokenLiteral() != identName {
-		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", identName, letStmt.Ident.TokenLiteral())
+	if letStmt.Ident.TokenLiteral() != expect.identName {
+		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", expect.identName, letStmt.Ident.TokenLiteral())
 	}
-	if letStmt.Ident.Value != identName {
-		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", identName, letStmt.Ident.Value)
+	if letStmt.Ident.Value != expect.identName {
+		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", expect.identName, letStmt.Ident.Value)
 	}
+	testLiteral(t, letStmt.Value, expect.value)
 }
 func TestReturnStatement(t *testing.T) {
 	type expect struct {
 		tokenLiteral string
+		value        expectedLiteral
 	}
 	tests := []struct {
 		in     string
 		expect expect
 	}{
-		{"return 5;", expect{"return"}},
-		{"return 10;", expect{"return"}},
-		{"return foo;", expect{"return"}},
+		{"return 5;", expect{"return", expectedLiteral{"5", 5}}},
+		{"return foo;", expect{"return", expectedLiteral{"foo", "foo"}}},
+		{"return true;", expect{"return", expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		testParserHasNoErrors(t, parser)
 		testProgramStatements(t, program.Statements, 1)
-		testReturnStatement(t, program.Statements[0], test.expect.tokenLiteral)
+		testReturnStatement(t, program.Statements[0], test.expect)
 	}
 }
 
-func testReturnStatement(t *testing.T, stmt ast.Statement, tokenLiteral string) {
+func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
+	tokenLiteral string
+	value        expectedLiteral
+}) {
 	returnStmt, ok := stmt.(*ast.ReturnStatement)
 	if !ok {
 		t.Error("faild to assert stmt as *ast.ReturnStatement")
 	}
-	if returnStmt.TokenLiteral() != tokenLiteral {
-		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", tokenLiteral, returnStmt.TokenLiteral())
+	if returnStmt.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", expect.tokenLiteral, returnStmt.TokenLiteral())
 	}
+	testLiteral(t, returnStmt.Value, expect.value)
 }
 func TestIdentifier(t *testing.T) {
 	type expect struct {
@@ -288,7 +299,12 @@ func TestIfReturn(t *testing.T) {
 		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
 		for i, consequenceStmt := range ifExp.Consequence.Statements {
 			expectedConsequenceStmt := test.expect.consequence[i]
-			testReturnStatement(t, consequenceStmt, expectedConsequenceStmt.tokenLiteral)
+			testReturnStatement(t, consequenceStmt, struct {
+				tokenLiteral string
+				value        expectedLiteral
+			}{
+				"return", expectedConsequenceStmt,
+			})
 		}
 	}
 }
@@ -328,11 +344,21 @@ func TestIfElseReturn(t *testing.T) {
 		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
 		for i, consequenceStmt := range ifExp.Consequence.Statements {
 			expectedConsequenceStmt := test.expect.consequence[i]
-			testReturnStatement(t, consequenceStmt, expectedConsequenceStmt.tokenLiteral)
+			testReturnStatement(t, consequenceStmt, struct {
+				tokenLiteral string
+				value        expectedLiteral
+			}{
+				"return", expectedConsequenceStmt,
+			})
 		}
 		for i, alternativeStmt := range ifExp.Consequence.Statements {
 			expectedAlternativeStmt := test.expect.alternative[i]
-			testReturnStatement(t, alternativeStmt, expectedAlternativeStmt.tokenLiteral)
+			testReturnStatement(t, alternativeStmt, struct {
+				tokenLiteral string
+				value        expectedLiteral
+			}{
+				"return", expectedAlternativeStmt,
+			})
 		}
 	}
 }
