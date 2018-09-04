@@ -359,6 +359,17 @@ func TestFunction(t *testing.T) {
 				},
 			},
 		},
+		{
+			in: "fn() { 5 + 5; }",
+			expect: expect{
+				parameters: make([]expectedLiteral, 0),
+				body: expectedInfix{
+					leftValue:  expectedLiteral{"5", 5},
+					operator:   "+",
+					rightValue: expectedLiteral{"5", 5},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -372,11 +383,13 @@ func TestFunction(t *testing.T) {
 		if !ok {
 			t.Fatal("faild to assert expStmt as *ast.Function")
 		}
-		if len(fn.Parameters) != 2 {
-			t.Errorf("len(fn.Parameters) returned wrong value: expected 2, but got %d\n", len(fn.Parameters))
+		if len(fn.Parameters) != len(test.expect.parameters) {
+			t.Errorf("len(fn.Parameters) returned wrong value: expected %d, but got %d\n", len(test.expect.parameters), len(fn.Parameters))
 		}
-		testLiteral(t, fn.Parameters[0], test.expect.parameters[0])
-		testLiteral(t, fn.Parameters[1], test.expect.parameters[1])
+		for i, param := range test.expect.parameters {
+			testLiteral(t, fn.Parameters[i], param)
+		}
+
 		testProgramStatements(t, fn.Body.Statements, 1)
 		bodyStmt := fn.Body.Statements[0]
 		testExpressionStatement(t, bodyStmt)
