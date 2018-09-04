@@ -226,10 +226,10 @@ func (i If) TokenLiteral() string {
 
 func (i If) String() string {
 	b := make([]byte, 0, 10)
-	b = append(b, "if"...)
-	b = append(b, ' ')
+	b = append(b, "if ("...)
+	// b = append(b, ' ')
 	b = append(b, i.Condition.String()...)
-	b = append(b, ' ')
+	b = append(b, ") "...)
 	b = append(b, i.Consequence.String()...)
 	if i.Alternative != nil {
 		b = append(b, " else "...)
@@ -253,9 +253,11 @@ func (s BlockStatement) TokenLiteral() string {
 
 func (s BlockStatement) String() string {
 	b := make([]byte, 0, 10)
+	b = append(b, "{ "...)
 	for _, stmt := range s.Statements {
 		b = append(b, stmt.String()...)
 	}
+	b = append(b, " }"...)
 
 	return string(b)
 }
