@@ -63,14 +63,14 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.If, p.parseIf)
 	p.registerPrefixParseFunction(token.Function, p.parseFunction)
 
-	p.registerInfixParseFucntion(token.Equal, p.parseInfix)
-	p.registerInfixParseFucntion(token.NotEqual, p.parseInfix)
-	p.registerInfixParseFucntion(token.LessThan, p.parseInfix)
-	p.registerInfixParseFucntion(token.GreaterThan, p.parseInfix)
-	p.registerInfixParseFucntion(token.Plus, p.parseInfix)
-	p.registerInfixParseFucntion(token.Minus, p.parseInfix)
-	p.registerInfixParseFucntion(token.Asterrisk, p.parseInfix)
-	p.registerInfixParseFucntion(token.Slash, p.parseInfix)
+	p.registerInfixParseFunction(token.Equal, p.parseInfix)
+	p.registerInfixParseFunction(token.NotEqual, p.parseInfix)
+	p.registerInfixParseFunction(token.LessThan, p.parseInfix)
+	p.registerInfixParseFunction(token.GreaterThan, p.parseInfix)
+	p.registerInfixParseFunction(token.Plus, p.parseInfix)
+	p.registerInfixParseFunction(token.Minus, p.parseInfix)
+	p.registerInfixParseFunction(token.Asterrisk, p.parseInfix)
+	p.registerInfixParseFunction(token.Slash, p.parseInfix)
 
 	p.nextToken()
 	p.nextToken()
@@ -82,7 +82,7 @@ func (p *Parser) registerPrefixParseFunction(tokenType token.TokenType, fn prefi
 	p.prefixParseFns[tokenType] = fn
 }
 
-func (p *Parser) registerInfixParseFucntion(tokenType token.TokenType, fn infixParseFunction) {
+func (p *Parser) registerInfixParseFunction(tokenType token.TokenType, fn infixParseFunction) {
 	p.infixParseFns[tokenType] = fn
 }
 
