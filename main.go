@@ -19,6 +19,6 @@ func sayHelloToUser() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("Hello %s! This is the Monkey programming language!", user.Username)
+	fmt.Printf("Hello %s! This is the Monkey programming language!\n", user.Username)
 	fmt.Println("Feel free to type in commands")
 }
