@@ -29,6 +29,7 @@ var precedences = map[token.TokenType]precedence{
 	token.Minus:       Additive,
 	token.Asterrisk:   Multiplicative,
 	token.Slash:       Multiplicative,
+	token.LParen:      Call,
 }
 
 type precedence int
@@ -71,6 +72,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfixParseFunction(token.Minus, p.parseInfix)
 	p.registerInfixParseFunction(token.Asterrisk, p.parseInfix)
 	p.registerInfixParseFunction(token.Slash, p.parseInfix)
+	p.registerInfixParseFunction(token.LParen, p.parseFunctionCall)
 
 	p.nextToken()
 	p.nextToken()
@@ -258,6 +260,40 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 
 	return blockStmt
+}
+
+func (p *Parser) parseFunctionCall(function ast.Expression) ast.Expression {
+	exp := &ast.FunctionCall{
+		Token:    p.currentToken,
+		Function: function,
+	}
+	exp.Arguments = p.parseFunctionCallArguments()
+
+	return exp
+}
+
+func (p *Parser) parseFunctionCallArguments() []ast.Expression {
+	p.nextToken()
+	args := make([]ast.Expression, 0)
+	if p.isCurrentToken(token.RParen) {
+		return args
+	}
+
+	args = append(args, p.parseExpression(Lowest))
+	for p.isPeekToken(token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		args = append(args, p.parseExpression(Lowest))
+	}
+
+	if !p.isPeekToken(token.RParen) {
+		p.reportPeekTokenError(token.RParen)
+		return nil
+	}
+
+	p.nextToken()
+
+	return args
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
