@@ -237,7 +237,8 @@ func TestString(t *testing.T) {
 		{"!(true == true)", "(!(true == true))"},
 		{"1 + add(2, 3 * 4)", "(1 + add(2,(3 * 4)))"},
 		{"if (x < y) { return x; } else { return y; }", "if ((x < y)) { return x; } else { return y; }"},
-		{"fn(x, y) { return x + y; }", "fn(x, y) { return (x + y); }"},
+		{"fn(x, y) { return x + y; }", "fn(x,y) { return (x + y); }"},
+		{"fn(x, y) { return x + y; }(1, 2 * 3)", "fn(x,y) { return (x + y); }(1,(2 * 3))"},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
