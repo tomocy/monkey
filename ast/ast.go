@@ -278,13 +278,13 @@ func (f Function) TokenLiteral() string {
 func (f Function) String() string {
 	b := make([]byte, 0, 10)
 	b = append(b, f.TokenLiteral()...)
-	b = append(b, " ("...)
+	b = append(b, '(')
 	params := make([]string, len(f.Parameters))
 	for i, param := range f.Parameters {
 		params[i] = param.String()
 	}
 	b = append(b, strings.Join(params, ",")...)
-	b = append(b, " )"...)
+	b = append(b, ") "...)
 	b = append(b, f.Body.String()...)
 
 	return string(b)
