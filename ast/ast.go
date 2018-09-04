@@ -287,3 +287,30 @@ func (f Function) String() string {
 
 	return string(b)
 }
+
+type FunctionCall struct {
+	Token     token.Token
+	Function  Expression
+	Arguments []Expression
+}
+
+func (fc FunctionCall) expression() {
+}
+
+func (fc FunctionCall) TokenLiteral() string {
+	return fc.Token.Literal
+}
+
+func (fc FunctionCall) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, fc.Function.String()...)
+	args := make([]string, 0)
+	for _, arg := range fc.Arguments {
+		args = append(args, arg.String())
+	}
+	b = append(b, '(')
+	b = append(b, strings.Join(args, ",")...)
+	b = append(b, ')')
+
+	return string(b)
+}
