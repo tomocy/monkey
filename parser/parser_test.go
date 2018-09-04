@@ -225,6 +225,7 @@ func TestString(t *testing.T) {
 		{"2 / (5 * 5);", "(2 / (5 * 5))"},
 		{"-(5 + 5);", "(-(5 + 5))"},
 		{"!(true == true)", "(!(true == true))"},
+		{"1 + add(2, 3 * 4)", "(1 + add(2,(3 * 4)))"},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
