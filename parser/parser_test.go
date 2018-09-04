@@ -336,6 +336,55 @@ func TestIfElseReturn(t *testing.T) {
 	}
 }
 
+func TestFunction(t *testing.T) {
+	type expect struct {
+		parameters []expectedLiteral
+		body       expectedInfix
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{
+			in: "fn(x, y) { x + y; }",
+			expect: expect{
+				parameters: []expectedLiteral{
+					{"x", "x"},
+					{"y", "y"},
+				},
+				body: expectedInfix{
+					leftValue:  expectedLiteral{"x", "x"},
+					operator:   "+",
+					rightValue: expectedLiteral{"y", "y"},
+				},
+			},
+		},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testProgramStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		fn, ok := expStmt.Value.(*ast.Function)
+		if !ok {
+			t.Fatal("faild to assert expStmt as *ast.Function")
+		}
+		if len(fn.Parameters) != 2 {
+			t.Errorf("len(fn.Parameters) returned wrong value: expected 2, but got %d\n", len(fn.Parameters))
+		}
+		testLiteral(t, fn.Parameters[0], test.expect.parameters[0])
+		testLiteral(t, fn.Parameters[1], test.expect.parameters[1])
+		testProgramStatements(t, fn.Body.Statements, 1)
+		bodyStmt := fn.Body.Statements[0]
+		testExpressionStatement(t, bodyStmt)
+		bodyExpStmt := bodyStmt.(*ast.ExpressionStatement)
+		testInfix(t, bodyExpStmt.Value, test.expect.body)
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
