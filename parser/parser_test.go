@@ -62,7 +62,7 @@ func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
 }) {
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
-		t.Error("faild to assert stmt as *ast.LetStatement")
+		t.Fatal("faild to assert stmt as *ast.LetStatement")
 	}
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
@@ -103,7 +103,7 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
 }) {
 	returnStmt, ok := stmt.(*ast.ReturnStatement)
 	if !ok {
-		t.Error("faild to assert stmt as *ast.ReturnStatement")
+		t.Fatal("faild to assert stmt as *ast.ReturnStatement")
 	}
 	if returnStmt.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", expect.tokenLiteral, returnStmt.TokenLiteral())
@@ -135,7 +135,7 @@ func TestIdentifier(t *testing.T) {
 func testIdentifier(t *testing.T, exp ast.Expression, name string) {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Error("faild to assert exp as *ast.Identifier")
+		t.Fatal("faild to assert exp as *ast.Identifier")
 	}
 	if ident.TokenLiteral() != name {
 		t.Errorf("ident.TokenLiteral retuned wrong value: expect %s, but got %s\n", name, ident.TokenLiteral())
@@ -503,7 +503,7 @@ func testInteger(t *testing.T, exp ast.Expression, expect expectedInteger) {
 func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 	boolean, ok := e.(*ast.Boolean)
 	if !ok {
-		t.Error("faild to assert e as *ast.Boolean")
+		t.Fatal("faild to assert e as *ast.Boolean")
 	}
 	if boolean.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, boolean.TokenLiteral())
