@@ -3,11 +3,12 @@ package repl
 import (
 	"bufio"
 	"fmt"
+	"strings"
 
 	"io"
 
 	"github.com/tomocy/monkey/lexer"
-	"github.com/tomocy/monkey/token"
+	"github.com/tomocy/monkey/parser"
 )
 
 const prompt = ">> "
@@ -17,17 +18,17 @@ func Start(in io.Reader, w io.Writer) {
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		sourceCode := scanner.Text()
-		fmt.Print(generateTokens(sourceCode))
+		fmt.Println(parsedProgramOrErrorMessages(sourceCode))
 		fmt.Print(prompt)
 	}
 }
 
-func generateTokens(input string) string {
-	b := make([]byte, 0, 10)
-	lexer := lexer.New(input)
-	for t := lexer.NextToken(); t.Type != token.EOF; t = lexer.NextToken() {
-		b = append(b, fmt.Sprintf("%+v\n", t)...)
+func parsedProgramOrErrorMessages(in string) string {
+	parser := parser.New(lexer.New(in))
+	program := parser.ParseProgram()
+	if len(parser.Errors()) != 0 {
+		return strings.Join(parser.Errors(), "\n")
 	}
 
-	return string(b)
+	return program.String()
 }
