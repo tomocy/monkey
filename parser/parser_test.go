@@ -244,10 +244,10 @@ func TestString(t *testing.T) {
 func TestBoolean(t *testing.T) {
 	tests := []struct {
 		in     string
-		expect expectedBoolean
+		expect expectedLiteral
 	}{
-		{"true;", expectedBoolean{"true", true}},
-		{"false;", expectedBoolean{"false", false}},
+		{"true;", expectedLiteral{"true", true}},
+		{"false;", expectedLiteral{"false", false}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -257,7 +257,7 @@ func TestBoolean(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testBoolean(t, expStmt.Value, test.expect)
+		testLiteral(t, expStmt.Value, test.expect)
 	}
 }
 func TestIfReturn(t *testing.T) {
