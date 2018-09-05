@@ -428,7 +428,7 @@ func testFunction(t *testing.T, exp ast.Expression, expect struct {
 		testInfix(t, bodyExpStmt.Value, body)
 	}
 }
-func TestFunctionCall(t *testing.T) {
+func TestFunctionCallWithArguments(t *testing.T) {
 	in := "add(1, 2 * 3, 4 + 5);"
 	parser := New(lexer.New(in))
 	program := parser.ParseProgram()
@@ -442,7 +442,7 @@ func TestFunctionCall(t *testing.T) {
 		t.Fatal("faild to assert expStmt as *ast.FunctionCall")
 	}
 
-	testIdentifier(t, funcCall.Function, expectedLiteral{"add", "add"})
+	testLiteral(t, funcCall.Function, expectedLiteral{"add", "add"})
 
 	if len(funcCall.Arguments) != 3 {
 		t.Errorf("len(funcCall.Arguments) retuned wrong value: expected 3, but got %d\n", len(funcCall.Arguments))
