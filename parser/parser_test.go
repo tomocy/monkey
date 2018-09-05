@@ -135,9 +135,9 @@ func testIdentifier(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 func TestInteger(t *testing.T) {
 	tests := []struct {
 		in     string
-		expect expectedInteger
+		expect expectedLiteral
 	}{
-		{"5;", expectedInteger{"5", 5}},
+		{"5;", expectedLiteral{"5", 5}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -147,9 +147,10 @@ func TestInteger(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testInteger(t, expStmt.Value, test.expect)
+		testLiteral(t, expStmt.Value, test.expect)
 	}
 }
+
 func TestPrefix(t *testing.T) {
 	tests := []struct {
 		in     string
