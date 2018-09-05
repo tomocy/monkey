@@ -70,16 +70,15 @@ func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
 }
 func TestReturnStatement(t *testing.T) {
 	type expect struct {
-		tokenLiteral string
-		value        expectedLiteral
+		value expectedLiteral
 	}
 	tests := []struct {
 		in     string
 		expect expect
 	}{
-		{"return 5;", expect{"return", expectedLiteral{"5", 5}}},
-		{"return foo;", expect{"return", expectedLiteral{"foo", "foo"}}},
-		{"return true;", expect{"return", expectedLiteral{"true", true}}},
+		{"return 5;", expect{expectedLiteral{"5", 5}}},
+		{"return foo;", expect{expectedLiteral{"foo", "foo"}}},
+		{"return true;", expect{expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -91,15 +90,14 @@ func TestReturnStatement(t *testing.T) {
 }
 
 func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
-	tokenLiteral string
-	value        expectedLiteral
+	value expectedLiteral
 }) {
 	returnStmt, ok := stmt.(*ast.ReturnStatement)
 	if !ok {
 		t.Fatal("faild to assert stmt as *ast.ReturnStatement")
 	}
-	if returnStmt.TokenLiteral() != expect.tokenLiteral {
-		t.Errorf("returnStmt returned wrong value: expect %s, but got %s\n", expect.tokenLiteral, returnStmt.TokenLiteral())
+	if returnStmt.TokenLiteral() != "return" {
+		t.Errorf("returnStmt returned wrong value: expect return, but got %s\n", returnStmt.TokenLiteral())
 	}
 	testLiteral(t, returnStmt.Value, expect.value)
 }
@@ -296,10 +294,9 @@ func TestIfReturn(t *testing.T) {
 		for i, consequenceStmt := range ifExp.Consequence.Statements {
 			expectedConsequenceStmt := test.expect.consequence[i]
 			testReturnStatement(t, consequenceStmt, struct {
-				tokenLiteral string
-				value        expectedLiteral
+				value expectedLiteral
 			}{
-				"return", expectedConsequenceStmt,
+				expectedConsequenceStmt,
 			})
 		}
 	}
@@ -341,19 +338,17 @@ func TestIfElseReturn(t *testing.T) {
 		for i, consequenceStmt := range ifExp.Consequence.Statements {
 			expectedConsequenceStmt := test.expect.consequence[i]
 			testReturnStatement(t, consequenceStmt, struct {
-				tokenLiteral string
-				value        expectedLiteral
+				value expectedLiteral
 			}{
-				"return", expectedConsequenceStmt,
+				expectedConsequenceStmt,
 			})
 		}
 		for i, alternativeStmt := range ifExp.Alternative.Statements {
 			expectedAlternativeStmt := test.expect.alternative[i]
 			testReturnStatement(t, alternativeStmt, struct {
-				tokenLiteral string
-				value        expectedLiteral
+				value expectedLiteral
 			}{
-				"return", expectedAlternativeStmt,
+				expectedAlternativeStmt,
 			})
 		}
 	}
