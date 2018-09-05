@@ -364,13 +364,13 @@ func TestFunction(t *testing.T) {
 		expect expect
 	}{
 		{
-			in: "fn(x, y) { x + y; }",
-			expect: expect{
-				parameters: []expectedLiteral{
+			"fn(x, y) { x + y; }",
+			expect{
+				[]expectedLiteral{
 					{"x", "x"},
 					{"y", "y"},
 				},
-				body: []expectedInfix{
+				[]expectedInfix{
 					{
 						leftValue:  expectedLiteral{"x", "x"},
 						operator:   "+",
@@ -380,10 +380,10 @@ func TestFunction(t *testing.T) {
 			},
 		},
 		{
-			in: "fn() { 5 + 5; }",
-			expect: expect{
-				parameters: make([]expectedLiteral, 0),
-				body: []expectedInfix{
+			"fn() { 5 + 5; }",
+			expect{
+				make([]expectedLiteral, 0),
+				[]expectedInfix{
 					{
 						leftValue:  expectedLiteral{"5", 5},
 						operator:   "+",
@@ -401,27 +401,33 @@ func TestFunction(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		fn, ok := expStmt.Value.(*ast.Function)
-		if !ok {
-			t.Fatal("faild to assert expStmt as *ast.Function")
-		}
-		if len(fn.Parameters) != len(test.expect.parameters) {
-			t.Errorf("len(fn.Parameters) returned wrong value: expected %d, but got %d\n", len(test.expect.parameters), len(fn.Parameters))
-		}
-		for i, param := range test.expect.parameters {
-			testLiteral(t, fn.Parameters[i], param)
-		}
-
-		testProgramStatements(t, fn.Body.Statements, len(test.expect.body))
-		for i, body := range test.expect.body {
-			bodyStmt := fn.Body.Statements[i]
-			testExpressionStatement(t, bodyStmt)
-			bodyExpStmt := bodyStmt.(*ast.ExpressionStatement)
-			testInfix(t, bodyExpStmt.Value, body)
-		}
+		testFunction(t, expStmt.Value, test.expect)
 	}
 }
 
+func testFunction(t *testing.T, exp ast.Expression, expect struct {
+	parameters []expectedLiteral
+	body       []expectedInfix
+}) {
+	fn, ok := exp.(*ast.Function)
+	if !ok {
+		t.Fatal("faild to assert exp as *ast.Function")
+	}
+	if len(fn.Parameters) != len(expect.parameters) {
+		t.Errorf("len(fn.Parameters) returned wrong value: expected %d, but got %d\n", len(expect.parameters), len(fn.Parameters))
+	}
+	for i, param := range expect.parameters {
+		testLiteral(t, fn.Parameters[i], param)
+	}
+
+	testProgramStatements(t, fn.Body.Statements, len(expect.body))
+	for i, body := range expect.body {
+		bodyStmt := fn.Body.Statements[i]
+		testExpressionStatement(t, bodyStmt)
+		bodyExpStmt := bodyStmt.(*ast.ExpressionStatement)
+		testInfix(t, bodyExpStmt.Value, body)
+	}
+}
 func TestFunctionCall(t *testing.T) {
 	in := "add(1, 2 * 3, 4 + 5);"
 	parser := New(lexer.New(in))
