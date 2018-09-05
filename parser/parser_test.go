@@ -35,16 +35,15 @@ type expectedLiteral struct {
 
 func TestLetStatement(t *testing.T) {
 	type expect struct {
-		identName string
-		value     expectedLiteral
+		ident expectedLiteral
+		value expectedLiteral
 	}
 	tests := []struct {
 		in     string
 		expect expect
 	}{
-		{"let x = 5;", expect{"x", expectedLiteral{"5", 5}}},
-		{"let y = 10;", expect{"y", expectedLiteral{"10", 10}}},
-		{"let isOK = true;", expect{"isOK", expectedLiteral{"true", true}}},
+		{"let x = 5;", expect{expectedLiteral{"x", "x"}, expectedLiteral{"5", 5}}},
+		{"let isOK = true;", expect{expectedLiteral{"isOK", "isOK"}, expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -56,8 +55,8 @@ func TestLetStatement(t *testing.T) {
 }
 
 func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
-	identName string
-	value     expectedLiteral
+	ident expectedLiteral
+	value expectedLiteral
 }) {
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
@@ -66,12 +65,7 @@ func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
 	}
-	if letStmt.Ident.TokenLiteral() != expect.identName {
-		t.Errorf("letStmt.Name.TokenLiteral() returns wrong value. expected %s, but got %s\n", expect.identName, letStmt.Ident.TokenLiteral())
-	}
-	if letStmt.Ident.Value != expect.identName {
-		t.Errorf("letStmt.Name.Value was wrong. expected %s, but got %s\n", expect.identName, letStmt.Ident.Value)
-	}
+	testLiteral(t, letStmt.Ident, expect.ident)
 	testLiteral(t, letStmt.Value, expect.value)
 }
 func TestReturnStatement(t *testing.T) {
