@@ -33,6 +33,11 @@ type expectedLiteral struct {
 	value        interface{}
 }
 
+type expectedIf struct {
+	condition   expectedInfix
+	consequence []expectedLiteral
+}
+
 func TestLetStatement(t *testing.T) {
 	type expect struct {
 		ident expectedLiteral
@@ -261,17 +266,13 @@ func TestBoolean(t *testing.T) {
 	}
 }
 func TestIfReturn(t *testing.T) {
-	type expect struct {
-		condition   expectedInfix
-		consequence []expectedLiteral
-	}
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedIf
 	}{
 		{
-			in: "if (x < y) { return x; }",
-			expect: expect{
+			"if (x < y) { return x; }",
+			expectedIf{
 				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
 				consequence: []expectedLiteral{{"x", "x"}},
 			},
@@ -285,20 +286,24 @@ func TestIfReturn(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		ifExp, ok := expStmt.Value.(*ast.If)
-		if !ok {
-			t.Fatal("faild to assert expStmt.Value as *ast.If")
-		}
-		testInfix(t, ifExp.Condition, test.expect.condition)
-		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
-		for i, consequenceStmt := range ifExp.Consequence.Statements {
-			expectedConsequenceStmt := test.expect.consequence[i]
-			testReturnStatement(t, consequenceStmt, struct {
-				value expectedLiteral
-			}{
-				expectedConsequenceStmt,
-			})
-		}
+		testIfReturn(t, expStmt.Value, test.expect)
+	}
+}
+
+func testIfReturn(t *testing.T, exp ast.Expression, expect expectedIf) {
+	ifExp, ok := exp.(*ast.If)
+	if !ok {
+		t.Fatal("faild to assert expStmt.Value as *ast.If")
+	}
+	testInfix(t, ifExp.Condition, expect.condition)
+	testProgramStatements(t, ifExp.Consequence.Statements, len(expect.consequence))
+	for i, consequenceStmt := range ifExp.Consequence.Statements {
+		expectedConsequenceStmt := expect.consequence[i]
+		testReturnStatement(t, consequenceStmt, struct {
+			value expectedLiteral
+		}{
+			expectedConsequenceStmt,
+		})
 	}
 }
 
