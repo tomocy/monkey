@@ -102,14 +102,11 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
 	testLiteral(t, returnStmt.Value, expect.value)
 }
 func TestIdentifier(t *testing.T) {
-	type expect struct {
-		name string
-	}
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedLiteral
 	}{
-		{"foobar;", expect{"foobar"}},
+		{"foobar;", expectedLiteral{"foobar", "foobar"}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
@@ -119,20 +116,20 @@ func TestIdentifier(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		testIdentifier(t, expStmt.Value, test.expect.name)
+		testIdentifier(t, expStmt.Value, test.expect)
 	}
 }
 
-func testIdentifier(t *testing.T, exp ast.Expression, name string) {
+func testIdentifier(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
 		t.Fatal("faild to assert exp as *ast.Identifier")
 	}
-	if ident.TokenLiteral() != name {
-		t.Errorf("ident.TokenLiteral retuned wrong value: expect %s, but got %s\n", name, ident.TokenLiteral())
+	if ident.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("ident.TokenLiteral retuned wrong value: expect %s, but got %s\n", expect.tokenLiteral, ident.TokenLiteral())
 	}
-	if ident.Value != name {
-		t.Errorf("ident.Value was wrong: expect %s, but got %s\n", name, ident.TokenLiteral())
+	if ident.Value != expect.value {
+		t.Errorf("ident.Value was wrong: expect %s, but got %s\n", expect.value, ident.TokenLiteral())
 	}
 }
 func TestInteger(t *testing.T) {
@@ -436,7 +433,7 @@ func TestFunctionCall(t *testing.T) {
 		t.Fatal("faild to assert expStmt as *ast.FunctionCall")
 	}
 
-	testIdentifier(t, funcCall.Function, "add")
+	testIdentifier(t, funcCall.Function, expectedLiteral{"add", "add"})
 
 	if len(funcCall.Arguments) != 3 {
 		t.Errorf("len(funcCall.Arguments) retuned wrong value: expected 3, but got %d\n", len(funcCall.Arguments))
@@ -534,6 +531,6 @@ func testLiteral(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 	case bool:
 		testBoolean(t, exp, expectedBoolean{expect.tokenLiteral, v})
 	case string:
-		testIdentifier(t, exp, v)
+		testIdentifier(t, exp, expect)
 	}
 }
