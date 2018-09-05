@@ -187,6 +187,8 @@ func TestInfix(t *testing.T) {
 		{"5 != 5;", expectedInfix{expectedLiteral{"5", 5}, "!=", expectedLiteral{"5", 5}}},
 		{"true == true;", expectedInfix{expectedLiteral{"true", true}, "==", expectedLiteral{"true", true}}},
 		{"true != false;", expectedInfix{expectedLiteral{"true", true}, "!=", expectedLiteral{"false", false}}},
+		{"foo == bar;", expectedInfix{expectedLiteral{"foo", "foo"}, "==", expectedLiteral{"bar", "bar"}}},
+		{"foo != bar;", expectedInfix{expectedLiteral{"foo", "foo"}, "!=", expectedLiteral{"bar", "bar"}}},
 	}
 	for _, test := range tests {
 		parser := New(lexer.New(test.in))
