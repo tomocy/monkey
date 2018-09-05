@@ -428,6 +428,25 @@ func testFunction(t *testing.T, exp ast.Expression, expect struct {
 		testInfix(t, bodyExpStmt.Value, body)
 	}
 }
+
+func testFunctionCallWithoutArguments(t *testing.T) {
+	in := "sayHello();"
+	parser := New(lexer.New(in))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	testProgramStatements(t, program.Statements, 1)
+	stmt := program.Statements[0]
+	testExpressionStatement(t, stmt)
+	expStmt := stmt.(*ast.ExpressionStatement)
+	funcCall, ok := expStmt.Value.(*ast.FunctionCall)
+	if !ok {
+		t.Fatal("faild to assert expStmt.Value as *ast.FunctionCall")
+	}
+	testLiteral(t, funcCall.Function, expectedLiteral{"sayHello", "sayHello"})
+	if len(funcCall.Arguments) != 0 {
+		t.Errorf("len(funcCall.Arguments) returned wrong value: expected 0, but got %d\n", len(funcCall.Arguments))
+	}
+}
 func TestFunctionCallWithArguments(t *testing.T) {
 	in := "add(1, 2 * 3, 4 + 5);"
 	parser := New(lexer.New(in))
