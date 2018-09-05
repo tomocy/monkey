@@ -38,6 +38,11 @@ type expectedIf struct {
 	consequence []expectedLiteral
 }
 
+type expectedIfElse struct {
+	expectedIf
+	alternative []expectedLiteral
+}
+
 func TestLetStatement(t *testing.T) {
 	type expect struct {
 		ident expectedLiteral
@@ -306,23 +311,19 @@ func testIfReturn(t *testing.T, exp ast.Expression, expect expectedIf) {
 		})
 	}
 }
-
 func TestIfElseReturn(t *testing.T) {
-	type expect struct {
-		condition   expectedInfix
-		consequence []expectedLiteral
-		alternative []expectedLiteral
-	}
 	tests := []struct {
 		in     string
-		expect expect
+		expect expectedIfElse
 	}{
 		{
-			in: "if (x < y) { return x; } else { return y; }",
-			expect: expect{
-				condition:   expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
-				consequence: []expectedLiteral{{"x", "x"}},
-				alternative: []expectedLiteral{{"y", "y"}},
+			"if (x < y) { return x; } else { return y; }",
+			expectedIfElse{
+				expectedIf{
+					expectedInfix{expectedLiteral{"x", "x"}, "<", expectedLiteral{"y", "y"}},
+					[]expectedLiteral{{"x", "x"}},
+				},
+				[]expectedLiteral{{"y", "y"}},
 			},
 		},
 	}
@@ -334,31 +335,25 @@ func TestIfElseReturn(t *testing.T) {
 		stmt := program.Statements[0]
 		testExpressionStatement(t, stmt)
 		expStmt := stmt.(*ast.ExpressionStatement)
-		ifExp, ok := expStmt.Value.(*ast.If)
-		if !ok {
-			t.Fatal("faild to assert expStmt.Value as *ast.If")
-		}
-		testInfix(t, ifExp.Condition, test.expect.condition)
-		testProgramStatements(t, ifExp.Consequence.Statements, len(test.expect.consequence))
-		for i, consequenceStmt := range ifExp.Consequence.Statements {
-			expectedConsequenceStmt := test.expect.consequence[i]
-			testReturnStatement(t, consequenceStmt, struct {
-				value expectedLiteral
-			}{
-				expectedConsequenceStmt,
-			})
-		}
-		for i, alternativeStmt := range ifExp.Alternative.Statements {
-			expectedAlternativeStmt := test.expect.alternative[i]
-			testReturnStatement(t, alternativeStmt, struct {
-				value expectedLiteral
-			}{
-				expectedAlternativeStmt,
-			})
-		}
+		testIfElseReturn(t, expStmt.Value, test.expect)
 	}
 }
 
+func testIfElseReturn(t *testing.T, exp ast.Expression, expect expectedIfElse) {
+	ifExp, ok := exp.(*ast.If)
+	if !ok {
+		t.Fatal("faild to assert expStmt.Value as *ast.If")
+	}
+	testIfReturn(t, ifExp, expect.expectedIf)
+	for i, alternativeStmt := range ifExp.Alternative.Statements {
+		expectedAlternativeStmt := expect.alternative[i]
+		testReturnStatement(t, alternativeStmt, struct {
+			value expectedLiteral
+		}{
+			expectedAlternativeStmt,
+		})
+	}
+}
 func TestFunction(t *testing.T) {
 	type expect struct {
 		parameters []expectedLiteral
