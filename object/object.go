@@ -5,6 +5,7 @@ import "fmt"
 const (
 	integer = "Integer"
 	boolean = "Boolean"
+	null    = "Null"
 )
 
 type ObjectType string
@@ -36,4 +37,15 @@ func (b Boolean) Type() ObjectType {
 
 func (b Boolean) Inspect() string {
 	return fmt.Sprintf("%t", b.Value)
+}
+
+type Null struct {
+}
+
+func (n Null) Type() ObjectType {
+	return null
+}
+
+func (n Null) Inspect() string {
+	return "null"
 }
