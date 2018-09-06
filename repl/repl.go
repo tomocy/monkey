@@ -7,6 +7,7 @@ import (
 
 	"io"
 
+	"github.com/tomocy/monkey/evaluator"
 	"github.com/tomocy/monkey/lexer"
 	"github.com/tomocy/monkey/parser"
 )
@@ -18,17 +19,22 @@ func Start(in io.Reader, w io.Writer) {
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		sourceCode := scanner.Text()
-		fmt.Println(parsedProgramOrErrorMessages(sourceCode))
+		fmt.Println(evaluatedProgramOrErrorMessages(sourceCode))
 		fmt.Print(prompt)
 	}
 }
 
-func parsedProgramOrErrorMessages(in string) string {
+func evaluatedProgramOrErrorMessages(in string) string {
 	parser := parser.New(lexer.New(in))
 	program := parser.ParseProgram()
 	if len(parser.Errors()) != 0 {
 		return strings.Join(parser.Errors(), "\n")
 	}
 
-	return program.String()
+	evaluatedProgram := evaluator.Eval(program)
+	if evaluatedProgram == nil {
+		return fmt.Sprintf(`could not evaluate "%s"`, in)
+	}
+
+	return evaluatedProgram.Inspect()
 }
