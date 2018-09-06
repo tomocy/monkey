@@ -14,18 +14,19 @@ func TestEvalInteger(t *testing.T) {
 		expect int64
 	}{
 		{"5", 5},
-		{"-5", -5},
 	}
 	for _, test := range tests {
-		parser := parser.New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		got := Eval(program)
-		integer, ok := got.(*object.Integer)
-		if !ok {
-			t.Fatal("faild to assert got as *object.Integer")
-		}
-		if integer.Value != test.expect {
-			t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
-		}
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			got := Eval(program)
+			integer, ok := got.(*object.Integer)
+			if !ok {
+				t.Fatal("faild to assert got as *object.Integer")
+			}
+			if integer.Value != test.expect {
+				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
+			}
+		})
 	}
 }
