@@ -14,11 +14,13 @@ var (
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
-		return evalStatements(node.Statements)
+		return evalProgram(node)
 	case *ast.ExpressionStatement:
 		return Eval(node.Value)
 	case *ast.BlockStatement:
-		return evalStatements(node.Statements)
+		return evalBlockStatements(node)
+	case *ast.ReturnStatement:
+		return &object.ReturnObject{Value: Eval(node.Value)}
 	case *ast.If:
 		return evalIf(node)
 	case *ast.Prefix:
@@ -34,10 +36,25 @@ func Eval(node ast.Node) object.Object {
 	return nullObj
 }
 
-func evalStatements(stmts []ast.Statement) object.Object {
+func evalProgram(program *ast.Program) object.Object {
 	var obj object.Object
-	for _, stmt := range stmts {
+	for _, stmt := range program.Statements {
 		obj = Eval(stmt)
+		if returnObj, ok := obj.(*object.ReturnObject); ok {
+			return returnObj.Value
+		}
+	}
+
+	return obj
+}
+
+func evalBlockStatements(blockStmt *ast.BlockStatement) object.Object {
+	var obj object.Object
+	for _, stmt := range blockStmt.Statements {
+		obj = Eval(stmt)
+		if obj.Type() == object.Return && obj != nil {
+			return obj
+		}
 	}
 
 	return obj
