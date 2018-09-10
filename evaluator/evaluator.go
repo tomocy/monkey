@@ -67,8 +67,8 @@ func evalMinusPrefix(rightObj object.Object) object.Object {
 		return nullObj
 	}
 
-	val := rightObj.(*object.IntegerObject).Value
-	return &object.IntegerObject{Value: -val}
+	rightVal := rightObj.(*object.IntegerObject).Value
+	return &object.IntegerObject{Value: -rightVal}
 }
 
 func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression) object.Object {
@@ -86,7 +86,7 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 	if leftObj.Type() != object.Integer || rightObj.Type() != object.Integer {
 		return nullObj
 	}
-	
+
 	leftVal := leftObj.(*object.IntegerObject).Value
 	rightVal := rightObj.(*object.IntegerObject).Value
 	switch operator {
