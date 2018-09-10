@@ -141,6 +141,7 @@ func TestEvalReturnStatement(t *testing.T) {
 		{"return 10;", 10},
 		{"9; return 10;", 10},
 		{"return 2*5; 11;", 10},
+		{"if (true) { if (true) { return 10; } return 1; }", 10},
 	}
 	for _, test := range tests {
 		parser := parser.New(lexer.New(test.in))
