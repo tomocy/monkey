@@ -6,6 +6,7 @@ const (
 	Integer = "Integer"
 	Boolean = "Boolean"
 	Null    = "Null"
+	Return  = "Return"
 )
 
 type ObjectType string
@@ -48,4 +49,16 @@ func (n NullObject) Type() ObjectType {
 
 func (n NullObject) Inspect() string {
 	return "null"
+}
+
+type ReturnObject struct {
+	Value Object
+}
+
+func (r ReturnObject) Type() ObjectType {
+	return Return
+}
+
+func (r ReturnObject) Inspect() string {
+	return r.Value.Inspect()
 }
