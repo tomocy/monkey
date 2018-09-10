@@ -100,3 +100,33 @@ func TestBang(t *testing.T) {
 		}
 	}
 }
+
+func TestIf(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect interface{}
+	}{
+		{"if (true) {10}", 10},
+		{"if (false) {10}", nil},
+		{"if (1 < 2) {10} else {20}", 10},
+		{"if (!(1 < 2)) {10} else {20}", 20},
+	}
+	for _, test := range tests {
+		parser := parser.New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		got := Eval(program)
+		integer, ok := got.(*object.IntegerObject)
+		if !ok {
+			if test.expect != nil {
+				t.Fatal("faild to assert got as *object.Integer")
+			}
+			if got != nullObj {
+				t.Error("got was not nullObj")
+				return
+			}
+		}
+		if integer.Value != test.expect {
+			t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
+		}
+	}
+}
