@@ -40,47 +40,19 @@ func evalStatements(stmts []ast.Statement) object.Object {
 }
 
 func evalPrefix(operator string, exp ast.Expression) object.Object {
-	rightVal := Eval(exp)
+	rightObj := Eval(exp)
 	switch operator {
 	case "!":
-		return evalBang(rightVal)
+		return evalBang(rightObj)
 	case "-":
-		return evalMinusPrefix(rightVal)
+		return evalMinusPrefix(rightObj)
 	default:
 		return nullObj
 	}
 }
 
-func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression) object.Object {
-	leftVal := Eval(leftExp)
-	rightVal := Eval(rightExp)
-	switch {
-	case leftVal.Type() == object.Integer && rightVal.Type() == object.Integer:
-		leftObj := leftVal.(*object.IntegerObject)
-		rightObj := rightVal.(*object.IntegerObject)
-		return evalInfixOfInteger(leftObj, operator, rightObj)
-	default:
-		return nullObj
-	}
-}
-
-func evalInfixOfInteger(leftObj *object.IntegerObject, operator string, rightObj *object.IntegerObject) object.Object {
-	switch operator {
-	case "+":
-		return &object.IntegerObject{Value: leftObj.Value + rightObj.Value}
-	case "-":
-		return &object.IntegerObject{Value: leftObj.Value - rightObj.Value}
-	case "*":
-		return &object.IntegerObject{Value: leftObj.Value * rightObj.Value}
-	case "/":
-		return &object.IntegerObject{Value: leftObj.Value / rightObj.Value}
-	default:
-		return nullObj
-	}
-}
-
-func evalBang(rightVal object.Object) object.Object {
-	switch rightVal {
+func evalBang(rightObj object.Object) object.Object {
+	switch rightObj {
 	case trueObj:
 		return falseObj
 	case falseObj, nullObj:
@@ -90,13 +62,45 @@ func evalBang(rightVal object.Object) object.Object {
 	}
 }
 
-func evalMinusPrefix(rightVal object.Object) object.Object {
-	if rightVal.Type() != object.Integer {
+func evalMinusPrefix(rightObj object.Object) object.Object {
+	if rightObj.Type() != object.Integer {
 		return nullObj
 	}
 
-	val := rightVal.(*object.IntegerObject).Value
+	val := rightObj.(*object.IntegerObject).Value
 	return &object.IntegerObject{Value: -val}
+}
+
+func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression) object.Object {
+	leftObj := Eval(leftExp)
+	rightObj := Eval(rightExp)
+	switch {
+	case leftObj.Type() == object.Integer && rightObj.Type() == object.Integer:
+		return evalInfixOfInteger(leftObj, operator, rightObj)
+	default:
+		return nullObj
+	}
+}
+
+func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.Object) object.Object {
+	if leftObj.Type() != object.Integer || rightObj.Type() != object.Integer {
+		return nullObj
+	}
+	
+	leftVal := leftObj.(*object.IntegerObject).Value
+	rightVal := rightObj.(*object.IntegerObject).Value
+	switch operator {
+	case "+":
+		return &object.IntegerObject{Value: leftVal + rightVal}
+	case "-":
+		return &object.IntegerObject{Value: leftVal - rightVal}
+	case "*":
+		return &object.IntegerObject{Value: leftVal * rightVal}
+	case "/":
+		return &object.IntegerObject{Value: leftVal / rightVal}
+	default:
+		return nullObj
+	}
 }
 
 func convertToBooleanObject(b bool) object.Object {
