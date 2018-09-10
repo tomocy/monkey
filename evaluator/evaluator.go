@@ -17,6 +17,10 @@ func Eval(node ast.Node) object.Object {
 		return evalStatements(node.Statements)
 	case *ast.ExpressionStatement:
 		return Eval(node.Value)
+	case *ast.BlockStatement:
+		return evalStatements(node.Statements)
+	case *ast.If:
+		return evalIf(node)
 	case *ast.Prefix:
 		return evalPrefix(node.Operator, node.RightValue)
 	case *ast.Infix:
@@ -37,6 +41,22 @@ func evalStatements(stmts []ast.Statement) object.Object {
 	}
 
 	return obj
+}
+
+func evalIf(ifExp *ast.If) object.Object {
+	condition := Eval(ifExp.Condition)
+	if isTruthy(condition) {
+		return Eval(ifExp.Consequence)
+	}
+	if ifExp.Alternative != nil {
+		return Eval(ifExp.Alternative)
+	}
+
+	return nullObj
+}
+
+func isTruthy(obj object.Object) bool {
+	return obj != falseObj && obj != nullObj
 }
 
 func evalPrefix(operator string, exp ast.Expression) object.Object {
