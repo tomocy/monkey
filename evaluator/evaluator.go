@@ -5,6 +5,11 @@ import (
 	"github.com/tomocy/monkey/object"
 )
 
+var (
+	trueObj  = &object.Boolean{Value: true}
+	falseObj = &object.Boolean{Value: false}
+)
+
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -14,7 +19,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.Integer:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
-		return &object.Boolean{Value: node.Value}
+		return convertToBooleanObject(node.Value)
 	}
 
 	return nil
@@ -27,4 +32,12 @@ func evalStatements(stmts []ast.Statement) object.Object {
 	}
 
 	return obj
+}
+
+func convertToBooleanObject(b bool) object.Object {
+	if b {
+		return trueObj
+	}
+
+	return falseObj
 }
