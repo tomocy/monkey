@@ -112,21 +112,24 @@ func TestIf(t *testing.T) {
 		{"if (!(1 < 2)) {10} else {20}", 20},
 	}
 	for _, test := range tests {
-		parser := parser.New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		got := Eval(program)
-		integer, ok := got.(*object.IntegerObject)
-		if !ok {
-			if test.expect != nil {
-				t.Fatal("faild to assert got as *object.Integer")
-			}
-			if got != nullObj {
-				t.Error("got was not nullObj")
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			got := Eval(program)
+			if test.expect == nil {
+				if got != nullObj {
+					t.Errorf("got was wrong: expected %s, but got %s\n", nullObj, got)
+				}
 				return
 			}
-		}
-		if integer.Value != test.expect {
-			t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
-		}
+			expect := test.expect.(int)
+			integer, ok := got.(*object.IntegerObject)
+			if !ok {
+				t.Fatal("faild to assert go as *object.IntegerObject")
+			}
+			if integer.Value != int64(expect) {
+				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
+			}
+		})
 	}
 }
