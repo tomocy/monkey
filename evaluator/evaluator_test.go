@@ -157,3 +157,27 @@ func TestEvalReturnStatement(t *testing.T) {
 		}
 	}
 }
+
+func TestErrorHandling(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect string
+	}{
+		{"if (true) { return 5 + true; }", "unknown operation: Integer + Boolean"},
+		{"return true + false", "unknown operation: Boolean + Boolean"},
+		{"if (!5) { return 5; }", "unknown operation: !Integer"},
+		{"return -true;", "unknown operation: -Boolean"},
+	}
+	for _, test := range tests {
+		parser := parser.New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		got := Eval(program)
+		errorObj, ok := got.(*object.ErrorObject)
+		if !ok {
+			t.Fatal("faild to assert got as *object.ErrorObject")
+		}
+		if errorObj.Message != test.expect {
+			t.Errorf("errorObj.Message was wrong: expected %s, but got %s\n", test.expect, errorObj.Message)
+		}
+	}
+}
