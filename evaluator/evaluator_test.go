@@ -14,6 +14,7 @@ func TestEvalInteger(t *testing.T) {
 		expect int64
 	}{
 		{"5", 5},
+		{"-5", -5},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
