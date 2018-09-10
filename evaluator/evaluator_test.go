@@ -100,7 +100,6 @@ func TestBang(t *testing.T) {
 		}
 	}
 }
-
 func TestIf(t *testing.T) {
 	tests := []struct {
 		in     string
@@ -131,5 +130,29 @@ func TestIf(t *testing.T) {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
 			}
 		})
+	}
+}
+
+func TestEvalReturnStatement(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect interface{}
+	}{
+		{"return 10;", 10},
+		{"9; return 10;", 10},
+		{"return 2*5; 11;", 10},
+	}
+	for _, test := range tests {
+		parser := parser.New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		got := Eval(program)
+		expect := test.expect.(int)
+		integer, ok := got.(*object.IntegerObject)
+		if !ok {
+			t.Fatal("faild to assert got as *object.IntegerObject")
+		}
+		if integer.Value != int64(expect) {
+			t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
+		}
 	}
 }
