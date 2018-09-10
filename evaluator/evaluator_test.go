@@ -15,6 +15,12 @@ func TestEvalInteger(t *testing.T) {
 	}{
 		{"5", 5},
 		{"-5", -5},
+		{"5 + 5", 10},
+		{"5 - 5", 0},
+		{"5 * 5", 25},
+		{"5 / 5", 1},
+		{"5 + 5 * 5 / 5", 10},
+		{"(1 - 2) * 5 / 5", -1},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
