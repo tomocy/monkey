@@ -3,9 +3,9 @@ package object
 import "fmt"
 
 const (
-	integer = "Integer"
-	boolean = "Boolean"
-	null    = "Null"
+	Integer = "Integer"
+	Boolean = "Boolean"
+	Null    = "Null"
 )
 
 type ObjectType string
@@ -20,7 +20,7 @@ type IntegerObject struct {
 }
 
 func (i IntegerObject) Type() ObjectType {
-	return integer
+	return Integer
 }
 
 func (i IntegerObject) Inspect() string {
@@ -32,7 +32,7 @@ type BooleanObject struct {
 }
 
 func (b BooleanObject) Type() ObjectType {
-	return boolean
+	return Boolean
 }
 
 func (b BooleanObject) Inspect() string {
@@ -43,7 +43,7 @@ type NullObject struct {
 }
 
 func (n NullObject) Type() ObjectType {
-	return null
+	return Null
 }
 
 func (n NullObject) Inspect() string {
