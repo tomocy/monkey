@@ -98,6 +98,14 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 		return &object.IntegerObject{Value: leftVal * rightVal}
 	case "/":
 		return &object.IntegerObject{Value: leftVal / rightVal}
+	case "<":
+		return convertToBooleanObject(leftVal < rightVal)
+	case ">":
+		return convertToBooleanObject(leftVal > rightVal)
+	case "==":
+		return convertToBooleanObject(leftVal == rightVal)
+	case "!=":
+		return convertToBooleanObject(leftVal != rightVal)
 	default:
 		return nullObj
 	}
