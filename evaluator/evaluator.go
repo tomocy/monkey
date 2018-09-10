@@ -61,7 +61,7 @@ func evalBang(rightVal object.Object) object.Object {
 }
 
 func evalMinusPrefix(rightVal object.Object) object.Object {
-	if rightVal.Type() != "Integer" {
+	if rightVal.Type() != object.Integer {
 		return nullObj
 	}
 
