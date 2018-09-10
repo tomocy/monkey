@@ -25,7 +25,7 @@ func Eval(node ast.Node) object.Object {
 		return convertToBooleanObject(node.Value)
 	}
 
-	return nil
+	return nullObj
 }
 
 func evalStatements(stmts []ast.Statement) object.Object {
