@@ -45,6 +45,15 @@ func TestEvalBoolean(t *testing.T) {
 	}{
 		{"true", true},
 		{"false;", false},
+		{"5 < 6", true},
+		{"6 < 5", false},
+		{"4 < 5", true},
+		{"5 < 4", false},
+		{"5 < 5", false},
+		{"5 <= 5", true},
+		{"5 >= 5", true},
+		{"(1 + 2) < (3 + 4)", true},
+		{"(1 / 2) < (3 / 4)", false},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
