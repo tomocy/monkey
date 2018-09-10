@@ -21,7 +21,7 @@ func TestEvalInteger(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			got := Eval(program)
-			integer, ok := got.(*object.Integer)
+			integer, ok := got.(*object.IntegerObject)
 			if !ok {
 				t.Fatal("faild to assert got as *object.Integer")
 			}
@@ -45,7 +45,7 @@ func TestEvalBoolean(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			got := Eval(program)
-			boolean, ok := got.(*object.Boolean)
+			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
 				t.Fatal("faild to assert got as *object.Boolean")
 			}
@@ -70,7 +70,7 @@ func TestBang(t *testing.T) {
 		parser := parser.New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		got := Eval(program)
-		boolean, ok := got.(*object.Boolean)
+		boolean, ok := got.(*object.BooleanObject)
 		if !ok {
 			t.Fatal("faild to assert got as *object.Boolean")
 		}

@@ -15,37 +15,37 @@ type Object interface {
 	Inspect() string
 }
 
-type Integer struct {
+type IntegerObject struct {
 	Value int64
 }
 
-func (i Integer) Type() ObjectType {
+func (i IntegerObject) Type() ObjectType {
 	return integer
 }
 
-func (i Integer) Inspect() string {
+func (i IntegerObject) Inspect() string {
 	return fmt.Sprintf("%d", i.Value)
 }
 
-type Boolean struct {
+type BooleanObject struct {
 	Value bool
 }
 
-func (b Boolean) Type() ObjectType {
+func (b BooleanObject) Type() ObjectType {
 	return boolean
 }
 
-func (b Boolean) Inspect() string {
+func (b BooleanObject) Inspect() string {
 	return fmt.Sprintf("%t", b.Value)
 }
 
-type Null struct {
+type NullObject struct {
 }
 
-func (n Null) Type() ObjectType {
+func (n NullObject) Type() ObjectType {
 	return null
 }
 
-func (n Null) Inspect() string {
+func (n NullObject) Inspect() string {
 	return "null"
 }

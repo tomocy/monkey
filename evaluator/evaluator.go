@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	nullObj  = &object.Null{}
-	trueObj  = &object.Boolean{Value: true}
-	falseObj = &object.Boolean{Value: false}
+	nullObj  = &object.NullObject{}
+	trueObj  = &object.BooleanObject{Value: true}
+	falseObj = &object.BooleanObject{Value: false}
 )
 
 func Eval(node ast.Node) object.Object {
@@ -20,7 +20,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.Prefix:
 		return evalPrefix(node.Operator, node.RightValue)
 	case *ast.Integer:
-		return &object.Integer{Value: node.Value}
+		return &object.IntegerObject{Value: node.Value}
 	case *ast.Boolean:
 		return convertToBooleanObject(node.Value)
 	}
@@ -65,8 +65,8 @@ func evalMinusPrefix(rightVal object.Object) object.Object {
 		return nullObj
 	}
 
-	val := rightVal.(*object.Integer).Value
-	return &object.Integer{Value: -val}
+	val := rightVal.(*object.IntegerObject).Value
+	return &object.IntegerObject{Value: -val}
 }
 
 func convertToBooleanObject(b bool) object.Object {
