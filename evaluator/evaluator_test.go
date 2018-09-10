@@ -54,6 +54,10 @@ func TestEvalBoolean(t *testing.T) {
 		{"(1 / 2) < (3 / 4)", false},
 		{"5 == 5", true},
 		{"5 != 5", false},
+		{"true == true", true},
+		{"true != true", false},
+		{"(4 < 3) == (2 < 1)", true},
+		{"(4 < 3) != (2 < 1)", false},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
