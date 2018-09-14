@@ -219,3 +219,39 @@ func TestEvalLetStatement(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalFunction(t *testing.T) {
+	type expect struct {
+		params []string
+		body   string
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{"fn(x) { return x + 2; }", expect{[]string{"x"}, "return x + 2;"}},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := NewEnvironment()
+			got := Eval(program, env)
+			function, ok := got.(*object.FunctionObject)
+			if !ok {
+				t.Fatalf("faild to assert got: expected *object.FunctionObject, but got %T\n", got)
+			}
+			if len(functino.Parameters) != len(test.expect.params) {
+				t.Fatalf("len(function.Parameters) returned wrong value: expected %d, but got %d\n", len(test.expect.params), len(function.Parameters))
+			}
+			for i, param := range test.expect.params {
+				if function.Parameters[i].String() != param {
+					t.Errorf("function.Parameters[i].String() retuend wrong value: expected %s, but got %s\n", param, function.Parameters[i].String())
+				}
+			}
+			if function.Body.String() != test.expect.body {
+				t.Errorf("function.Body.String(9 returned wrong value: expected %s, but got %s\n", test.expect.body, functino.Body.String())
+			}
+		})
+	}
+}
