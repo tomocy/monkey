@@ -13,22 +13,22 @@ var (
 	falseObj = &object.BooleanObject{Value: false}
 )
 
-func Eval(node ast.Node) object.Object {
+func Eval(node ast.Node, env *Environment) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
-		return evalProgram(node)
+		return evalProgram(node, env)
 	case *ast.ExpressionStatement:
-		return Eval(node.Value)
+		return Eval(node.Value, env)
 	case *ast.BlockStatement:
-		return evalBlockStatements(node)
+		return evalBlockStatements(node, env)
 	case *ast.ReturnStatement:
-		return evalReturnStatement(node)
+		return evalReturnStatement(node, env)
 	case *ast.If:
-		return evalIf(node)
+		return evalIf(node, env)
 	case *ast.Prefix:
-		return evalPrefix(node.Operator, node.RightValue)
+		return evalPrefix(node.Operator, node.RightValue, env)
 	case *ast.Infix:
-		return evalInfix(node.LeftValue, node.Operator, node.RightValue)
+		return evalInfix(node.LeftValue, node.Operator, node.RightValue, env)
 	case *ast.Integer:
 		return &object.IntegerObject{Value: node.Value}
 	case *ast.Boolean:
@@ -38,10 +38,10 @@ func Eval(node ast.Node) object.Object {
 	return nullObj
 }
 
-func evalProgram(program *ast.Program) object.Object {
+func evalProgram(program *ast.Program, env *Environment) object.Object {
 	var obj object.Object
 	for _, stmt := range program.Statements {
-		obj = Eval(stmt)
+		obj = Eval(stmt, env)
 		if obj.Type() == object.Error {
 			return obj
 		}
@@ -53,10 +53,10 @@ func evalProgram(program *ast.Program) object.Object {
 	return obj
 }
 
-func evalBlockStatements(blockStmt *ast.BlockStatement) object.Object {
+func evalBlockStatements(blockStmt *ast.BlockStatement, env *Environment) object.Object {
 	var obj object.Object
 	for _, stmt := range blockStmt.Statements {
-		obj = Eval(stmt)
+		obj = Eval(stmt, env)
 		if obj.Type() == object.Return {
 			return obj
 		}
@@ -68,8 +68,8 @@ func evalBlockStatements(blockStmt *ast.BlockStatement) object.Object {
 	return obj
 }
 
-func evalReturnStatement(exp *ast.ReturnStatement) object.Object {
-	obj := Eval(exp.Value)
+func evalReturnStatement(exp *ast.ReturnStatement, env *Environment) object.Object {
+	obj := Eval(exp.Value, env)
 	if obj.Type() == object.Error {
 		return obj
 	}
@@ -77,18 +77,18 @@ func evalReturnStatement(exp *ast.ReturnStatement) object.Object {
 	return &object.ReturnObject{Value: obj}
 }
 
-func evalIf(ifExp *ast.If) object.Object {
-	condition := Eval(ifExp.Condition)
+func evalIf(ifExp *ast.If, env *Environment) object.Object {
+	condition := Eval(ifExp.Condition, env)
 	if condition.Type() == object.Error {
 		return condition
 	}
 
 	if isTruthy(condition) {
-		return Eval(ifExp.Consequence)
+		return Eval(ifExp.Consequence, env)
 	}
 
 	if ifExp.Alternative != nil {
-		return Eval(ifExp.Alternative)
+		return Eval(ifExp.Alternative, env)
 	}
 
 	return nullObj
@@ -98,8 +98,8 @@ func isTruthy(obj object.Object) bool {
 	return obj != falseObj && obj != nullObj
 }
 
-func evalPrefix(operator string, exp ast.Expression) object.Object {
-	rightObj := Eval(exp)
+func evalPrefix(operator string, exp ast.Expression, env *Environment) object.Object {
+	rightObj := Eval(exp, env)
 	if rightObj.Type() == object.Error {
 		return rightObj
 	}
@@ -134,13 +134,13 @@ func evalMinusPrefix(rightObj object.Object) object.Object {
 	return &object.IntegerObject{Value: -rightVal}
 }
 
-func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression) object.Object {
-	leftObj := Eval(leftExp)
+func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression, env *Environment) object.Object {
+	leftObj := Eval(leftExp, env)
 	if leftObj.Type() == object.Error {
 		return leftObj
 	}
 
-	rightObj := Eval(rightExp)
+	rightObj := Eval(rightExp, env)
 	if rightObj.Type() == object.Error {
 		return rightObj
 	}
