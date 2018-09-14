@@ -21,6 +21,8 @@ func Eval(node ast.Node, env *Environment) object.Object {
 		return Eval(node.Value, env)
 	case *ast.BlockStatement:
 		return evalBlockStatements(node, env)
+	case *ast.LetStatement:
+		return evalLetStatement(node, env)
 	case *ast.ReturnStatement:
 		return evalReturnStatement(node, env)
 	case *ast.If:
@@ -29,6 +31,8 @@ func Eval(node ast.Node, env *Environment) object.Object {
 		return evalPrefix(node.Operator, node.RightValue, env)
 	case *ast.Infix:
 		return evalInfix(node.LeftValue, node.Operator, node.RightValue, env)
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 	case *ast.Integer:
 		return &object.IntegerObject{Value: node.Value}
 	case *ast.Boolean:
@@ -64,6 +68,17 @@ func evalBlockStatements(blockStmt *ast.BlockStatement, env *Environment) object
 			return obj
 		}
 	}
+
+	return obj
+}
+
+func evalLetStatement(node *ast.LetStatement, env *Environment) object.Object {
+	obj := Eval(node.Value, env)
+	if obj.Type() == object.Error {
+		return obj
+	}
+
+	env.Set(node.Ident.Value, obj)
 
 	return obj
 }
@@ -188,6 +203,15 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 	default:
 		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
 	}
+}
+
+func evalIdentifier(node *ast.Identifier, env *Environment) object.Object {
+	obj, ok := env.Get(node.Value)
+	if !ok {
+		return newError("unknown identifier: %s", node.Value)
+	}
+
+	return obj
 }
 
 func convertToBooleanObject(b bool) object.Object {
