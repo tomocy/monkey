@@ -26,7 +26,7 @@ func TestEvalInteger(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
@@ -66,7 +66,7 @@ func TestEvalBoolean(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
@@ -93,7 +93,7 @@ func TestBang(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
@@ -119,7 +119,7 @@ func TestIf(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			if test.expect == nil {
 				if got != nullObj {
@@ -153,7 +153,7 @@ func TestEvalReturnStatement(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
@@ -181,7 +181,7 @@ func TestErrorHandling(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			errorObj, ok := got.(*object.ErrorObject)
 			if !ok {
@@ -207,7 +207,7 @@ func TestEvalLetStatement(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
@@ -235,13 +235,13 @@ func TestEvalFunction(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			env := NewEnvironment()
+			env := object.NewEnvironment()
 			got := Eval(program, env)
 			function, ok := got.(*object.FunctionObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.FunctionObject, but got %T\n", got)
 			}
-			if len(functino.Parameters) != len(test.expect.params) {
+			if len(function.Parameters) != len(test.expect.params) {
 				t.Fatalf("len(function.Parameters) returned wrong value: expected %d, but got %d\n", len(test.expect.params), len(function.Parameters))
 			}
 			for i, param := range test.expect.params {
@@ -250,7 +250,46 @@ func TestEvalFunction(t *testing.T) {
 				}
 			}
 			if function.Body.String() != test.expect.body {
-				t.Errorf("function.Body.String(9 returned wrong value: expected %s, but got %s\n", test.expect.body, functino.Body.String())
+				t.Errorf("function.Body.String(9 returned wrong value: expected %s, but got %s\n", test.expect.body, function.Body.String())
+			}
+		})
+	}
+}
+
+func TestEvalFunctionCall(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect interface{}
+	}{
+		{"fn(x) { retrun x + 5; }(5)", 10},
+		{"fn(x) { let y = x + 5; if (10 < y) { return true; } else { return false; } }(5)", false},
+		{"fn(x) { let y = x + 5; if (10 < y) { return true; } else { return false; } }(6)", true},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := object.NewEnvironment()
+			got := Eval(program, env)
+			if expectedInteger, ok := test.expect.(int); ok {
+				integer, ok := got.(*object.IntegerObject)
+				if !ok {
+					t.Fatalf("faild to assert got: expected *object.IntgerObject, but got %T\n", got)
+				}
+				if integer.Value != int64(expectedInteger) {
+					t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedInteger, integer.Value)
+				}
+				return
+			}
+			if expectedBoolean, ok := test.expect.(bool); ok {
+				boolean, ok := got.(*object.BooleanObject)
+				if !ok {
+					t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
+				}
+				if boolean.Value != expectedBoolean {
+					t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", expectedBoolean, boolean.Value)
+				}
+				return
 			}
 		})
 	}

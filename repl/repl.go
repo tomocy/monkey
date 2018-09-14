@@ -9,12 +9,13 @@ import (
 
 	"github.com/tomocy/monkey/evaluator"
 	"github.com/tomocy/monkey/lexer"
+	"github.com/tomocy/monkey/object"
 	"github.com/tomocy/monkey/parser"
 )
 
 const prompt = ">> "
 
-var env = evaluator.NewEnvironment()
+var env = object.NewEnvironment()
 
 func Start(in io.Reader, w io.Writer) {
 	fmt.Print(prompt)

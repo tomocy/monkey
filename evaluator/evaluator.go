@@ -13,7 +13,7 @@ var (
 	falseObj = &object.BooleanObject{Value: false}
 )
 
-func Eval(node ast.Node, env *Environment) object.Object {
+func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
@@ -42,7 +42,7 @@ func Eval(node ast.Node, env *Environment) object.Object {
 	return nullObj
 }
 
-func evalProgram(program *ast.Program, env *Environment) object.Object {
+func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var obj object.Object
 	for _, stmt := range program.Statements {
 		obj = Eval(stmt, env)
@@ -57,7 +57,7 @@ func evalProgram(program *ast.Program, env *Environment) object.Object {
 	return obj
 }
 
-func evalBlockStatements(blockStmt *ast.BlockStatement, env *Environment) object.Object {
+func evalBlockStatements(blockStmt *ast.BlockStatement, env *object.Environment) object.Object {
 	var obj object.Object
 	for _, stmt := range blockStmt.Statements {
 		obj = Eval(stmt, env)
@@ -72,7 +72,7 @@ func evalBlockStatements(blockStmt *ast.BlockStatement, env *Environment) object
 	return obj
 }
 
-func evalLetStatement(node *ast.LetStatement, env *Environment) object.Object {
+func evalLetStatement(node *ast.LetStatement, env *object.Environment) object.Object {
 	obj := Eval(node.Value, env)
 	if obj.Type() == object.Error {
 		return obj
@@ -83,7 +83,7 @@ func evalLetStatement(node *ast.LetStatement, env *Environment) object.Object {
 	return obj
 }
 
-func evalReturnStatement(node *ast.ReturnStatement, env *Environment) object.Object {
+func evalReturnStatement(node *ast.ReturnStatement, env *object.Environment) object.Object {
 	obj := Eval(node.Value, env)
 	if obj.Type() == object.Error {
 		return obj
@@ -92,7 +92,7 @@ func evalReturnStatement(node *ast.ReturnStatement, env *Environment) object.Obj
 	return &object.ReturnObject{Value: obj}
 }
 
-func evalIf(node *ast.If, env *Environment) object.Object {
+func evalIf(node *ast.If, env *object.Environment) object.Object {
 	condition := Eval(node.Condition, env)
 	if condition.Type() == object.Error {
 		return condition
@@ -113,7 +113,7 @@ func isTruthy(obj object.Object) bool {
 	return obj != falseObj && obj != nullObj
 }
 
-func evalPrefix(operator string, exp ast.Expression, env *Environment) object.Object {
+func evalPrefix(operator string, exp ast.Expression, env *object.Environment) object.Object {
 	rightObj := Eval(exp, env)
 	if rightObj.Type() == object.Error {
 		return rightObj
@@ -149,7 +149,7 @@ func evalMinusPrefix(rightObj object.Object) object.Object {
 	return &object.IntegerObject{Value: -rightVal}
 }
 
-func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression, env *Environment) object.Object {
+func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression, env *object.Environment) object.Object {
 	leftObj := Eval(leftExp, env)
 	if leftObj.Type() == object.Error {
 		return leftObj
@@ -201,7 +201,7 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 	}
 }
 
-func evalIdentifier(node *ast.Identifier, env *Environment) object.Object {
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	obj, ok := env.Get(node.Value)
 	if !ok {
 		return newError("unknown identifier: %s", node.Value)

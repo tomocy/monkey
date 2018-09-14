@@ -1,13 +1,19 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/tomocy/monkey/ast"
+)
 
 const (
-	Integer = "Integer"
-	Boolean = "Boolean"
-	Null    = "Null"
-	Return  = "Return"
-	Error   = "Error"
+	Integer  = "Integer"
+	Boolean  = "Boolean"
+	Null     = "Null"
+	Return   = "Return"
+	Error    = "Error"
+	Function = "Function"
 )
 
 type ObjectType string
@@ -74,4 +80,28 @@ func (e ErrorObject) Type() ObjectType {
 
 func (e ErrorObject) Inspect() string {
 	return "Error: " + e.Message
+}
+
+type FunctionObject struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f FunctionObject) Type() ObjectType {
+	return Function
+}
+
+func (f FunctionObject) Inspect() string {
+	b := make([]byte, 0, 10)
+	b = append(b, "fn ("...)
+	params := make([]string, len(f.Parameters))
+	for i, param := range f.Parameters {
+		params[i] = param.String()
+	}
+	b = append(b, strings.Join(params, ",")...)
+	b = append(b, ") "...)
+	b = append(b, f.Body.String()...)
+
+	return string(b)
 }
