@@ -29,7 +29,7 @@ func TestEvalInteger(t *testing.T) {
 			got := Eval(program)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatal("faild to assert got as *object.Integer")
+				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != test.expect {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
@@ -68,7 +68,7 @@ func TestEvalBoolean(t *testing.T) {
 			got := Eval(program)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
-				t.Fatal("faild to assert got as *object.Boolean")
+				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
 			}
 			if boolean.Value != test.expect {
 				t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
@@ -94,7 +94,7 @@ func TestBang(t *testing.T) {
 			got := Eval(program)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
-				t.Fatal("faild to assert got as *object.Boolean")
+				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
 			}
 			if boolean.Value != test.expect {
 				t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
@@ -126,7 +126,7 @@ func TestIf(t *testing.T) {
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatal("faild to assert go as *object.IntegerObject")
+				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != int64(expect) {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
@@ -153,7 +153,7 @@ func TestEvalReturnStatement(t *testing.T) {
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatal("faild to assert got as *object.IntegerObject")
+				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != int64(expect) {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
