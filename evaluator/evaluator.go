@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/object"
 )
@@ -20,7 +22,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.BlockStatement:
 		return evalBlockStatements(node)
 	case *ast.ReturnStatement:
-		return &object.ReturnObject{Value: Eval(node.Value)}
+		return evalReturnStatement(node)
 	case *ast.If:
 		return evalIf(node)
 	case *ast.Prefix:
@@ -40,8 +42,11 @@ func evalProgram(program *ast.Program) object.Object {
 	var obj object.Object
 	for _, stmt := range program.Statements {
 		obj = Eval(stmt)
-		if returnObj, ok := obj.(*object.ReturnObject); ok {
-			return returnObj.Value
+		if obj.Type() == object.Error {
+			return obj
+		}
+		if obj.Type() == object.Return {
+			return obj.(*object.ReturnObject).Value
 		}
 	}
 
@@ -52,7 +57,10 @@ func evalBlockStatements(blockStmt *ast.BlockStatement) object.Object {
 	var obj object.Object
 	for _, stmt := range blockStmt.Statements {
 		obj = Eval(stmt)
-		if obj.Type() == object.Return && obj != nil {
+		if obj.Type() == object.Return {
+			return obj
+		}
+		if obj.Type() == object.Error {
 			return obj
 		}
 	}
@@ -60,11 +68,25 @@ func evalBlockStatements(blockStmt *ast.BlockStatement) object.Object {
 	return obj
 }
 
+func evalReturnStatement(exp *ast.ReturnStatement) object.Object {
+	obj := Eval(exp.Value)
+	if obj.Type() == object.Error {
+		return obj
+	}
+
+	return &object.ReturnObject{Value: obj}
+}
+
 func evalIf(ifExp *ast.If) object.Object {
 	condition := Eval(ifExp.Condition)
+	if condition.Type() == object.Error {
+		return condition
+	}
+
 	if isTruthy(condition) {
 		return Eval(ifExp.Consequence)
 	}
+
 	if ifExp.Alternative != nil {
 		return Eval(ifExp.Alternative)
 	}
@@ -78,13 +100,17 @@ func isTruthy(obj object.Object) bool {
 
 func evalPrefix(operator string, exp ast.Expression) object.Object {
 	rightObj := Eval(exp)
+	if rightObj.Type() == object.Error {
+		return rightObj
+	}
+
 	switch operator {
 	case "!":
 		return evalBang(rightObj)
 	case "-":
 		return evalMinusPrefix(rightObj)
 	default:
-		return nullObj
+		return newError("unknown operation: %s%s", operator, rightObj.Type())
 	}
 }
 
@@ -101,7 +127,7 @@ func evalBang(rightObj object.Object) object.Object {
 
 func evalMinusPrefix(rightObj object.Object) object.Object {
 	if rightObj.Type() != object.Integer {
-		return nullObj
+		return newError("unknown operation: -%s", rightObj.Type())
 	}
 
 	rightVal := rightObj.(*object.IntegerObject).Value
@@ -110,7 +136,15 @@ func evalMinusPrefix(rightObj object.Object) object.Object {
 
 func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression) object.Object {
 	leftObj := Eval(leftExp)
+	if leftObj.Type() == object.Error {
+		return leftObj
+	}
+
 	rightObj := Eval(rightExp)
+	if rightObj.Type() == object.Error {
+		return rightObj
+	}
+
 	switch {
 	case leftObj.Type() == object.Integer && rightObj.Type() == object.Integer:
 		return evalInfixOfInteger(leftObj, operator, rightObj)
@@ -119,13 +153,17 @@ func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression)
 	case operator == "!=":
 		return convertToBooleanObject(leftObj != rightObj)
 	default:
-		return nullObj
+		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
 	}
+}
+
+func newError(format string, a ...interface{}) object.Object {
+	return &object.ErrorObject{Message: fmt.Sprintf(format, a...)}
 }
 
 func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.Object) object.Object {
 	if leftObj.Type() != object.Integer || rightObj.Type() != object.Integer {
-		return nullObj
+		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
 	}
 
 	leftVal := leftObj.(*object.IntegerObject).Value
@@ -148,7 +186,7 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 	case "!=":
 		return convertToBooleanObject(leftVal != rightVal)
 	default:
-		return nullObj
+		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
 	}
 }
 
