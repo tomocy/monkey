@@ -6,17 +6,17 @@ type Environment struct {
 	objs map[string]object.Object
 }
 
-func newEnvironment() *Environment {
+func NewEnvironment() *Environment {
 	return &Environment{
 		objs: make(map[string]object.Object),
 	}
 }
 
-func (e Environment) get(name string) (object.Object, bool) {
+func (e Environment) Get(name string) (object.Object, bool) {
 	obj, ok := e.objs[name]
 	return obj, ok
 }
 
-func (e *Environment) set(name string, obj object.Object) {
+func (e *Environment) Set(name string, obj object.Object) {
 	e.objs[name] = obj
 }
