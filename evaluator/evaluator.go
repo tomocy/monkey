@@ -83,8 +83,8 @@ func evalLetStatement(node *ast.LetStatement, env *Environment) object.Object {
 	return obj
 }
 
-func evalReturnStatement(exp *ast.ReturnStatement, env *Environment) object.Object {
-	obj := Eval(exp.Value, env)
+func evalReturnStatement(node *ast.ReturnStatement, env *Environment) object.Object {
+	obj := Eval(node.Value, env)
 	if obj.Type() == object.Error {
 		return obj
 	}
@@ -92,18 +92,18 @@ func evalReturnStatement(exp *ast.ReturnStatement, env *Environment) object.Obje
 	return &object.ReturnObject{Value: obj}
 }
 
-func evalIf(ifExp *ast.If, env *Environment) object.Object {
-	condition := Eval(ifExp.Condition, env)
+func evalIf(node *ast.If, env *Environment) object.Object {
+	condition := Eval(node.Condition, env)
 	if condition.Type() == object.Error {
 		return condition
 	}
 
 	if isTruthy(condition) {
-		return Eval(ifExp.Consequence, env)
+		return Eval(node.Consequence, env)
 	}
 
-	if ifExp.Alternative != nil {
-		return Eval(ifExp.Alternative, env)
+	if node.Alternative != nil {
+		return Eval(node.Alternative, env)
 	}
 
 	return nullObj
@@ -172,10 +172,6 @@ func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression,
 	}
 }
 
-func newError(format string, a ...interface{}) object.Object {
-	return &object.ErrorObject{Message: fmt.Sprintf(format, a...)}
-}
-
 func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.Object) object.Object {
 	if leftObj.Type() != object.Integer || rightObj.Type() != object.Integer {
 		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
@@ -220,4 +216,8 @@ func convertToBooleanObject(b bool) object.Object {
 	}
 
 	return falseObj
+}
+
+func newError(format string, a ...interface{}) object.Object {
+	return &object.ErrorObject{Message: fmt.Sprintf(format, a...)}
 }
