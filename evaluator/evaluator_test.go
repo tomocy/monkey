@@ -170,6 +170,7 @@ func TestErrorHandling(t *testing.T) {
 		{"if (true) { return 5 + true; }", "unknown operation: Integer + Boolean"},
 		{"return true + false", "unknown operation: Boolean + Boolean"},
 		{"return -true;", "unknown operation: -Boolean"},
+		{"foo;", "unknown identifier: foo"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
