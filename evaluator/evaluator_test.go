@@ -186,3 +186,28 @@ func TestErrorHandling(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalLetStatement(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect int64
+	}{
+		{"let a = 5; a", 5},
+		{"let a = 5 * 5; let b = a; b", 25},
+		{"let a = 5; let b = 5; let c = a * b * 5", 125},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			got := Eval(program)
+			integer, ok := got.(*object.IntegerObject)
+			if !ok {
+				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
+			}
+			if integer.Value != test.expect {
+				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
+			}
+		})
+	}
+}
