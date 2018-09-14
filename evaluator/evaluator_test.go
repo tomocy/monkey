@@ -202,6 +202,7 @@ func TestEvalLetStatement(t *testing.T) {
 		{"let a = 5; a", 5},
 		{"let a = 5 * 5; let b = a; b", 25},
 		{"let a = 5; let b = 5; let c = a * b * 5", 125},
+		{"let double = fn(x) { return x * 2; }; double(5);", 10},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -215,42 +216,6 @@ func TestEvalLetStatement(t *testing.T) {
 			}
 			if integer.Value != test.expect {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
-			}
-		})
-	}
-}
-
-func TestEvalFunction(t *testing.T) {
-	type expect struct {
-		params []string
-		body   string
-	}
-	tests := []struct {
-		in     string
-		expect expect
-	}{
-		{"fn(x) { return x + 2; }", expect{[]string{"x"}, "return x + 2;"}},
-	}
-	for _, test := range tests {
-		t.Run(test.in, func(t *testing.T) {
-			parser := parser.New(lexer.New(test.in))
-			program := parser.ParseProgram()
-			env := object.NewEnvironment()
-			got := Eval(program, env)
-			function, ok := got.(*object.FunctionObject)
-			if !ok {
-				t.Fatalf("faild to assert got: expected *object.FunctionObject, but got %T\n", got)
-			}
-			if len(function.Parameters) != len(test.expect.params) {
-				t.Fatalf("len(function.Parameters) returned wrong value: expected %d, but got %d\n", len(test.expect.params), len(function.Parameters))
-			}
-			for i, param := range test.expect.params {
-				if function.Parameters[i].String() != param {
-					t.Errorf("function.Parameters[i].String() retuend wrong value: expected %s, but got %s\n", param, function.Parameters[i].String())
-				}
-			}
-			if function.Body.String() != test.expect.body {
-				t.Errorf("function.Body.String(9 returned wrong value: expected %s, but got %s\n", test.expect.body, function.Body.String())
 			}
 		})
 	}
