@@ -14,6 +14,8 @@ import (
 
 const prompt = ">> "
 
+var env = evaluator.NewEnvironment()
+
 func Start(in io.Reader, w io.Writer) {
 	fmt.Print(prompt)
 	scanner := bufio.NewScanner(in)
@@ -31,7 +33,7 @@ func evaluatedProgramOrErrorMessages(in string) string {
 		return strings.Join(parser.Errors(), "\n")
 	}
 
-	evaluatedProgram := evaluator.Eval(program)
+	evaluatedProgram := evaluator.Eval(program, env)
 	if evaluatedProgram == nil {
 		return fmt.Sprintf(`could not evaluate "%s"`, in)
 	}
