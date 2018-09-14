@@ -26,7 +26,8 @@ func TestEvalInteger(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
@@ -65,7 +66,8 @@ func TestEvalBoolean(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
@@ -91,7 +93,8 @@ func TestBang(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
@@ -116,7 +119,8 @@ func TestIf(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			if test.expect == nil {
 				if got != nullObj {
 					t.Errorf("got was wrong: expected %s, but got %s\n", nullObj, got)
@@ -149,7 +153,8 @@ func TestEvalReturnStatement(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
@@ -176,7 +181,8 @@ func TestErrorHandling(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			errorObj, ok := got.(*object.ErrorObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.ErrorObject, but got %T\n", got)
@@ -201,7 +207,8 @@ func TestEvalLetStatement(t *testing.T) {
 		t.Run(test.in, func(t *testing.T) {
 			parser := parser.New(lexer.New(test.in))
 			program := parser.ParseProgram()
-			got := Eval(program)
+			env := NewEnvironment()
+			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
 				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
