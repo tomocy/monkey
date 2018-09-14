@@ -88,16 +88,18 @@ func TestBang(t *testing.T) {
 		{"!!!true", false},
 	}
 	for _, test := range tests {
-		parser := parser.New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		got := Eval(program)
-		boolean, ok := got.(*object.BooleanObject)
-		if !ok {
-			t.Fatal("faild to assert got as *object.Boolean")
-		}
-		if boolean.Value != test.expect {
-			t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
-		}
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			got := Eval(program)
+			boolean, ok := got.(*object.BooleanObject)
+			if !ok {
+				t.Fatal("faild to assert got as *object.Boolean")
+			}
+			if boolean.Value != test.expect {
+				t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
+			}
+		})
 	}
 }
 func TestIf(t *testing.T) {
@@ -144,17 +146,19 @@ func TestEvalReturnStatement(t *testing.T) {
 		{"if (true) { if (true) { return 10; } return 1; }", 10},
 	}
 	for _, test := range tests {
-		parser := parser.New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		got := Eval(program)
-		expect := test.expect.(int)
-		integer, ok := got.(*object.IntegerObject)
-		if !ok {
-			t.Fatal("faild to assert got as *object.IntegerObject")
-		}
-		if integer.Value != int64(expect) {
-			t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
-		}
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			got := Eval(program)
+			expect := test.expect.(int)
+			integer, ok := got.(*object.IntegerObject)
+			if !ok {
+				t.Fatal("faild to assert got as *object.IntegerObject")
+			}
+			if integer.Value != int64(expect) {
+				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
+			}
+		})
 	}
 }
 
