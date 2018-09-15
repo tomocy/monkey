@@ -31,6 +31,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalPrefix(node.Operator, node.RightValue, env)
 	case *ast.Infix:
 		return evalInfix(node.LeftValue, node.Operator, node.RightValue, env)
+	case *ast.Function:
+		return evalFunction(node, env)
+	case *ast.FunctionCall:
+		return evalFunctionCall(node, env)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.Integer:
@@ -199,6 +203,67 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 	default:
 		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
 	}
+}
+
+func evalFunction(node *ast.Function, env *object.Environment) object.Object {
+	return &object.FunctionObject{
+		Parameters: node.Parameters,
+		Body:       node.Body,
+		Env:        env,
+	}
+}
+
+func evalFunctionCall(node *ast.FunctionCall, env *object.Environment) object.Object {
+	functionObj := Eval(node.Function, env)
+	if functionObj.Type() == object.Error {
+		return functionObj
+	}
+
+	argObjs := evalExpressions(node.Arguments, env)
+	if len(argObjs) == 1 && argObjs[0].Type() == object.Error {
+		return argObjs[0]
+	}
+
+	return applyFunction(functionObj, argObjs)
+}
+
+func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
+	objs := make([]object.Object, len(exps))
+	for i, exp := range exps {
+		obj := Eval(exp, env)
+		if obj.Type() == object.Error {
+			return []object.Object{obj}
+		}
+
+		objs[i] = obj
+	}
+
+	return objs
+}
+
+func applyFunction(functionObj object.Object, argObjs []object.Object) object.Object {
+	function, ok := functionObj.(*object.FunctionObject)
+	if !ok {
+		return newError("unknown object: %T", functionObj)
+	}
+
+	extendedEnv := extendFunctionEnvironment(function, argObjs)
+	obj := Eval(function.Body, extendedEnv)
+
+	if obj.Type() == object.Return {
+		return obj.(*object.ReturnObject).Value
+	}
+
+	return obj
+}
+
+func extendFunctionEnvironment(functionObj *object.FunctionObject, argObjs []object.Object) *object.Environment {
+	env := object.NewEnclosedEnvironment(functionObj.Env)
+	for i, param := range functionObj.Parameters {
+		env.Set(param.Value, argObjs[i])
+	}
+
+	return env
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
