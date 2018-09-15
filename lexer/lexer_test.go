@@ -69,15 +69,17 @@ func TestNextToken(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		lexer := New(test.in)
-		for _, expect := range test.expects {
-			nextToken := lexer.NextToken()
-			if nextToken.Type != expect.tokenType {
-				t.Errorf("nextToken.Type was wrong: expected %s, but got %s\n", expect.tokenType, nextToken.Type)
+		t.Run(test.in, func(t *testing.T) {
+			lexer := New(test.in)
+			for _, expect := range test.expects {
+				nextToken := lexer.NextToken()
+				if nextToken.Type != expect.tokenType {
+					t.Errorf("nextToken.Type was wrong: expected %s, but got %s\n", expect.tokenType, nextToken.Type)
+				}
+				if nextToken.Literal != expect.literal {
+					t.Errorf("nextToken.Type was wrong: expected %s, but got %s\n", expect.literal, nextToken.Literal)
+				}
 			}
-			if nextToken.Literal != expect.literal {
-				t.Errorf("nextToken.Type was wrong: expected %s, but got %s\n", expect.literal, nextToken.Literal)
-			}
-		}
+		})
 	}
 }
