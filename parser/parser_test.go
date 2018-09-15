@@ -56,11 +56,13 @@ func TestLetStatement(t *testing.T) {
 		{"let isOK = true;", expect{expectedLiteral{"isOK", "isOK"}, expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		testLetStatement(t, program.Statements[0], test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			testLetStatement(t, program.Statements[0], test.expect)
+		})
 	}
 }
 
@@ -91,11 +93,13 @@ func TestReturnStatement(t *testing.T) {
 		{"return true;", expect{expectedLiteral{"true", true}}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		testReturnStatement(t, program.Statements[0], test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			testReturnStatement(t, program.Statements[0], test.expect)
+		})
 	}
 }
 
@@ -119,14 +123,16 @@ func TestIdentifier(t *testing.T) {
 		{"foobar;", expectedLiteral{"foobar", "foobar"}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testIdentifier(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testIdentifier(t, expStmt.Value, test.expect)
+		})
 	}
 }
 
@@ -150,14 +156,16 @@ func TestInteger(t *testing.T) {
 		{"5;", expectedLiteral{"5", 5}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testLiteral(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testLiteral(t, expStmt.Value, test.expect)
+		})
 	}
 }
 
@@ -172,14 +180,16 @@ func TestPrefix(t *testing.T) {
 		{"!false", expectedPrefix{"!", expectedLiteral{"false", false}}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testPrefix(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testPrefix(t, expStmt.Value, test.expect)
+		})
 	}
 }
 func TestInfix(t *testing.T) {
@@ -201,14 +211,16 @@ func TestInfix(t *testing.T) {
 		{"foo != bar;", expectedInfix{expectedLiteral{"foo", "foo"}, "!=", expectedLiteral{"bar", "bar"}}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testInfix(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testInfix(t, expStmt.Value, test.expect)
+		})
 	}
 }
 func TestString(t *testing.T) {
@@ -243,12 +255,14 @@ func TestString(t *testing.T) {
 		{"fn(x, y) { return x + y; }(1, 2 * 3)", "fn(x,y) { return (x + y); }(1,(2 * 3))"},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		if program.String() != test.expect {
-			t.Errorf("program.String() returned wrong value: expected %s, but got %s\n", test.expect, program.String())
-		}
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			if program.String() != test.expect {
+				t.Errorf("program.String() returned wrong value: expected %s, but got %s\n", test.expect, program.String())
+			}
+		})
 	}
 }
 func TestBoolean(t *testing.T) {
@@ -260,14 +274,16 @@ func TestBoolean(t *testing.T) {
 		{"false;", expectedLiteral{"false", false}},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testLiteral(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testLiteral(t, expStmt.Value, test.expect)
+		})
 	}
 }
 func TestIfReturn(t *testing.T) {
@@ -284,14 +300,16 @@ func TestIfReturn(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testIfReturn(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testIfReturn(t, expStmt.Value, test.expect)
+		})
 	}
 }
 
@@ -328,14 +346,16 @@ func TestIfElseReturn(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testIfElseReturn(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testIfElseReturn(t, expStmt.Value, test.expect)
+		})
 	}
 }
 
@@ -394,14 +414,16 @@ func TestFunction(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		parser := New(lexer.New(test.in))
-		program := parser.ParseProgram()
-		testParserHasNoErrors(t, parser)
-		testProgramStatements(t, program.Statements, 1)
-		stmt := program.Statements[0]
-		testExpressionStatement(t, stmt)
-		expStmt := stmt.(*ast.ExpressionStatement)
-		testFunction(t, expStmt.Value, test.expect)
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testProgramStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			testFunction(t, expStmt.Value, test.expect)
+		})
 	}
 }
 
