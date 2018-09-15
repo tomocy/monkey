@@ -226,7 +226,8 @@ func TestEvalFunctionCall(t *testing.T) {
 		in     string
 		expect interface{}
 	}{
-		{"fn(x) { retrun x + 5; }(5)", 10},
+		{"fn(x) { return x + 5; }(5)", 10},
+		{"fn(x) { return x; }(5); 10;", 10},
 		{"fn(x) { let y = x + 5; if (10 < y) { return true; } else { return false; } }(5)", false},
 		{"fn(x) { let y = x + 5; if (10 < y) { return true; } else { return false; } }(6)", true},
 	}
