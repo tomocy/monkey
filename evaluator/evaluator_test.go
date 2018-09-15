@@ -203,6 +203,19 @@ func TestEvalLetStatement(t *testing.T) {
 		{"let a = 5 * 5; let b = a; b", 25},
 		{"let a = 5; let b = 5; let c = a * b * 5", 125},
 		{"let double = fn(x) { return x * 2; }; double(5);", 10},
+		{
+			`let newAdder = fn(x) { return fn(y) { return x + y; }; };
+			let addTwo = newAdder(2)
+			addTwo(3)
+			`,
+			5,
+		},
+		{
+			`let add = fn(x, y) { return x + y; };
+			let applyFunc = fn(func, a, b) { return func(a, b); };
+			applyFunc(add, 2, 3)`,
+			5,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
