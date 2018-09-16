@@ -63,6 +63,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.LParen, p.parseGroupedExpression)
 	p.registerPrefixParseFunction(token.If, p.parseIf)
 	p.registerPrefixParseFunction(token.Function, p.parseFunction)
+	p.registerPrefixParseFunction(token.String, p.parseString)
 
 	p.registerInfixParseFunction(token.Equal, p.parseInfix)
 	p.registerInfixParseFunction(token.NotEqual, p.parseInfix)
@@ -294,6 +295,13 @@ func (p *Parser) parseFunctionCallArguments() []ast.Expression {
 	p.nextToken()
 
 	return args
+}
+
+func (p *Parser) parseString() ast.Expression {
+	return &ast.String{
+		Token: p.currentToken,
+		Value: p.currentToken.Literal,
+	}
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
