@@ -26,6 +26,9 @@ func (l *Lexer) NextToken() token.Token {
 	if isDigit(l.char) {
 		return l.expressAsNumber()
 	}
+	if l.char == '"' {
+		return l.expressAsString()
+	}
 
 	tokenType := token.LookUpTokenType(string(l.char))
 	if tokenType == token.EOF {
@@ -106,6 +109,27 @@ func (l *Lexer) readNumber() string {
 
 func isDigit(char byte) bool {
 	return '0' <= char && char <= '9'
+}
+
+func (l *Lexer) expressAsString() token.Token {
+	t := token.Token{
+		Type:    token.String,
+		Literal: l.readString(),
+	}
+
+	return t
+}
+
+func (l *Lexer) readString() string {
+	beginPosition := l.readingPosition
+	for {
+		l.readCharacter()
+		if l.char == '"' || l.char == 0 {
+			break
+		}
+	}
+
+	return l.input[beginPosition:l.position]
 }
 
 func (l *Lexer) expressAsSingleToken() token.Token {
