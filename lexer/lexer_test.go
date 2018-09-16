@@ -73,8 +73,8 @@ func TestNextToken(t *testing.T) {
 			"foo bar";
 			`,
 			[]expect{
-				{token.String, "foobar"},
-				{token.String, "foo bar"},
+				{token.String, "foobar"}, {token.Semicolon, ";"},
+				{token.String, "foo bar"}, {token.Semicolon, ";"},
 			},
 		},
 	}
