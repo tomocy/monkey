@@ -356,3 +356,27 @@ func (a Array) String() string {
 
 	return string(b)
 }
+
+type Subscript struct {
+	Token     token.Token
+	LeftValue Expression
+	Index     Expression
+}
+
+func (s Subscript) expression() {
+}
+
+func (s Subscript) TokenLiteral() string {
+	return s.Token.Literal
+}
+
+func (s Subscript) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '(')
+	b = append(b, s.LeftValue.String()...)
+	b = append(b, '[')
+	b = append(b, s.Index.String()...)
+	b = append(b, "])"...)
+
+	return string(b)
+}
