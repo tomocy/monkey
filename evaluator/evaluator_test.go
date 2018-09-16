@@ -21,6 +21,8 @@ func TestEvalInteger(t *testing.T) {
 		{"5 / 5", 1},
 		{"5 + 5 * 5 / 5", 10},
 		{"(1 - 2) * 5 / 5", -1},
+		{"let array = [1, 2, 3]; array[0]", 1},
+		{"[1, 2 + 3, 4 * 5][1]", 5},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -61,6 +63,8 @@ func TestEvalBoolean(t *testing.T) {
 		{"(4 < 3) != (2 < 1)", false},
 		{"(1 < 2) == true", true},
 		{"(1 < 2) != true", false},
+		{"let array = [true, false]; array[0];", true},
+		{"let array = [true, !true]; array[1];", false},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -286,6 +290,8 @@ func TestEvalString(t *testing.T) {
 	}{
 		{`"hello world";`, "hello world"},
 		{`"hello" + " " + "world"`, "hello world"},
+		{`let names = ["tom", "bob"]; names[0]`, "tom"},
+		{`["hello", "world"][1]`, "world"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -361,6 +367,32 @@ func TestEvalArray(t *testing.T) {
 
 					continue
 				}
+			}
+		})
+	}
+}
+
+func TestNullObject(t *testing.T) {
+	tests := []struct {
+		in string
+	}{
+		{"let array = [1, 2, 3]; array[-1];"},
+		{"let array = [1, 2, 3]; array[3];"},
+		{"[true, false][-1];"},
+		{"[true, false][2];"},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := object.NewEnvironment()
+			got := Eval(program, env)
+			null, ok := got.(*object.NullObject)
+			if !ok {
+				t.Errorf("assertion faild: expected *object.NullObject, but got %T\n", got)
+			}
+			if null != nullObj {
+				t.Errorf("null was wrong: expected %s, but got %s\n", nullObj, null)
 			}
 		})
 	}
