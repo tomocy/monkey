@@ -227,7 +227,6 @@ func (i If) TokenLiteral() string {
 func (i If) String() string {
 	b := make([]byte, 0, 10)
 	b = append(b, "if ("...)
-	// b = append(b, ' ')
 	b = append(b, i.Condition.String()...)
 	b = append(b, ") "...)
 	b = append(b, i.Consequence.String()...)
