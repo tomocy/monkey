@@ -217,9 +217,7 @@ func evalInfixOfString(leftObj object.Object, operator string, rightObj object.O
 	leftVal := leftObj.(*object.StringObject).Value
 	rightVal := rightObj.(*object.StringObject).Value
 
-	return &object.StringObject{
-		Value: leftVal + rightVal,
-	}
+	return &object.StringObject{Value: leftVal + rightVal}
 }
 
 func evalFunction(node *ast.Function, env *object.Environment) object.Object {
@@ -293,9 +291,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 }
 
 func evalInteger(node *ast.Integer) object.Object {
-	return &object.IntegerObject{
-		Value: node.Value,
-	}
+	return &object.IntegerObject{Value: node.Value}
 }
 
 func evalBoolean(node *ast.Boolean) object.Object {
@@ -311,9 +307,7 @@ func convertToBooleanObject(b bool) object.Object {
 }
 
 func evalString(node *ast.String) object.Object {
-	return &object.StringObject{
-		Value: node.Value,
-	}
+	return &object.StringObject{Value: node.Value}
 }
 
 func newError(format string, a ...interface{}) object.Object {
