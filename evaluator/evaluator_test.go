@@ -23,6 +23,7 @@ func TestEvalInteger(t *testing.T) {
 		{"(1 - 2) * 5 / 5", -1},
 		{"let array = [1, 2, 3]; array[0]", 1},
 		{"[1, 2 + 3, 4 * 5][1]", 5},
+		{"let array = [1, 2, 3, 4]; len(array);", 4},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
