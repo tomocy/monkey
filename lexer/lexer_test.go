@@ -85,6 +85,12 @@ func TestNextToken(t *testing.T) {
 				{token.Illegal, "$"}, {token.Int, "1"}, {token.Semicolon, ";"},
 			},
 		},
+		{
+			"[1, 2];",
+			[]expect{
+				{token.LBracket, "["}, {token.Int, "1"}, {token.Comma, ","}, {token.Int, "2"}, {token.RBracket, "]"}, {token.Semicolon, ";"},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
