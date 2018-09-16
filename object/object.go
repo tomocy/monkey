@@ -8,13 +8,14 @@ import (
 )
 
 const (
-	Integer  = "Integer"
-	Boolean  = "Boolean"
-	String   = "String"
-	Null     = "Null"
-	Return   = "Return"
-	Error    = "Error"
-	Function = "Function"
+	Integer         = "Integer"
+	Boolean         = "Boolean"
+	String          = "String"
+	Null            = "Null"
+	Return          = "Return"
+	Error           = "Error"
+	Function        = "Function"
+	BuiltinFunction = "Builtin Function"
 )
 
 type ObjectType string
@@ -117,4 +118,16 @@ func (s StringObject) Type() ObjectType {
 
 func (s StringObject) Inspect() string {
 	return s.Value
+}
+
+type BuiltinFunctionObject struct {
+	Function func(objs ...Object) Object
+}
+
+func (bf BuiltinFunctionObject) Type() ObjectType {
+	return BuiltinFunction
+}
+
+func (bf BuiltinFunctionObject) Inspect() string {
+	return "builtin function"
 }
