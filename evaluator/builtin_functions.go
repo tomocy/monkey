@@ -56,4 +56,31 @@ var builtinFns = map[string]*object.BuiltinFunctionObject{
 			return array.Elements[len(array.Elements)-1]
 		},
 	},
+	"rest": &object.BuiltinFunctionObject{
+		Function: func(objs ...object.Object) object.Object {
+			if len(objs) != 1 {
+				return newError("invalid number of arguments to rest: expected 1, but got %d", len(objs))
+			}
+
+			obj := objs[0]
+			array, ok := obj.(*object.ArrayObject)
+			if !ok {
+				return newError("unknown operation: rest(%s)", obj.Type())
+			}
+
+			arrayLen := len(array.Elements)
+			if arrayLen <= 0 {
+				return nullObj
+			}
+
+			if arrayLen == 1 {
+				return &object.ArrayObject{Elements: make([]object.Object, 0)}
+			}
+
+			newElems := make([]object.Object, arrayLen-1, arrayLen-1)
+			copy(newElems, array.Elements[1:])
+
+			return &object.ArrayObject{Elements: newElems}
+		},
+	},
 }
