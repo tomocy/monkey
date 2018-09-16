@@ -192,6 +192,8 @@ func TestErrorHandling(t *testing.T) {
 		{"first(1234);", "unknown operation: first(Integer)"},
 		{"last([1, 2, 3], [4, 5, 6])", "invalid number of arguments to last: expected 1, but got 2"},
 		{"last(1234);", "unknown operation: last(Integer)"},
+		{"rest([1, 2, 3], [4, 5, 6])", "invalid number of arguments to rest: expected 1, but got 2"},
+		{"rest(1234);", "unknown operation: rest(Integer)"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -327,6 +329,8 @@ func TestEvalArray(t *testing.T) {
 		expects []interface{}
 	}{
 		{`[1, 2 + 3, 4 * 5, true, "hello"];`, []interface{}{1, 5, 20, true, "hello"}},
+		{"let array = [1, 2, 3, 4]; rest(array)", []interface{}{2, 3, 4}},
+		{"let array = [1]; rest(array)", []interface{}{}},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -393,6 +397,7 @@ func TestNullObject(t *testing.T) {
 		{"[true, false][2];"},
 		{"let array = []; first(array);"},
 		{"let array = []; last(array);"},
+		{"let array = []; last(rest);"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
