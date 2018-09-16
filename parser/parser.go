@@ -64,6 +64,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.If, p.parseIf)
 	p.registerPrefixParseFunction(token.Function, p.parseFunction)
 	p.registerPrefixParseFunction(token.String, p.parseString)
+	p.registerPrefixParseFunction(token.LBracket, p.parseArray)
 
 	p.registerInfixParseFunction(token.Equal, p.parseInfix)
 	p.registerInfixParseFunction(token.NotEqual, p.parseInfix)
@@ -302,6 +303,38 @@ func (p *Parser) parseString() ast.Expression {
 		Token: p.currentToken,
 		Value: p.currentToken.Literal,
 	}
+}
+
+func (p *Parser) parseArray() ast.Expression {
+	exp := &ast.Array{Token: p.currentToken}
+	exp.Elements = p.parseArrayElements()
+
+	return exp
+}
+
+func (p *Parser) parseArrayElements() []ast.Expression {
+	p.nextToken()
+	exps := make([]ast.Expression, 0)
+	if p.isCurrentToken(token.RBracket) {
+		return exps
+	}
+	// [1, 2]
+	// [1, 2]
+	exps = append(exps, p.parseExpression(Lowest))
+	for p.isPeekToken(token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		exps = append(exps, p.parseExpression(Lowest))
+	}
+
+	if !p.isPeekToken(token.RBracket) {
+		p.reportPeekTokenError(token.RBracket)
+		return nil
+	}
+
+	p.nextToken()
+
+	return exps
 }
 
 func (p *Parser) ParseProgram() *ast.Program {

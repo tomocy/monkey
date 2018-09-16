@@ -536,18 +536,20 @@ func TestParseString(t *testing.T) {
 }
 
 func TestParseArray(t *testing.T) {
-	type expect struct {
-		tokenLiteral string
-		value        int64
-	}
 	tests := []struct {
 		in      string
-		expects []expect
+		expects []interface{}
 	}{
 		{
-			"[1, 2 + 3, 4 * 5]",
-			[]expect{
-				{"1", 1}, {"5", 5}, {"20", 20},
+			"[1, 2 + 3, 4 * 5];",
+			[]interface{}{
+				expectedLiteral{"1", 1},
+				expectedInfix{
+					expectedLiteral{"2", 2}, "+", expectedLiteral{"3", 3},
+				},
+				expectedInfix{
+					expectedLiteral{"4", 4}, "*", expectedLiteral{"5", 5},
+				},
 			},
 		},
 	}
@@ -568,11 +570,11 @@ func TestParseArray(t *testing.T) {
 		}
 		for i, expect := range test.expects {
 			elm := array.Elements[i]
-			if elm.TokenLiteral() != expect.tokenLiteral {
-				t.Errorf("elm.TokenLiteral() returned wrong value: expected %s, but got %s\n", expect.tokenLiteral, elm.TokenLiteral())
+			if expectedLiteral, ok := expect.(expectedLiteral); ok {
+				testLiteral(t, elm, expectedLiteral)
 			}
-			if elm.Value != expect.value {
-				t.Errorf("elm.Value was wrong: expected %d, but got %d\n", expect.value, elm.Value)
+			if expectedInfix, ok := expect.(expectedInfix); ok {
+				testInfix(t, elm, expectedInfix)
 			}
 		}
 	}
