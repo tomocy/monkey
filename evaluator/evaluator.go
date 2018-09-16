@@ -259,19 +259,23 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 func applyFunction(functionObj object.Object, argObjs []object.Object) object.Object {
 	switch function := functionObj.(type) {
 	case *object.FunctionObject:
-		extendedEnv := extendFunctionEnvironment(function, argObjs)
-		obj := Eval(function.Body, extendedEnv)
-
-		if obj.Type() == object.Return {
-			return obj.(*object.ReturnObject).Value
-		}
-
-		return obj
+		return applyUserDefinedFunction(function, argObjs)
 	case *object.BuiltinFunctionObject:
 		return function.Function(argObjs...)
 	default:
 		return newError("unknown object: %T", functionObj)
 	}
+}
+
+func applyUserDefinedFunction(functionObj *object.FunctionObject, argObjs []object.Object) object.Object {
+	extendedEnv := extendFunctionEnvironment(functionObj, argObjs)
+	obj := Eval(functionObj.Body, extendedEnv)
+
+	if obj.Type() == object.Return {
+		return obj.(*object.ReturnObject).Value
+	}
+
+	return obj
 }
 
 func extendFunctionEnvironment(functionObj *object.FunctionObject, argObjs []object.Object) *object.Environment {
