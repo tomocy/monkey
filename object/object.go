@@ -11,6 +11,7 @@ const (
 	Integer         = "Integer"
 	Boolean         = "Boolean"
 	String          = "String"
+	Array           = "Array"
 	Null            = "Null"
 	Return          = "Return"
 	Error           = "Error"
