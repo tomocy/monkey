@@ -257,19 +257,21 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 }
 
 func applyFunction(functionObj object.Object, argObjs []object.Object) object.Object {
-	function, ok := functionObj.(*object.FunctionObject)
-	if !ok {
+	switch function := functionObj.(type) {
+	case *object.FunctionObject:
+		extendedEnv := extendFunctionEnvironment(function, argObjs)
+		obj := Eval(function.Body, extendedEnv)
+
+		if obj.Type() == object.Return {
+			return obj.(*object.ReturnObject).Value
+		}
+
+		return obj
+	case *object.BuiltinFunctionObject:
+		return function.Function(argObjs...)
+	default:
 		return newError("unknown object: %T", functionObj)
 	}
-
-	extendedEnv := extendFunctionEnvironment(function, argObjs)
-	obj := Eval(function.Body, extendedEnv)
-
-	if obj.Type() == object.Return {
-		return obj.(*object.ReturnObject).Value
-	}
-
-	return obj
 }
 
 func extendFunctionEnvironment(functionObj *object.FunctionObject, argObjs []object.Object) *object.Environment {
@@ -282,12 +284,15 @@ func extendFunctionEnvironment(functionObj *object.FunctionObject, argObjs []obj
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
-	obj, ok := env.Get(node.Value)
-	if !ok {
-		return newError("unknown identifier: %s", node.Value)
+	if obj, ok := env.Get(node.Value); ok {
+		return obj
 	}
 
-	return obj
+	if builtinFn, ok := builtinFns[node.Value]; ok {
+		return builtinFn
+	}
+
+	return newError("unknown identifier: %s", node.Value)
 }
 
 func evalInteger(node *ast.Integer) object.Object {
