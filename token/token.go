@@ -5,7 +5,6 @@ const (
 	EOF     = "EOF"
 
 	Ident = "Ident"
-	Int   = "Int"
 
 	Assign    = "Assign"
 	Plus      = "Plus"
@@ -35,6 +34,8 @@ const (
 	Return   = "Return"
 	True     = "True"
 	False    = "False"
+	Int      = "Int"
+	String   = "String"
 )
 
 var tokenTypes = map[string]TokenType{
