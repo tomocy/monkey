@@ -176,6 +176,7 @@ func TestErrorHandling(t *testing.T) {
 		{"return true + false", "unknown operation: Boolean + Boolean"},
 		{"return -true;", "unknown operation: -Boolean"},
 		{"foo;", "unknown identifier: foo"},
+		{`"five" - "five"`, "unknown operation: String - String"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -280,6 +281,7 @@ func TestEvalString(t *testing.T) {
 		expect string
 	}{
 		{`"hello world";`, "hello world"},
+		{`"hello" + " " + "world"`, "hello world"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
