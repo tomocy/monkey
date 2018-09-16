@@ -60,7 +60,7 @@ func TestLetStatement(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			testLetStatement(t, program.Statements[0], test.expect)
 		})
 	}
@@ -97,7 +97,7 @@ func TestReturnStatement(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			testReturnStatement(t, program.Statements[0], test.expect)
 		})
 	}
@@ -127,7 +127,7 @@ func TestIdentifier(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -160,7 +160,7 @@ func TestInteger(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -184,7 +184,7 @@ func TestPrefix(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -215,7 +215,7 @@ func TestInfix(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -278,7 +278,7 @@ func TestBoolean(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -304,7 +304,7 @@ func TestIfReturn(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -319,7 +319,7 @@ func testIfReturn(t *testing.T, exp ast.Expression, expect expectedIf) {
 		t.Fatalf("faild to assert: expected , but got %T\n", ifExp)
 	}
 	testInfix(t, ifExp.Condition, expect.condition)
-	testProgramStatements(t, ifExp.Consequence.Statements, len(expect.consequence))
+	testLengthOfStatements(t, ifExp.Consequence.Statements, len(expect.consequence))
 	for i, consequenceStmt := range ifExp.Consequence.Statements {
 		expectedConsequenceStmt := expect.consequence[i]
 		testReturnStatement(t, consequenceStmt, struct {
@@ -350,7 +350,7 @@ func TestIfElseReturn(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -418,7 +418,7 @@ func TestFunction(t *testing.T) {
 			parser := New(lexer.New(test.in))
 			program := parser.ParseProgram()
 			testParserHasNoErrors(t, parser)
-			testProgramStatements(t, program.Statements, 1)
+			testLengthOfStatements(t, program.Statements, 1)
 			stmt := program.Statements[0]
 			testExpressionStatement(t, stmt)
 			expStmt := stmt.(*ast.ExpressionStatement)
@@ -442,7 +442,7 @@ func testFunction(t *testing.T, exp ast.Expression, expect struct {
 		testLiteral(t, fn.Parameters[i], param)
 	}
 
-	testProgramStatements(t, fn.Body.Statements, len(expect.body))
+	testLengthOfStatements(t, fn.Body.Statements, len(expect.body))
 	for i, body := range expect.body {
 		bodyStmt := fn.Body.Statements[i]
 		testExpressionStatement(t, bodyStmt)
@@ -456,7 +456,7 @@ func testFunctionCallWithoutArguments(t *testing.T) {
 	parser := New(lexer.New(in))
 	program := parser.ParseProgram()
 	testParserHasNoErrors(t, parser)
-	testProgramStatements(t, program.Statements, 1)
+	testLengthOfStatements(t, program.Statements, 1)
 	stmt := program.Statements[0]
 	testExpressionStatement(t, stmt)
 	expStmt := stmt.(*ast.ExpressionStatement)
@@ -474,7 +474,7 @@ func TestFunctionCallWithArguments(t *testing.T) {
 	parser := New(lexer.New(in))
 	program := parser.ParseProgram()
 	testParserHasNoErrors(t, parser)
-	testProgramStatements(t, program.Statements, 1)
+	testLengthOfStatements(t, program.Statements, 1)
 	stmt := program.Statements[0]
 	testExpressionStatement(t, stmt)
 	expStmt := stmt.(*ast.ExpressionStatement)
@@ -511,7 +511,7 @@ func testParserHasNoErrors(t *testing.T, p *Parser) {
 	}
 }
 
-func testProgramStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
+func testLengthOfStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
 	if len(stmts) != stmtLen {
 		t.Fatalf("len(stmts) returned wrong value: expected %d, but got %d\n", stmtLen, len(stmts))
 	}
