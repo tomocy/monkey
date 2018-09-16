@@ -525,7 +525,7 @@ func TestParseString(t *testing.T) {
 			if !ok {
 				t.Fatalf("assertion faild: expected *ast.String, but got %T\n", expStmt)
 			}
-			if str.TokenLiteral != test.expect.tokenLiteral {
+			if str.TokenLiteral() != test.expect.tokenLiteral {
 				t.Errorf("str.TokenLiteral was wrong: expected %s, but got %s\n", test.expect.tokenLiteral, str.TokenLiteral)
 			}
 			if str.Value != test.expect.value {
