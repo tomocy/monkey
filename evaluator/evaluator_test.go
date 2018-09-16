@@ -24,6 +24,7 @@ func TestEvalInteger(t *testing.T) {
 		{"let array = [1, 2, 3]; array[0]", 1},
 		{"[1, 2 + 3, 4 * 5][1]", 5},
 		{"let array = [1, 2, 3, 4]; len(array);", 4},
+		{"let array = [1, 2, 3, 4]; first(array);", 1},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -66,6 +67,7 @@ func TestEvalBoolean(t *testing.T) {
 		{"(1 < 2) != true", false},
 		{"let array = [true, false]; array[0];", true},
 		{"let array = [true, !true]; array[1];", false},
+		{"let array = [true, !true]; first(array)", true},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -293,6 +295,8 @@ func TestEvalString(t *testing.T) {
 		{`"hello" + " " + "world"`, "hello world"},
 		{`let names = ["tom", "bob"]; names[0]`, "tom"},
 		{`["hello", "world"][1]`, "world"},
+		{`let array = ["hello", "world"]; first(array);`, "hello"},
+		{`first(["hello", "world"])`, "hello"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -381,6 +385,8 @@ func TestNullObject(t *testing.T) {
 		{"let array = [1, 2, 3]; array[3];"},
 		{"[true, false][-1];"},
 		{"[true, false][2];"},
+		{"let array = []; first(array);"},
+		{"first([]);"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
