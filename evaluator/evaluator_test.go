@@ -303,3 +303,65 @@ func TestEvalString(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalArray(t *testing.T) {
+	tests := []struct {
+		in      string
+		expects []interface{}
+	}{
+		{`[1, 2 + 3, 4 * 5, true, "hello"];`, []interface{}{1, 5, 20, true, "hello"}},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := object.NewEnvironment()
+			got := Eval(program, env)
+			array, ok := got.(*object.ArrayObject)
+			if !ok {
+				t.Fatalf("assertion faild: expected *object.ArrayObject, but got %T\n", got)
+			}
+			if len(array.Elements) != len(test.expects) {
+				t.Fatalf("len(array.Elements) returned wrong: expected %d, but got %d\n", len(test.expects), len(array.Elements))
+			}
+			for i, expect := range test.expects {
+				elm := array.Elements[i]
+				if expectedInteger, ok := expect.(int); ok {
+					integer, ok := elm.(*object.IntegerObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", elm)
+					}
+					if integer.Value != int64(expectedInteger) {
+						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedInteger, integer.Value)
+					}
+
+					continue
+				}
+
+				if expectedBoolean, ok := expect.(bool); ok {
+					boolean, ok := elm.(*object.BooleanObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", elm)
+					}
+					if boolean.Value != expectedBoolean {
+						t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", expectedBoolean, boolean.Value)
+					}
+
+					continue
+				}
+
+				if expectedString, ok := expect.(string); ok {
+					str, ok := elm.(*object.StringObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.StringObject, but got %T\n", elm)
+					}
+					if str.Value != expectedString {
+						t.Errorf("str.Value was wrong: expected %s, but got %s\n", expectedString, str.Value)
+					}
+
+					continue
+				}
+			}
+		})
+	}
+}
