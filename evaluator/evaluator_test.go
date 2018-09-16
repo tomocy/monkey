@@ -177,6 +177,8 @@ func TestErrorHandling(t *testing.T) {
 		{"return -true;", "unknown operation: -Boolean"},
 		{"foo;", "unknown identifier: foo"},
 		{`"five" - "five"`, "unknown operation: String - String"},
+		{"len(1234)", "unknown operation: len(Integer)"},
+		{`len("hello", "world");`, "too many arguments to len: expected 1, but got 2"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
