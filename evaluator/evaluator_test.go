@@ -25,6 +25,7 @@ func TestEvalInteger(t *testing.T) {
 		{"[1, 2 + 3, 4 * 5][1]", 5},
 		{"let array = [1, 2, 3, 4]; len(array);", 4},
 		{"let array = [1, 2, 3, 4]; first(array);", 1},
+		{"let array = [1, 2, 3, 4]; last(array);", 4},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -68,6 +69,7 @@ func TestEvalBoolean(t *testing.T) {
 		{"let array = [true, false]; array[0];", true},
 		{"let array = [true, !true]; array[1];", false},
 		{"let array = [true, !true]; first(array)", true},
+		{"let array = [true, !true]; last(array)", false},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -188,6 +190,8 @@ func TestErrorHandling(t *testing.T) {
 		{`len("hello", "world");`, "invalid number of arguments to len: expected 1, but got 2"},
 		{"first([1, 2, 3], [4, 5, 6])", "invalid number of arguments to first: expected 1, but got 2"},
 		{"first(1234);", "unknown operation: first(Integer)"},
+		{"last([1, 2, 3], [4, 5, 6])", "invalid number of arguments to last: expected 1, but got 2"},
+		{"last(1234);", "unknown operation: last(Integer)"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -299,6 +303,7 @@ func TestEvalString(t *testing.T) {
 		{`["hello", "world"][1]`, "world"},
 		{`let array = ["hello", "world"]; first(array);`, "hello"},
 		{`first(["hello", "world"])`, "hello"},
+		{`let array = ["hello", "world"]; last(array);`, "world"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -389,6 +394,7 @@ func TestNullObject(t *testing.T) {
 		{"[true, false][2];"},
 		{"let array = []; first(array);"},
 		{"first([]);"},
+		{"let array = []; last(array);"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
