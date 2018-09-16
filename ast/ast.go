@@ -315,3 +315,19 @@ func (fc FunctionCall) String() string {
 
 	return string(b)
 }
+
+type String struct {
+	Token token.Token
+	Value string
+}
+
+func (s String) expression() {
+}
+
+func (s String) TokenLiteral() string {
+	return s.Token.Literal
+}
+
+func (s String) String() string {
+	return s.Value
+}
