@@ -67,6 +67,16 @@ func TestNextToken(t *testing.T) {
 				{token.EOF, ""},
 			},
 		},
+		{
+			`
+			"foobar";
+			"foo bar";
+			`,
+			[]expect{
+				{token.String, "foobar"},
+				{token.String, "foo bar"},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
