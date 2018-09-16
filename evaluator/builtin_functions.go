@@ -83,4 +83,25 @@ var builtinFns = map[string]*object.BuiltinFunctionObject{
 			return &object.ArrayObject{Elements: newElems}
 		},
 	},
+	"push": &object.BuiltinFunctionObject{
+		Function: func(objs ...object.Object) object.Object {
+			if len(objs) != 2 {
+				return newError("invalid number of arguments to push: expected 2, but got %d", len(objs))
+			}
+
+			srcArray := objs[0]
+			newElem := objs[1]
+			array, ok := srcArray.(*object.ArrayObject)
+			if !ok {
+				return newError("unknown operation: push(%s, %s)", srcArray.Type(), newElem.Type())
+			}
+
+			arrayLen := len(array.Elements)
+			newElems := make([]object.Object, arrayLen+1, arrayLen+1)
+			copy(newElems, array.Elements)
+			newElems[arrayLen] = newElem
+
+			return &object.ArrayObject{Elements: newElems}
+		},
+	},
 }
