@@ -120,8 +120,10 @@ func (s StringObject) Inspect() string {
 	return s.Value
 }
 
+type builtinFunction func(objs ...Object) Object
+
 type BuiltinFunctionObject struct {
-	Function func(objs ...Object) Object
+	Function builtinFunction
 }
 
 func (bf BuiltinFunctionObject) Type() ObjectType {
