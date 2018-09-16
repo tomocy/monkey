@@ -2,7 +2,6 @@ package evaluator
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/object"
@@ -15,7 +14,6 @@ var (
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
-	log.Printf("%#v\n", node)
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)
