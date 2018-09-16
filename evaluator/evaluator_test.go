@@ -185,7 +185,7 @@ func TestErrorHandling(t *testing.T) {
 		{"foo;", "unknown identifier: foo"},
 		{`"five" - "five"`, "unknown operation: String - String"},
 		{"len(1234)", "unknown operation: len(Integer)"},
-		{`len("hello", "world");`, "too many arguments to len: expected 1, but got 2"},
+		{`len("hello", "world");`, "invalid number of arguments to len: expected 1, but got 2"},
 		{"first([1, 2, 3], [4, 5, 6])", "invalid number of arguments to first: expected 1, but got 2"},
 		{"first(1234);", "unknown operation: first(Integer)"},
 	}
