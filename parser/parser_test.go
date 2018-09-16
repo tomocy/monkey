@@ -254,7 +254,7 @@ func TestString(t *testing.T) {
 		{"fn(x, y) { return x + y; }", "fn(x,y) { return (x + y); }"},
 		{"fn(x, y) { return x + y; }(1, 2 * 3)", "fn(x,y) { return (x + y); }(1,(2 * 3))"},
 		{"a + [1, 2, 3, 4][b * c] + d", "((a + ([1,2,3,4][(b * c)])) + d)"},
-		{"add(a + b[1], b[2], c * [1, 2, 3, 4][3])", "add((a + (b[1])), (b[2]), (c * ([1,2,3,4][3])))"},
+		{"add(a + b[1], b[2], c * [1, 2, 3, 4][3])", "add((a + (b[1])),(b[2]),(c * ([1,2,3,4][3])))"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {

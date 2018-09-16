@@ -18,6 +18,7 @@ const (
 	Multiplicative
 	Prefix
 	Call
+	Subscript
 )
 
 var precedences = map[token.TokenType]precedence{
@@ -30,6 +31,7 @@ var precedences = map[token.TokenType]precedence{
 	token.Asterrisk:   Multiplicative,
 	token.Slash:       Multiplicative,
 	token.LParen:      Call,
+	token.LBracket:    Subscript,
 }
 
 type precedence int
@@ -75,6 +77,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfixParseFunction(token.Asterrisk, p.parseInfix)
 	p.registerInfixParseFunction(token.Slash, p.parseInfix)
 	p.registerInfixParseFunction(token.LParen, p.parseFunctionCall)
+	p.registerInfixParseFunction(token.LBracket, p.parseSubscript)
 
 	p.nextToken()
 	p.nextToken()
@@ -335,6 +338,25 @@ func (p *Parser) parseArrayElements() []ast.Expression {
 	p.nextToken()
 
 	return exps
+}
+
+func (p *Parser) parseSubscript(leftValue ast.Expression) ast.Expression {
+	exp := &ast.Subscript{
+		Token:     p.currentToken,
+		LeftValue: leftValue,
+	}
+	p.nextToken()
+
+	exp.Index = p.parseExpression(Lowest)
+
+	if !p.isPeekToken(token.RBracket) {
+		p.reportPeekTokenError(token.RBracket)
+		return nil
+	}
+
+	p.nextToken()
+
+	return exp
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
