@@ -28,9 +28,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.If:
 		return evalIf(node, env)
 	case *ast.Prefix:
-		return evalPrefix(node.Operator, node.RightValue, env)
+		return evalPrefix(node, env)
 	case *ast.Infix:
-		return evalInfix(node.LeftValue, node.Operator, node.RightValue, env)
+		return evalInfix(node, env)
 	case *ast.Function:
 		return evalFunction(node, env)
 	case *ast.FunctionCall:
@@ -38,11 +38,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.Integer:
-		return &object.IntegerObject{Value: node.Value}
+		return evalInteger(node)
 	case *ast.Boolean:
-		return convertToBooleanObject(node.Value)
+		return evalBoolean(node)
 	case *ast.String:
-		return &object.StringObject{Value: node.Value}
+		return evalString(node)
 	}
 
 	return nullObj
@@ -119,19 +119,19 @@ func isTruthy(obj object.Object) bool {
 	return obj != falseObj && obj != nullObj
 }
 
-func evalPrefix(operator string, exp ast.Expression, env *object.Environment) object.Object {
-	rightObj := Eval(exp, env)
+func evalPrefix(node *ast.Prefix, env *object.Environment) object.Object {
+	rightObj := Eval(node.RightValue, env)
 	if rightObj.Type() == object.Error {
 		return rightObj
 	}
 
-	switch operator {
+	switch node.Operator {
 	case "!":
 		return evalBang(rightObj)
 	case "-":
 		return evalMinusPrefix(rightObj)
 	default:
-		return newError("unknown operation: %s%s", operator, rightObj.Type())
+		return newError("unknown operation: %s%s", node.Operator, rightObj.Type())
 	}
 }
 
@@ -155,26 +155,26 @@ func evalMinusPrefix(rightObj object.Object) object.Object {
 	return &object.IntegerObject{Value: -rightVal}
 }
 
-func evalInfix(leftExp ast.Expression, operator string, rightExp ast.Expression, env *object.Environment) object.Object {
-	leftObj := Eval(leftExp, env)
+func evalInfix(node *ast.Infix, env *object.Environment) object.Object {
+	leftObj := Eval(node.LeftValue, env)
 	if leftObj.Type() == object.Error {
 		return leftObj
 	}
 
-	rightObj := Eval(rightExp, env)
+	rightObj := Eval(node.RightValue, env)
 	if rightObj.Type() == object.Error {
 		return rightObj
 	}
 
 	switch {
 	case leftObj.Type() == object.Integer && rightObj.Type() == object.Integer:
-		return evalInfixOfInteger(leftObj, operator, rightObj)
-	case operator == "==":
+		return evalInfixOfInteger(leftObj, node.Operator, rightObj)
+	case node.Operator == "==":
 		return convertToBooleanObject(leftObj == rightObj)
-	case operator == "!=":
+	case node.Operator == "!=":
 		return convertToBooleanObject(leftObj != rightObj)
 	default:
-		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
+		return newError("unknown operation: %s %s %s", leftObj.Type(), node.Operator, rightObj.Type())
 	}
 }
 
@@ -277,12 +277,28 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	return obj
 }
 
+func evalInteger(node *ast.Integer) object.Object {
+	return &object.IntegerObject{
+		Value: node.Value,
+	}
+}
+
+func evalBoolean(node *ast.Boolean) object.Object {
+	return convertToBooleanObject(node.Value)
+}
+
 func convertToBooleanObject(b bool) object.Object {
 	if b {
 		return trueObj
 	}
 
 	return falseObj
+}
+
+func evalString(node *ast.String) object.Object {
+	return &object.StringObject{
+		Value: node.Value,
+	}
 }
 
 func newError(format string, a ...interface{}) object.Object {
