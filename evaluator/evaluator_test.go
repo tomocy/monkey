@@ -279,7 +279,7 @@ func TestEvalString(t *testing.T) {
 		in     string
 		expect string
 	}{
-		{"hello world", "hello world"},
+		{`"hello world";`, "hello world"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
