@@ -499,6 +499,42 @@ func TestFunctionCallWithArguments(t *testing.T) {
 	})
 }
 
+func TestParseString(t *testing.T) {
+	type expect struct {
+		tokenLiteral string
+		value        string
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{
+			`"hello world"`, expect{"hello world", "hello world"},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testLengthOfStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			str, ok := expStmt.Value.(*ast.String)
+			if !ok {
+				t.Fatalf("assertion faild: expected *ast.String, but got %T\n", expStmt)
+			}
+			if str.TokenLiteral != test.expect.tokenLiteral {
+				t.Errorf("str.TokenLiteral was wrong: expected %s, but got %s\n", test.expect.tokenLiteral, str.TokenLiteral)
+			}
+			if str.Value != test.expect.value {
+				t.Errorf("str.Value was wrong: expected %s, but got %s\n", test.expect.value, str.Value)
+			}
+		})
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
