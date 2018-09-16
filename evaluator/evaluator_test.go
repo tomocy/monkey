@@ -302,7 +302,6 @@ func TestEvalString(t *testing.T) {
 		{`let names = ["tom", "bob"]; names[0]`, "tom"},
 		{`["hello", "world"][1]`, "world"},
 		{`let array = ["hello", "world"]; first(array);`, "hello"},
-		{`first(["hello", "world"])`, "hello"},
 		{`let array = ["hello", "world"]; last(array);`, "world"},
 	}
 	for _, test := range tests {
@@ -393,7 +392,6 @@ func TestNullObject(t *testing.T) {
 		{"[true, false][-1];"},
 		{"[true, false][2];"},
 		{"let array = []; first(array);"},
-		{"first([]);"},
 		{"let array = []; last(array);"},
 	}
 	for _, test := range tests {
