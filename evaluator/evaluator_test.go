@@ -273,3 +273,27 @@ func TestEvalFunctionCall(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalString(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect string
+	}{
+		{"hello world", "hello world"},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := object.NewEnvironment()
+			got := Eval(program, env)
+			str, ok := got.(*object.StringObject)
+			if !ok {
+				t.Fatalf("assertion faild: expected *object.StringObject, but got %T\n", got)
+			}
+			if str.Value != test.expect {
+				t.Errorf("str.Value was wrong: expected %s, but got %s\n", test.expect, str.Value)
+			}
+		})
+	}
+}
