@@ -244,6 +244,8 @@ func TestEvalFunctionCall(t *testing.T) {
 			applyFunc(add, 2, 3)`,
 			5,
 		},
+		{`len("");`, 0},
+		{`len("1234");`, 4},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
