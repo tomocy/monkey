@@ -37,4 +37,23 @@ var builtinFns = map[string]*object.BuiltinFunctionObject{
 			return array.Elements[0]
 		},
 	},
+	"last": &object.BuiltinFunctionObject{
+		Function: func(objs ...object.Object) object.Object {
+			if len(objs) != 1 {
+				return newError("invalid number of arguments to last: expected 1, but got %d", len(objs))
+			}
+
+			obj := objs[0]
+			array, ok := obj.(*object.ArrayObject)
+			if !ok {
+				return newError("unknown operation: last(%s)", obj.Type())
+			}
+
+			if len(array.Elements) <= 0 {
+				return nullObj
+			}
+
+			return array.Elements[len(array.Elements)-1]
+		},
+	},
 }
