@@ -169,6 +169,8 @@ func evalInfix(node *ast.Infix, env *object.Environment) object.Object {
 	switch {
 	case leftObj.Type() == object.Integer && rightObj.Type() == object.Integer:
 		return evalInfixOfInteger(leftObj, node.Operator, rightObj)
+	case leftObj.Type() == object.String && rightObj.Type() == object.String:
+		return evalInfixOfString(leftObj, node.Operator, rightObj)
 	case node.Operator == "==":
 		return convertToBooleanObject(leftObj == rightObj)
 	case node.Operator == "!=":
@@ -204,6 +206,19 @@ func evalInfixOfInteger(leftObj object.Object, operator string, rightObj object.
 		return convertToBooleanObject(leftVal != rightVal)
 	default:
 		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
+	}
+}
+
+func evalInfixOfString(leftObj object.Object, operator string, rightObj object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operation: %s %s %s", leftObj.Type(), operator, rightObj.Type())
+	}
+
+	leftVal := leftObj.(*object.StringObject).Value
+	rightVal := rightObj.(*object.StringObject).Value
+
+	return &object.StringObject{
+		Value: leftVal + rightVal,
 	}
 }
 
