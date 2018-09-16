@@ -397,7 +397,7 @@ func TestNullObject(t *testing.T) {
 		{"[true, false][2];"},
 		{"let array = []; first(array);"},
 		{"let array = []; last(array);"},
-		{"let array = []; last(rest);"},
+		{"let array = []; rest(array);"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
