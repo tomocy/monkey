@@ -580,6 +580,50 @@ func TestParseArray(t *testing.T) {
 	}
 }
 
+func TestParseSubscript(t *testing.T) {
+	type expect struct {
+		leftValue interface{}
+		index     interface{}
+	}
+	tests := []struct {
+		in     string
+		expect expect
+	}{
+		{
+			"array[1 + 1];",
+			expect{
+				expectedLiteral{"array", "array"},
+				expectedInfix{
+					expectedLiteral{"1", 1}, "+", expectedLiteral{"2", 2},
+				},
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testLengthOfStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			subscript, ok := expStmt.Value.(*ast.Subscript)
+			if !ok {
+				t.Fatalf("assertion faild: expected *ast.Index, but got %T\n", expStmt.Value)
+			}
+
+			if expectedLeftLiteral, ok := test.expect.leftValue.(expectedLiteral); ok {
+				testLiteral(t, subscript.LeftValue, expectedLeftLiteral)
+			}
+
+			if expectedIndexInfix, ok := test.expect.index.(expectedInfix); ok {
+				testInfix(t, subscript.Index, expectedIndexInfix)
+			}
+		})
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
