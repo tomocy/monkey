@@ -535,6 +535,49 @@ func TestParseString(t *testing.T) {
 	}
 }
 
+func TestParseArray(t *testing.T) {
+	type expect struct {
+		tokenLiteral string
+		value        int64
+	}
+	tests := []struct {
+		in      string
+		expects []expect
+	}{
+		{
+			"[1, 2 + 3, 4 * 5]",
+			[]expect{
+				{"1", 1}, {"5", 5}, {"20", 20},
+			},
+		},
+	}
+	for _, test := range tests {
+		parser := New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		testParserHasNoErrors(t, parser)
+		testLengthOfStatements(t, program.Statements, 1)
+		stmt := program.Statements[0]
+		testExpressionStatement(t, stmt)
+		expStmt := stmt.(*ast.ExpressionStatement)
+		array, ok := expStmt.Value.(*ast.Array)
+		if !ok {
+			t.Fatalf("assertion faild: expected *ast.Array, but got %T\n", expStmt.Value)
+		}
+		if len(array.Elements) != len(test.expects) {
+			t.Fatalf("len(array.Elements) returned wrong value: expected %d, but got %d\n", len(test.expects), len(array.Elements))
+		}
+		for i, expect := range test.expects {
+			elm := array.Elements[i]
+			if elm.TokenLiteral() != expect.tokenLiteral {
+				t.Errorf("elm.TokenLiteral() returned wrong value: expected %s, but got %s\n", expect.tokenLiteral, elm.TokenLiteral())
+			}
+			if elm.Value != expect.value {
+				t.Errorf("elm.Value was wrong: expected %d, but got %d\n", expect.value, elm.Value)
+			}
+		}
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
