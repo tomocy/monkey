@@ -331,3 +331,28 @@ func (s String) TokenLiteral() string {
 func (s String) String() string {
 	return s.Value
 }
+
+type Array struct {
+	Token    token.Token
+	Elements []Expression
+}
+
+func (a Array) expression() {
+}
+
+func (a Array) TokenLiteral() string {
+	return a.Token.Literal
+}
+
+func (a Array) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '[')
+	elms := make([]string, len(a.Elements))
+	for i, elm := range a.Elements {
+		elms[i] = elm.String()
+	}
+	b = append(b, strings.Join(elms, ",")...)
+	b = append(b, ']')
+
+	return string(b)
+}
