@@ -10,6 +10,7 @@ import (
 const (
 	Integer  = "Integer"
 	Boolean  = "Boolean"
+	String   = "String"
 	Null     = "Null"
 	Return   = "Return"
 	Error    = "Error"
@@ -104,4 +105,16 @@ func (f FunctionObject) Inspect() string {
 	b = append(b, f.Body.String()...)
 
 	return string(b)
+}
+
+type StringObject struct {
+	Value string
+}
+
+func (s StringObject) Type() ObjectType {
+	return String
+}
+
+func (s StringObject) Inspect() string {
+	return s.Value
 }
