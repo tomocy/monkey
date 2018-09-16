@@ -43,6 +43,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalBoolean(node)
 	case *ast.String:
 		return evalString(node)
+	case *ast.Array:
+		return evalArray(node, env)
 	}
 
 	return nullObj
@@ -242,20 +244,6 @@ func evalFunctionCall(node *ast.FunctionCall, env *object.Environment) object.Ob
 	return applyFunction(functionObj, argObjs)
 }
 
-func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
-	objs := make([]object.Object, len(exps))
-	for i, exp := range exps {
-		obj := Eval(exp, env)
-		if obj.Type() == object.Error {
-			return []object.Object{obj}
-		}
-
-		objs[i] = obj
-	}
-
-	return objs
-}
-
 func applyFunction(functionObj object.Object, argObjs []object.Object) object.Object {
 	switch function := functionObj.(type) {
 	case *object.FunctionObject:
@@ -317,6 +305,29 @@ func convertToBooleanObject(b bool) object.Object {
 
 func evalString(node *ast.String) object.Object {
 	return &object.StringObject{Value: node.Value}
+}
+
+func evalArray(node *ast.Array, env *object.Environment) object.Object {
+	objs := evalExpressions(node.Elements, env)
+	if len(objs) == 1 && objs[0].Type() == object.Error {
+		return objs[0]
+	}
+
+	return &object.ArrayObject{Elements: objs}
+}
+
+func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
+	objs := make([]object.Object, len(exps))
+	for i, exp := range exps {
+		obj := Eval(exp, env)
+		if obj.Type() == object.Error {
+			return []object.Object{obj}
+		}
+
+		objs[i] = obj
+	}
+
+	return objs
 }
 
 func newError(format string, a ...interface{}) object.Object {
