@@ -131,3 +131,24 @@ func (bf BuiltinFunctionObject) Type() ObjectType {
 func (bf BuiltinFunctionObject) Inspect() string {
 	return "builtin function"
 }
+
+type ArrayObject struct {
+	Elements []Object
+}
+
+func (a ArrayObject) ObjectType() ObjectType {
+	return Array
+}
+
+func (a ArrayObject) Inspect() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '[')
+	elms := make([]string, len(a.Elements))
+	for i, elm := range a.Elements {
+		elms[i] = elm.Inspect()
+	}
+	b = append(b, strings.Join(elms, ",")...)
+	b = append(b, ']')
+
+	return string(b)
+}
