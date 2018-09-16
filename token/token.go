@@ -22,10 +22,12 @@ const (
 	Comma     = "Comma"
 	Semicolon = "Semicolon"
 
-	LParen = "LParen"
-	RParen = "RParen"
-	LBrace = "LBrace"
-	RBrace = "RBrace"
+	LParen   = "LParen"
+	RParen   = "RParen"
+	LBrace   = "LBrace"
+	RBrace   = "RBrace"
+	LBracket = "LBracket"
+	RBracket = "RBracket"
 
 	Function = "Function"
 	Let      = "Let"
@@ -55,6 +57,8 @@ var tokenTypes = map[string]TokenType{
 	")":    RParen,
 	"{":    LBrace,
 	"}":    RBrace,
+	"[":    LBracket,
+	"]":    RBracket,
 	"\x00": EOF,
 }
 
