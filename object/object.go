@@ -137,7 +137,7 @@ type ArrayObject struct {
 	Elements []Object
 }
 
-func (a ArrayObject) ObjectType() ObjectType {
+func (a ArrayObject) Type() ObjectType {
 	return Array
 }
 
