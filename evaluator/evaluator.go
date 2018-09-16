@@ -45,6 +45,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalString(node)
 	case *ast.Array:
 		return evalArray(node, env)
+	case *ast.Subscript:
+		return evalSubscript(node, env)
 	}
 
 	return nullObj
@@ -328,6 +330,33 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 	}
 
 	return objs
+}
+
+func evalSubscript(node *ast.Subscript, env *object.Environment) object.Object {
+	leftObj := Eval(node.LeftValue, env)
+	if leftObj.Type() == object.Error {
+		return leftObj
+	}
+	index := Eval(node.Index, env)
+	if index.Type() == object.Error {
+		return index
+	}
+
+	switch {
+	case leftObj.Type() == object.Array && index.Type() == object.Integer:
+		return evalSubscriptToArray(leftObj.(*object.ArrayObject), index.(*object.IntegerObject))
+	default:
+		return newError("unknown operation: %s[%s]", leftObj.Type(), index.Type())
+	}
+}
+
+func evalSubscriptToArray(arrayObj *object.ArrayObject, index *object.IntegerObject) object.Object {
+	maxIndex := int64(len(arrayObj.Elements) - 1)
+	if index.Value < 0 || maxIndex < index.Value {
+		return nullObj
+	}
+
+	return arrayObj.Elements[index.Value]
 }
 
 func newError(format string, a ...interface{}) object.Object {
