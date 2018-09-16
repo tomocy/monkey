@@ -22,9 +22,9 @@ func (l *Lexer) NextToken() token.Token {
 	l.skipWhitespace()
 	switch l.char {
 	case
-		'(', ')', '{', '}',
-		'+', '-', '*', '/',
-		'<', '>', ',', ';':
+		'(', ')', '{', '}', '[', ']',
+		'+', '-', '*', '/', '<', '>',
+		',', ';':
 		return l.expressAsSingleToken()
 	case '=', '!':
 		if l.peekCharacter() == '=' {
