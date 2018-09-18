@@ -45,6 +45,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalString(node)
 	case *ast.Array:
 		return evalArray(node, env)
+	case *ast.Hash:
+		return evalHash(node, env)
 	case *ast.Subscript:
 		return evalSubscript(node, env)
 	}
@@ -330,6 +332,32 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 	}
 
 	return objs
+}
+
+func evalHash(node *ast.Hash, env *object.Environment) object.Object {
+	values := make(map[object.HashKey]object.HashValue)
+	for key, value := range node.Values {
+		keyObj := Eval(key, env)
+		if keyObj.Type() == object.Error {
+			return keyObj
+		}
+		hashKey, ok := keyObj.(object.HashKeyable)
+		if !ok {
+			return newError("unusable as hash key: %s", keyObj.Type())
+		}
+
+		valueObj := Eval(value, env)
+		if valueObj.Type() == object.Error {
+			return valueObj
+		}
+
+		values[hashKey.HashKey()] = object.HashValue{
+			Key:   keyObj,
+			Value: valueObj,
+		}
+	}
+
+	return &object.HashObject{Values: values}
 }
 
 func evalSubscript(node *ast.Subscript, env *object.Environment) object.Object {
