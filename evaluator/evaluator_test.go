@@ -408,6 +408,7 @@ func TestNullObject(t *testing.T) {
 		{"let array = []; last(array);"},
 		{"let array = []; rest(array);"},
 		{`let hash = {1: 1, true: true, "string": "string"}; hash["null"]`},
+		{`puts("hello world");`},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
