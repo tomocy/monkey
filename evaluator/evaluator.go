@@ -373,6 +373,8 @@ func evalSubscript(node *ast.Subscript, env *object.Environment) object.Object {
 	switch {
 	case leftObj.Type() == object.Array && index.Type() == object.Integer:
 		return evalSubscriptToArray(leftObj.(*object.ArrayObject), index.(*object.IntegerObject))
+	case leftObj.Type() == object.Hash:
+		return evalSubscriptToHash(leftObj.(*object.HashObject), index)
 	default:
 		return newError("unknown operation: %s[%s]", leftObj.Type(), index.Type())
 	}
@@ -385,6 +387,20 @@ func evalSubscriptToArray(arrayObj *object.ArrayObject, index *object.IntegerObj
 	}
 
 	return arrayObj.Elements[index.Value]
+}
+
+func evalSubscriptToHash(hashObj *object.HashObject, index object.Object) object.Object {
+	hashKey, ok := index.(object.HashKeyable)
+	if !ok {
+		return newError("unusable as hash key: %s", index.Type())
+	}
+
+	hashValue, ok := hashObj.Values[hashKey.HashKey()]
+	if !ok {
+		return nullObj
+	}
+
+	return hashValue.Value
 }
 
 func newError(format string, a ...interface{}) object.Object {
