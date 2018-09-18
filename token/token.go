@@ -20,6 +20,7 @@ const (
 	GreaterThan = "GreaterThan"
 
 	Comma     = "Comma"
+	Colon     = "Colon"
 	Semicolon = "Semicolon"
 
 	LParen   = "LParen"
@@ -52,6 +53,7 @@ var tokenTypes = map[string]TokenType{
 	"<":    LessThan,
 	">":    GreaterThan,
 	",":    Comma,
+	":":    Colon,
 	";":    Semicolon,
 	"(":    LParen,
 	")":    RParen,
