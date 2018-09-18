@@ -17,6 +17,11 @@ type expectedBoolean struct {
 	value        bool
 }
 
+type expectedString struct {
+	tokenLiteral string
+	value        string
+}
+
 type expectedPrefix struct {
 	operator   string
 	rightValue expectedLiteral
@@ -139,7 +144,7 @@ func TestIdentifier(t *testing.T) {
 func testIdentifier(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", ident)
+		t.Fatalf("faild to assert: expected *ast.Identifier, but got %T\n", exp)
 	}
 	if ident.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("ident.TokenLiteral retuned wrong value: expected %s, but got %s\n", expect.tokenLiteral, ident.TokenLiteral())
@@ -636,7 +641,7 @@ func TestParseHash(t *testing.T) {
 			map[string]interface{}{
 				"one":   expectedLiteral{"one", 1},
 				"true":  expectedLiteral{"true", true},
-				"three": expectedLiteral{"three", "three"},
+				"three": expectedString{"three", "three"},
 			},
 		},
 		{
@@ -674,6 +679,9 @@ func TestParseHash(t *testing.T) {
 				}
 				if expectedLiteral, ok := expectedValue.(expectedLiteral); ok {
 					testLiteral(t, value, expectedLiteral)
+				}
+				if expectedString, ok := expectedValue.(expectedString); ok {
+					testString(t, value, expectedString)
 				}
 				if expectedInfix, ok := expectedValue.(expectedInfix); ok {
 					testInfix(t, value, expectedInfix)
@@ -730,6 +738,19 @@ func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 	}
 	if boolean.Value != expect.value {
 		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", expect.value, boolean.Value)
+	}
+}
+
+func testString(t *testing.T, e ast.Expression, expect expectedString) {
+	str, ok := e.(*ast.String)
+	if !ok {
+		t.Fatalf("faild to assert: expected , but got %T\n", e)
+	}
+	if str.TokenLiteral() != expect.tokenLiteral {
+		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, str.TokenLiteral())
+	}
+	if str.Value != expect.value {
+		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", expect.value, str.Value)
 	}
 }
 
