@@ -196,6 +196,7 @@ func TestErrorHandling(t *testing.T) {
 		{"rest(1234);", "unknown operation: rest(Integer)"},
 		{"push([1, 2, 3])", "invalid number of arguments to push: expected 2, but got 1"},
 		{"push(true, 1234);", "unknown operation: push(Boolean, Integer)"},
+		{"let hash = {fn(x) { return x + 2; }: 1}", "unusable as hash key: Function"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
