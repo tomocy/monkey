@@ -1,6 +1,10 @@
 package evaluator
 
-import "github.com/tomocy/monkey/object"
+import (
+	"fmt"
+
+	"github.com/tomocy/monkey/object"
+)
 
 var builtinFns = map[string]*object.BuiltinFunctionObject{
 	"len": &object.BuiltinFunctionObject{
@@ -17,6 +21,9 @@ var builtinFns = map[string]*object.BuiltinFunctionObject{
 	},
 	"push": &object.BuiltinFunctionObject{
 		Function: builtinPush,
+	},
+	"puts": &object.BuiltinFunctionObject{
+		Function: builtinPuts,
 	},
 }
 
@@ -114,4 +121,12 @@ func builtinPush(objs ...object.Object) object.Object {
 	newElems[arrayLen] = newElem
 
 	return &object.ArrayObject{Elements: newElems}
+}
+
+func builtinPuts(objs ...object.Object) object.Object {
+	for _, obj := range objs {
+		fmt.Println(obj.Inspect())
+	}
+
+	return nullObj
 }
