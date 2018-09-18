@@ -67,6 +67,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.Function, p.parseFunction)
 	p.registerPrefixParseFunction(token.String, p.parseString)
 	p.registerPrefixParseFunction(token.LBracket, p.parseArray)
+	p.registerPrefixParseFunction(token.LBrace, p.parseHash)
 
 	p.registerInfixParseFunction(token.Equal, p.parseInfix)
 	p.registerInfixParseFunction(token.NotEqual, p.parseInfix)
@@ -351,6 +352,51 @@ func (p *Parser) parseSubscript(leftValue ast.Expression) ast.Expression {
 
 	if !p.isPeekToken(token.RBracket) {
 		p.reportPeekTokenError(token.RBracket)
+		return nil
+	}
+
+	p.nextToken()
+
+	return exp
+}
+
+func (p *Parser) parseHash() ast.Expression {
+	exp := &ast.Hash{
+		Token:  p.currentToken,
+		Values: make(map[ast.Expression]ast.Expression),
+	}
+
+	p.nextToken()
+	if p.isCurrentToken(token.RBrace) {
+		return exp
+	}
+
+	key := p.parseExpression(Lowest)
+	if !p.isPeekToken(token.Colon) {
+		p.reportPeekTokenError(token.Colon)
+		return nil
+	}
+	p.nextToken()
+	p.nextToken()
+	value := p.parseExpression(Lowest)
+	exp.Values[key] = value
+
+	for p.isPeekToken(token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		key := p.parseExpression(Lowest)
+		if !p.isPeekToken(token.Colon) {
+			p.reportPeekTokenError(token.Colon)
+			return nil
+		}
+		p.nextToken()
+		p.nextToken()
+		value := p.parseExpression(Lowest)
+		exp.Values[key] = value
+	}
+
+	if !p.isPeekToken(token.RBrace) {
+		p.reportPeekTokenError(token.RBrace)
 		return nil
 	}
 
