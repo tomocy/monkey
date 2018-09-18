@@ -380,3 +380,28 @@ func (s Subscript) String() string {
 
 	return string(b)
 }
+
+type Hash struct {
+	Token  token.Token
+	Values map[Expression]Expression
+}
+
+func (h Hash) expression() {
+}
+
+func (h Hash) TokenLiteral() string {
+	return h.Token.Literal
+}
+
+func (h Hash) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '{')
+	values := make([]string, 0)
+	for key, value := range h.Values {
+		values = append(values, fmt.Sprintf("%s:%s", key, value))
+	}
+	b = append(b, strings.Join(values, ",")...)
+	b = append(b, '}')
+
+	return string(b)
+}
