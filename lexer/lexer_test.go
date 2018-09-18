@@ -91,6 +91,12 @@ func TestNextToken(t *testing.T) {
 				{token.LBracket, "["}, {token.Int, "1"}, {token.Comma, ","}, {token.Int, "2"}, {token.RBracket, "]"}, {token.Semicolon, ";"},
 			},
 		},
+		{
+			`{"foo": "bar"};`,
+			[]expect{
+				{token.LBrace, "{"}, {token.String, "foo"}, {token.Colon, ":"}, {token.String, "bar"}, {token.RBrace, "}"}, {token.Semicolon, ";"},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
