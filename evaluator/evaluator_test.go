@@ -445,34 +445,34 @@ func TestEvalHash(t *testing.T) {
 				t.Fatalf("assertion faild: expected *object.HashObject, but got %T\n", got)
 			}
 			for expectedKey, expectedValue := range test.expect {
-				value, ok := hash.Values[expectedKey]
+				hashValue, ok := hash.Values[expectedKey]
 				if !ok {
 					t.Errorf("no value for %+v found\n", expectedKey)
 				}
 				switch expectedValue := expectedValue.(type) {
 				case int64:
-					integer, ok := value.(*object.IntegerObject)
+					integer, ok := hashValue.Value.(*object.IntegerObject)
 					if !ok {
-						t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", value)
+						t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", hashValue)
 					}
 					if integer.Value != expectedValue {
 						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, integer.Value)
 					}
 				case bool:
-					boolean, ok := value.(*object.BooleanObject)
+					boolean, ok := hashValue.Value.(*object.BooleanObject)
 					if !ok {
-						t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", value)
+						t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", hashValue)
 					}
 					if boolean.Value != expectedValue {
-						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, boolean.Value)
+						t.Errorf("integer.Value was wrong: expected %t, but got %t\n", expectedValue, boolean.Value)
 					}
 				case string:
-					str, ok := value.(*object.StringObject)
+					str, ok := hashValue.Value.(*object.StringObject)
 					if !ok {
-						t.Fatalf("assertion faild: expected *object.StringObject, but got %T\n", value)
+						t.Fatalf("assertion faild: expected *object.StringObject, but got %T\n", hashValue)
 					}
 					if str.Value != expectedValue {
-						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, str.Value)
+						t.Errorf("integer.Value was wrong: expected %s, but got %s\n", expectedValue, str.Value)
 					}
 				}
 			}
