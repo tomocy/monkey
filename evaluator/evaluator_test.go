@@ -419,3 +419,63 @@ func TestNullObject(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalHash(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect map[object.HashKey]interface{}
+	}{
+		{
+			`{1: 1, true: true, "string": "string"}`,
+			map[object.HashKey]interface{}{
+				(&object.IntegerObject{Value: 1}).HashKey():       1,
+				(&object.BooleanObject{Value: true}).HashKey():    true,
+				(&object.StringObject{Value: "string"}).HashKey(): "string",
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := parser.New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			env := object.NewEnvironment()
+			got := Eval(program, env)
+			hash, ok := got.(*object.HashObject)
+			if !ok {
+				t.Fatalf("assertion faild: expected *object.HashObject, but got %T\n", got)
+			}
+			for expectedKey, expectedValue := range test.expect {
+				value, ok := hash.Values[expectedKey]
+				if !ok {
+					t.Errorf("no value for %+v found\n", expectedKey)
+				}
+				switch expectedValue := expectedValue.(type) {
+				case int64:
+					integer, ok := value.(*object.IntegerObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", value)
+					}
+					if integer.Value != expectedValue {
+						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, integer.Value)
+					}
+				case bool:
+					boolean, ok := value.(*object.BooleanObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", value)
+					}
+					if boolean.Value != expectedValue {
+						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, boolean.Value)
+					}
+				case string:
+					str, ok := value.(*object.StringObject)
+					if !ok {
+						t.Fatalf("assertion faild: expected *object.StringObject, but got %T\n", value)
+					}
+					if str.Value != expectedValue {
+						t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedValue, str.Value)
+					}
+				}
+			}
+		})
+	}
+}
