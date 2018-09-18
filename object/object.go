@@ -13,6 +13,7 @@ const (
 	Boolean         = "Boolean"
 	String          = "String"
 	Array           = "Array"
+	Hash            = "Hash"
 	Null            = "Null"
 	Return          = "Return"
 	Error           = "Error"
@@ -155,6 +156,27 @@ func (a ArrayObject) Inspect() string {
 	return string(b)
 }
 
+type HashObject struct {
+	Values map[HashKey]HashValue
+}
+
+func (h HashObject) Type() ObjectType {
+	return Hash
+}
+
+func (h HashObject) Inspect() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '{')
+	values := make([]string, 0)
+	for _, hashValue := range h.Values {
+		values = append(values, fmt.Sprintf("%s:%s", hashValue.Key.Inspect(), hashValue.Value.Inspect()))
+	}
+	b = append(b, strings.Join(values, ",")...)
+	b = append(b, '}')
+
+	return string(b)
+}
+
 type HashKeyable interface {
 	HashKey() HashKey
 }
@@ -192,4 +214,9 @@ func (s StringObject) HashKey() HashKey {
 		Type:  s.Type(),
 		Value: h.Sum64(),
 	}
+}
+
+type HashValue struct {
+	Key   Object
+	Value Object
 }
