@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"hash/fnv"
 	"strings"
 
 	"github.com/tomocy/monkey/ast"
@@ -152,4 +153,43 @@ func (a ArrayObject) Inspect() string {
 	b = append(b, ']')
 
 	return string(b)
+}
+
+type HashKeyable interface {
+	HashKey() HashKey
+}
+
+type HashKey struct {
+	Type  ObjectType
+	Value uint64
+}
+
+func (i IntegerObject) HashKey() HashKey {
+	return HashKey{
+		Type:  i.Type(),
+		Value: uint64(i.Value),
+	}
+}
+
+var (
+	HashKeyTrue  = HashKey{Type: Boolean, Value: 1}
+	HashKeyFalse = HashKey{Type: Boolean, Value: 0}
+)
+
+func (b BooleanObject) HashKey() HashKey {
+	if b.Value {
+		return HashKeyTrue
+	}
+
+	return HashKeyFalse
+}
+
+func (s StringObject) HashKey() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+
+	return HashKey{
+		Type:  s.Type(),
+		Value: h.Sum64(),
+	}
 }
