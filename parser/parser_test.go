@@ -626,6 +626,63 @@ func TestParseSubscript(t *testing.T) {
 	}
 }
 
+func TestParseHash(t *testing.T) {
+	tests := []struct {
+		in      string
+		expects map[string]interface{}
+	}{
+		{
+			`{"one": 1, "true": true, "three": "three"}`,
+			map[string]interface{}{
+				"one":   expectedLiteral{"one", 1},
+				"true":  expectedLiteral{"true", true},
+				"three": expectedLiteral{"three", "three"},
+			},
+		},
+		{
+			`{"one + one": 1 + 1}`,
+			map[string]interface{}{
+				"one + one": expectedInfix{expectedLiteral{"1", 1}, "+", expectedLiteral{"1", 1}},
+			},
+		},
+		{"{}", map[string]interface{}{}},
+	}
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			parser := New(lexer.New(test.in))
+			program := parser.ParseProgram()
+			testParserHasNoErrors(t, parser)
+			testLengthOfStatements(t, program.Statements, 1)
+			stmt := program.Statements[0]
+			testExpressionStatement(t, stmt)
+			expStmt := stmt.(*ast.ExpressionStatement)
+			hash, ok := expStmt.Value.(*ast.Hash)
+			if !ok {
+				t.Fatalf("assertion faild: expected *ast.Hash, but got %T\n", expStmt.Value)
+			}
+			if len(hash.Values) != len(test.expects) {
+				t.Fatalf("len(hash) returned wrong value: expected %d, but got %d\n", len(test.expects), len(hash.Values))
+			}
+			for key, value := range hash.Values {
+				str, ok := key.(*ast.String)
+				if !ok {
+					t.Fatalf("assertion faild: expected *ast.String, but got %T\n", key)
+				}
+				expectedValue, ok := test.expects[str.String()]
+				if !ok {
+					t.Errorf("unknown key: %s\n", str)
+				}
+				if expectedLiteral, ok := expectedValue.(expectedLiteral); ok {
+					testLiteral(t, value, expectedLiteral)
+				}
+				if expectedInfix, ok := expectedValue.(expectedInfix); ok {
+					testInfix(t, value, expectedInfix)
+				}
+			}
+		})
+	}
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
