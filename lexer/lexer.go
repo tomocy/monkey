@@ -24,7 +24,7 @@ func (l *Lexer) NextToken() token.Token {
 	case
 		'(', ')', '{', '}', '[', ']',
 		'+', '-', '*', '/', '<', '>',
-		',', ';':
+		',', ':', ';':
 		return l.expressAsSingleToken()
 	case '=', '!':
 		if l.peekCharacter() == '=' {
