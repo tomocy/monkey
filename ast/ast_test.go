@@ -33,6 +33,10 @@ func TestModify(t *testing.T) {
 			},
 		},
 		{
+			&Prefix{Operator: "-", RightValue: one()},
+			&Prefix{Operator: "-", RightValue: two()},
+		},
+		{
 			&Infix{LeftValue: one(), Operator: "+", RightValue: one()},
 			&Infix{LeftValue: two(), Operator: "+", RightValue: two()},
 		},
