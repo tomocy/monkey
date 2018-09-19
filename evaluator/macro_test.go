@@ -124,6 +124,21 @@ func TestExpandMacro(t *testing.T) {
 	}{
 		{"let infix = macro() { quote(1 + 2); }; infix();", "(1 + 2)"},
 		{"let minusReversely = macro(a, b) { quote(unquote(b) - unquote(a)); }; minusReversely(2 + 2, 10 - 5)", "((10 - 5) - (2 + 2))"},
+		{
+			`
+			let unless = macro(condition, consequence, alternative) {
+				quote(
+					if (!(unquote(condition))) {
+						unquote(consequence)
+					} else {
+						unquote(alternative)
+					}
+				);
+			};
+			unless(5 < 10, puts("not greater??"), puts("yes, greater..."))
+			`,
+			`if ((!(5 < 10))) { puts(not greater??) } else { puts(yes, greater...) }`,
+		},
 	}
 	for _, test := range tests {
 		parser := parser.New(lexer.New(test.in))
