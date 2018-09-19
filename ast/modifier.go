@@ -20,6 +20,8 @@ func Modify(node Node, modifier modifier) Node {
 		return modifyPrefix(node, modifier)
 	case *Infix:
 		return modifyInfix(node, modifier)
+	case *Function:
+		return modifyFunction(node, modifier)
 	case *Subscript:
 		return modifySubscript(node, modifier)
 	default:
@@ -80,6 +82,15 @@ func modifyPrefix(node *Prefix, modifier modifier) Node {
 func modifyInfix(node *Infix, modifier modifier) Node {
 	node.LeftValue, _ = Modify(node.LeftValue, modifier).(Expression)
 	node.RightValue, _ = Modify(node.LeftValue, modifier).(Expression)
+
+	return node
+}
+
+func modifyFunction(node *Function, modifier modifier) Node {
+	for i, param := range node.Parameters {
+		node.Parameters[i], _ = Modify(param, modifier).(*Identifier)
+	}
+	node.Body, _ = Modify(node.Body, modifier).(*BlockStatement)
 
 	return node
 }
