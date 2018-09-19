@@ -5,7 +5,7 @@ import (
 	"github.com/tomocy/monkey/object"
 )
 
-func DefineMacro(program *ast.Program, env *object.Environment) {
+func DefineMacros(program *ast.Program, env *object.Environment) {
 	setMacroDefinitionsInEnv(program, env)
 	removeMacroDefinitionsFromProgram(program)
 }

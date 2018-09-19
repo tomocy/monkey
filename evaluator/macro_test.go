@@ -81,7 +81,7 @@ func TestDefineMacro(t *testing.T) {
 	program := parser.ParseProgram()
 	env := object.NewEnvironment()
 
-	DefineMacro(program, env)
+	DefineMacros(program, env)
 
 	if len(program.Statements) != 2 {
 		t.Fatalf("len(program.Statements) returned wrong value: expected 2, but got %d\n", len(program.Statements))
@@ -129,7 +129,7 @@ func TestExpandMacro(t *testing.T) {
 		parser := parser.New(lexer.New(test.in))
 		program := parser.ParseProgram()
 		env := object.NewEnvironment()
-		DefineMacro(program, env)
+		DefineMacros(program, env)
 		got := ExpandMacros(program, env)
 		if got.String() != test.expect {
 			t.Errorf("got.String() returned wrong value: expected %s, but got %s\n", test.expect, got.String())
