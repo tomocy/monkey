@@ -39,6 +39,8 @@ const (
 	False    = "False"
 	Int      = "Int"
 	String   = "String"
+
+	Macro = "Macro"
 )
 
 var tokenTypes = map[string]TokenType{
@@ -72,6 +74,7 @@ var keywordTypes = map[string]TokenType{
 	"return": Return,
 	"true":   True,
 	"false":  False,
+	"macro":  Macro,
 }
 
 type TokenType string
