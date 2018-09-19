@@ -285,6 +285,8 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 	switch obj := obj.(type) {
 	case *object.IntegerObject:
 		return convertIntegerObjectToASTNode(obj)
+	case *object.BooleanObject:
+		return convertBooleanObjectToASTNode(obj)
 	default:
 		return nil
 	}
@@ -296,6 +298,26 @@ func convertIntegerObjectToASTNode(obj *object.IntegerObject) ast.Node {
 			Type:    token.Int,
 			Literal: fmt.Sprintf("%d", obj.Value),
 		},
+		Value: obj.Value,
+	}
+}
+
+func convertBooleanObjectToASTNode(obj *object.BooleanObject) ast.Node {
+	var t token.Token
+	if obj.Value {
+		t = token.Token{
+			Type:    token.True,
+			Literal: "true",
+		}
+	} else {
+		t = token.Token{
+			Type:    token.False,
+			Literal: "false",
+		}
+	}
+
+	return &ast.Boolean{
+		Token: t,
 		Value: obj.Value,
 	}
 }
