@@ -32,6 +32,10 @@ func TestModify(t *testing.T) {
 				[]Statement{&ExpressionStatement{Value: two()}},
 			},
 		},
+		{
+			&Infix{LeftValue: one(), Operator: "+", RightValue: one()},
+			&Infix{LeftValue: two(), Operator: "+", RightValue: two()},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in.String(), func(t *testing.T) {
