@@ -5,20 +5,22 @@ import (
 	"testing"
 )
 
-func TestModify(t *testing.T) {
-	one := func() Expression { return &Integer{Value: 1} }
-	two := func() Expression { return &Integer{Value: 2} }
-	turnOneIntoTwo := func(node Node) Node {
-		integer, ok := node.(*Integer)
-		if !ok {
-			return node
-		}
-		if integer.Value != 1 {
-			return node
-		}
-		integer.Value = 2
-		return integer
+var one = func() Expression { return &Integer{Value: 1} }
+var two = func() Expression { return &Integer{Value: 2} }
+
+var turnOneIntoTwo = func(node Node) Node {
+	integer, ok := node.(*Integer)
+	if !ok {
+		return node
 	}
+	if integer.Value != 1 {
+		return node
+	}
+	integer.Value = 2
+	return integer
+}
+
+func TestModify(t *testing.T) {
 	tests := []struct {
 		in     Node
 		expect Node
