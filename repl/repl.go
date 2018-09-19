@@ -16,6 +16,7 @@ import (
 const prompt = ">> "
 
 var env = object.NewEnvironment()
+var macroEnv = object.NewEnvironment()
 
 func Start(in io.Reader, w io.Writer) {
 	fmt.Print(prompt)
@@ -34,9 +35,12 @@ func evaluatedProgramOrErrorMessages(in string) string {
 		return strings.Join(parser.Errors(), "\n")
 	}
 
-	evaluatedProgram := evaluator.Eval(program, env)
+	evaluator.DefineMacros(program, macroEnv)
+	expandedProgram := evaluator.ExpandMacros(program, macroEnv)
+
+	evaluatedProgram := evaluator.Eval(expandedProgram, env)
 	if evaluatedProgram == nil {
-		return fmt.Sprintf(`could not evaluate "%s"`, in)
+		return ""
 	}
 
 	return evaluatedProgram.Inspect()
