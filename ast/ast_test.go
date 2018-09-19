@@ -1,6 +1,9 @@
 package ast
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestModify(t *testing.T) {
 	one := func() Expression { return &Integer{Value: 1} }
@@ -28,12 +31,14 @@ func TestModify(t *testing.T) {
 			&Program{
 				[]Statement{&ExpressionStatement{Value: two()}},
 			},
-		}
+		},
 	}
 	for _, test := range tests {
-		got := Modify(test.in, turnOneIntoTwo)
-		if !reflect.DeepEqual(got, test.expect) {
-			t.Errorf("got was wrong: expected %+v, but got %+v\n", test.expect, got)
-		}
+		t.Run(test.in.String(), func(t *testing.T) {
+			got := Modify(test.in, turnOneIntoTwo)
+			if !reflect.DeepEqual(got, test.expect) {
+				t.Errorf("got was wrong: expected %+v, but got %+v\n", test.expect, got)
+			}
+		})
 	}
 }
