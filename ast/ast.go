@@ -58,7 +58,7 @@ func (s LetStatement) TokenLiteral() string {
 
 func (s LetStatement) String() string {
 	b := make([]byte, 0, 10)
-	b = append(b, "let"...)
+	b = append(b, s.TokenLiteral()...)
 	b = append(b, ' ')
 	b = append(b, s.Ident.String()...)
 	b = append(b, " = "...)
@@ -100,7 +100,7 @@ func (s ReturnStatement) TokenLiteral() string {
 
 func (s ReturnStatement) String() string {
 	b := make([]byte, 0, 10)
-	b = append(b, "return"...)
+	b = append(b, s.TokenLiteral()...)
 	b = append(b, ' ')
 	if s.Value != nil {
 		b = append(b, s.Value.String()...)
