@@ -8,6 +8,10 @@ func Modify(node Node, modifier modifier) Node {
 		return modifyProgram(node, modifier)
 	case *ExpressionStatement:
 		return modifyExpressionStatement(node, modifier)
+	case *BlockStatement:
+		return modifyBlockStatement(node, modifier)
+	case *If:
+		return modifyIf(node, modifier)
 	case *Prefix:
 		return modifyPrefix(node, modifier)
 	case *Infix:
@@ -29,6 +33,24 @@ func modifyProgram(node *Program, modifier modifier) Node {
 
 func modifyExpressionStatement(node *ExpressionStatement, modifier modifier) Node {
 	node.Value, _ = Modify(node.Value, modifier).(Expression)
+
+	return node
+}
+
+func modifyBlockStatement(node *BlockStatement, modifier modifier) Node {
+	for i, stmt := range node.Statements {
+		node.Statements[i], _ = Modify(stmt, modifier).(Statement)
+	}
+
+	return node
+}
+
+func modifyIf(node *If, modifier modifier) Node {
+	node.Condition, _ = Modify(node.Condition, modifier).(Expression)
+	node.Consequence, _ = Modify(node.Consequence, modifier).(*BlockStatement)
+	if node.Alternative != nil {
+		node.Alternative, _ = Modify(node.Alternative, modifier).(*BlockStatement)
+	}
 
 	return node
 }
