@@ -102,3 +102,29 @@ func TestModify(t *testing.T) {
 		})
 	}
 }
+
+func TestModifyHash(t *testing.T) {
+	in := &Hash{Values: map[Expression]Expression{one(): one()}}
+	got := Modify(in, turnOneIntoTwo)
+	hash, ok := got.(*Hash)
+	if !ok {
+		t.Fatalf("assertion faild: expected *Hash, but got %T\n", got)
+	}
+	for key, value := range hash.Values {
+		keyInteger, ok := key.(*Integer)
+		if !ok {
+			t.Fatalf("assertion faild: expected *Integer, but got %T\n", key)
+		}
+		if keyInteger.Value != 2 {
+			t.Errorf("keyInteger.Value was wrong: expected 2, but got %d\n", keyInteger.Value)
+		}
+
+		valueInteger, ok := value.(*Integer)
+		if !ok {
+			t.Fatalf("assertion faild: expected *Integer, but got %T\n", key)
+		}
+		if valueInteger.Value != 2 {
+			t.Errorf("keyInteger.Value was wrong: expected 2, but got %d\n", valueInteger.Value)
+		}
+	}
+}
