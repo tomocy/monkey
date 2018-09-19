@@ -69,6 +69,20 @@ func TestModify(t *testing.T) {
 			&Infix{LeftValue: two(), Operator: "+", RightValue: two()},
 		},
 		{
+			&Function{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: one()}},
+				},
+			},
+			&Function{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: two()}},
+				},
+			},
+		},
+		{
 			&Subscript{LeftValue: one(), Index: one()},
 			&Subscript{LeftValue: two(), Index: two()},
 		},
