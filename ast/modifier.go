@@ -8,6 +8,8 @@ func Modify(node Node, modifier modifier) Node {
 		return modifyProgram(node, modifier)
 	case *ExpressionStatement:
 		return modifyExpressionStatement(node, modifier)
+	case *Prefix:
+		return modifyPrefix(node, modifier)
 	case *Infix:
 		return modifyInfix(node, modifier)
 	default:
@@ -25,6 +27,12 @@ func modifyProgram(node *Program, modifier modifier) Node {
 
 func modifyExpressionStatement(node *ExpressionStatement, modifier modifier) Node {
 	node.Value, _ = Modify(node.Value, modifier).(Expression)
+
+	return node
+}
+
+func modifyPrefix(node *Prefix, modifier modifier) Node {
+	node.RightValue, _ = Modify(node.RightValue, modifier).(Expression)
 
 	return node
 }
