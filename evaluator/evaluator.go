@@ -35,7 +35,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Function:
 		return evalFunction(node, env)
 	case *ast.FunctionCall:
-		if isQuoteCall(node) {
+		if isQuote(node) {
 			return evalQuote(node.Arguments[0], env)
 		}
 		return evalFunctionCall(node, env)
@@ -238,7 +238,7 @@ func evalFunction(node *ast.Function, env *object.Environment) object.Object {
 	}
 }
 
-func isQuoteCall(node ast.Node) bool {
+func isQuote(node ast.Node) bool {
 	funcCall, ok := node.(*ast.FunctionCall)
 	if !ok {
 		return false
