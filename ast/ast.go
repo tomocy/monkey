@@ -405,3 +405,31 @@ func (h Hash) String() string {
 
 	return string(b)
 }
+
+type Macro struct {
+	Token      token.Token
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (m Macro) expression() {
+}
+
+func (m Macro) TokenLiteral() string {
+	return m.Token.Literal
+}
+
+func (m Macro) String() string {
+	b := make([]byte, 0, 10)
+	b = append(b, m.TokenLiteral()...)
+	b = append(b, '(')
+	params := make([]string, len(m.Parameters))
+	for i, param := range m.Parameters {
+		params[i] = param.String()
+	}
+	b = append(b, strings.Join(params, ",")...)
+	b = append(b, ") "...)
+	b = append(b, m.Body.String()...)
+
+	return string(b)
+}
