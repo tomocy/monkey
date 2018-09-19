@@ -68,6 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefixParseFunction(token.String, p.parseString)
 	p.registerPrefixParseFunction(token.LBracket, p.parseArray)
 	p.registerPrefixParseFunction(token.LBrace, p.parseHash)
+	p.registerPrefixParseFunction(token.Macro, p.parseMacro)
 
 	p.registerInfixParseFunction(token.Equal, p.parseInfix)
 	p.registerInfixParseFunction(token.NotEqual, p.parseInfix)
@@ -218,56 +219,6 @@ func (p *Parser) parseFunction() ast.Expression {
 	return exp
 }
 
-func (p *Parser) parseFunctionParameters() []*ast.Identifier {
-	p.nextToken()
-	idents := make([]*ast.Identifier, 0)
-	if p.isCurrentToken(token.RParen) {
-		return idents
-	}
-
-	ident := &ast.Identifier{
-		Token: p.currentToken,
-		Value: p.currentToken.Literal,
-	}
-	idents = append(idents, ident)
-	for p.isPeekToken(token.Comma) {
-		p.nextToken()
-		p.nextToken()
-		ident = &ast.Identifier{
-			Token: p.currentToken,
-			Value: p.currentToken.Literal,
-		}
-		idents = append(idents, ident)
-	}
-
-	if !p.isPeekToken(token.RParen) {
-		p.reportPeekTokenError(token.RParen)
-		return nil
-	}
-
-	p.nextToken()
-
-	return idents
-}
-
-func (p *Parser) parseBlockStatement() *ast.BlockStatement {
-	blockStmt := &ast.BlockStatement{
-		Token:      p.currentToken,
-		Statements: make([]ast.Statement, 0),
-	}
-	p.nextToken()
-
-	for !p.isCurrentToken(token.RBrace) && !p.isCurrentToken(token.EOF) {
-		stmt := p.parseStatement()
-		if stmt != nil {
-			blockStmt.Statements = append(blockStmt.Statements, stmt)
-		}
-		p.nextToken()
-	}
-
-	return blockStmt
-}
-
 func (p *Parser) parseFunctionCall(function ast.Expression) ast.Expression {
 	exp := &ast.FunctionCall{
 		Token:    p.currentToken,
@@ -403,6 +354,78 @@ func (p *Parser) parseHash() ast.Expression {
 	p.nextToken()
 
 	return exp
+}
+
+func (p *Parser) parseMacro() ast.Expression {
+	exp := &ast.Macro{
+		Token: p.currentToken,
+	}
+
+	if !p.isPeekToken(token.LParen) {
+		p.reportPeekTokenError(token.LParen)
+		return nil
+	}
+	p.nextToken()
+	exp.Parameters = p.parseFunctionParameters()
+
+	if !p.isPeekToken(token.LBrace) {
+		p.reportPeekTokenError(token.LBrace)
+		return nil
+	}
+	p.nextToken()
+	exp.Body = p.parseBlockStatement()
+
+	return exp
+}
+
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	p.nextToken()
+	idents := make([]*ast.Identifier, 0)
+	if p.isCurrentToken(token.RParen) {
+		return idents
+	}
+
+	ident := &ast.Identifier{
+		Token: p.currentToken,
+		Value: p.currentToken.Literal,
+	}
+	idents = append(idents, ident)
+	for p.isPeekToken(token.Comma) {
+		p.nextToken()
+		p.nextToken()
+		ident = &ast.Identifier{
+			Token: p.currentToken,
+			Value: p.currentToken.Literal,
+		}
+		idents = append(idents, ident)
+	}
+
+	if !p.isPeekToken(token.RParen) {
+		p.reportPeekTokenError(token.RParen)
+		return nil
+	}
+
+	p.nextToken()
+
+	return idents
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	blockStmt := &ast.BlockStatement{
+		Token:      p.currentToken,
+		Statements: make([]ast.Statement, 0),
+	}
+	p.nextToken()
+
+	for !p.isCurrentToken(token.RBrace) && !p.isCurrentToken(token.EOF) {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			blockStmt.Statements = append(blockStmt.Statements, stmt)
+		}
+		p.nextToken()
+	}
+
+	return blockStmt
 }
 
 func (p *Parser) ParseProgram() *ast.Program {
