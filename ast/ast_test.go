@@ -33,6 +33,26 @@ func TestModify(t *testing.T) {
 			},
 		},
 		{
+			&If{
+				Condition: one(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: one()}},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: one()}},
+				},
+			},
+			&If{
+				Condition: two(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: two()}},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{&ExpressionStatement{Value: two()}},
+				},
+			},
+		},
+		{
 			&Prefix{Operator: "-", RightValue: one()},
 			&Prefix{Operator: "-", RightValue: two()},
 		},
