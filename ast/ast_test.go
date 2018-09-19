@@ -33,6 +33,10 @@ func TestModify(t *testing.T) {
 			},
 		},
 		{
+			&LetStatement{Ident: &Identifier{Value: "x"}, Value: one()},
+			&LetStatement{Ident: &Identifier{Value: "x"}, Value: two()},
+		},
+		{
 			&ReturnStatement{Value: one()},
 			&ReturnStatement{Value: two()},
 		},
