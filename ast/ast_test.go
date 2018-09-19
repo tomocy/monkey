@@ -40,6 +40,10 @@ func TestModify(t *testing.T) {
 			&Infix{LeftValue: one(), Operator: "+", RightValue: one()},
 			&Infix{LeftValue: two(), Operator: "+", RightValue: two()},
 		},
+		{
+			&Subscript{LeftValue: one(), Index: one()},
+			&Subscript{LeftValue: two(), Index: two()},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in.String(), func(t *testing.T) {
