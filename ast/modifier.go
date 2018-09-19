@@ -85,7 +85,7 @@ func modifyPrefix(node *Prefix, modifier modifier) Node {
 
 func modifyInfix(node *Infix, modifier modifier) Node {
 	node.LeftValue, _ = Modify(node.LeftValue, modifier).(Expression)
-	node.RightValue, _ = Modify(node.LeftValue, modifier).(Expression)
+	node.RightValue, _ = Modify(node.RightValue, modifier).(Expression)
 
 	return node
 }
