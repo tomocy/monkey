@@ -19,6 +19,7 @@ const (
 	Error           = "Error"
 	Function        = "Function"
 	BuiltinFunction = "Builtin Function"
+	Quote           = "Quote"
 )
 
 type ObjectType string
@@ -219,4 +220,21 @@ func (s StringObject) HashKey() HashKey {
 type HashValue struct {
 	Key   Object
 	Value Object
+}
+
+type QuoteObject struct {
+	Value ast.Node
+}
+
+func (q QuoteObject) Type() ObjectType {
+	return Quote
+}
+
+func (q QuoteObject) Inspect() string {
+	b := make([]byte, 0, 10)
+	b = append(b, '(')
+	b = append(b, q.Value.String()...)
+	b = append(b, ')')
+
+	return string(b)
 }
