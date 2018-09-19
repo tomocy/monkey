@@ -100,7 +100,7 @@ func (s ReturnStatement) TokenLiteral() string {
 
 func (s ReturnStatement) String() string {
 	b := make([]byte, 0, 10)
-	b = append(b, s.TokenLiteral()...)
+	b = append(b, "return"...)
 	b = append(b, ' ')
 	if s.Value != nil {
 		b = append(b, s.Value.String()...)
