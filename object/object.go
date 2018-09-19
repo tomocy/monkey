@@ -20,6 +20,7 @@ const (
 	Function        = "Function"
 	BuiltinFunction = "Builtin Function"
 	Quote           = "Quote"
+	Macro           = "Macro"
 )
 
 type ObjectType string
@@ -235,6 +236,30 @@ func (q QuoteObject) Inspect() string {
 	b = append(b, '(')
 	b = append(b, q.Value.String()...)
 	b = append(b, ')')
+
+	return string(b)
+}
+
+type MacroObject struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (m MacroObject) Type() ObjectType {
+	return Macro
+}
+
+func (m MacroObject) Inspect() string {
+	b := make([]byte, 0, 10)
+	b = append(b, "fn ("...)
+	params := make([]string, len(m.Parameters))
+	for i, param := range m.Parameters {
+		params[i] = param.String()
+	}
+	b = append(b, strings.Join(params, ",")...)
+	b = append(b, ") "...)
+	b = append(b, m.Body.String()...)
 
 	return string(b)
 }
