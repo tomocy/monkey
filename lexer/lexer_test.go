@@ -97,6 +97,13 @@ func TestNextToken(t *testing.T) {
 				{token.LBrace, "{"}, {token.String, "foo"}, {token.Colon, ":"}, {token.String, "bar"}, {token.RBrace, "}"}, {token.Semicolon, ";"},
 			},
 		},
+		{
+			"macro(x, y) { x + y; };",
+			[]expect{
+				{token.Macro, "macro"}, {token.LParen, "("}, {token.Ident, "x"}, {token.Comma, ","}, {token.Ident, "y"}, {token.RParen, ")"},
+				{token.LBrace, "{"}, {token.Ident, "x"}, {token.Plus, "+"}, {token.Ident, "y"}, {token.Semicolon, ";"}, {token.RBrace, "}"}, {token.Semicolon, ";"},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
