@@ -34,7 +34,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Function:
 		return evalFunction(node, env)
 	case *ast.FunctionCall:
-		if node.Function.TokenLiteral() == "quote" && len(node.Arguments) == 1 {
+		if isQuoteCall(node) {
 			return evalQuote(node.Arguments[0])
 		}
 		return evalFunctionCall(node, env)
@@ -235,6 +235,18 @@ func evalFunction(node *ast.Function, env *object.Environment) object.Object {
 		Body:       node.Body,
 		Env:        env,
 	}
+}
+
+func isQuoteCall(node ast.Node) bool {
+	funcCall, ok := node.(*ast.FunctionCall)
+	if !ok {
+		return false
+	}
+	if len(funcCall.Arguments) != 1 {
+		return false
+	}
+
+	return funcCall.Function.TokenLiteral() == "quote"
 }
 
 func evalQuote(node ast.Node) object.Object {
