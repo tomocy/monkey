@@ -691,6 +691,39 @@ func TestParseHash(t *testing.T) {
 	}
 }
 
+func TestParseMacro(t *testing.T) {
+	in := "macro(x, y) { x + y; }"
+	parser := New(lexer.New(in))
+	program := parser.ParseProgram()
+	testParserHasNoErrors(t, parser)
+	testLengthOfStatements(t, program.Statements, 1)
+	stmt := program.Statements[0]
+	testExpressionStatement(t, stmt)
+	expStmt := stmt.(*ast.ExpressionStatement)
+	macro, ok := expStmt.Value.(*ast.Macro)
+	if !ok {
+		t.Fatalf("assertion faild: expected *ast.Macro, but got %T\n", expStmt.Value)
+	}
+
+	if len(macro.Parameters) != 2 {
+		t.Fatalf("len(macro.Parameters) returned wrong value: expected 2, but got %d\n", len(macro.Parameters))
+	}
+	testLiteral(t, macro.Parameters[0], expectedLiteral{"x", "x"})
+	testLiteral(t, macro.Parameters[1], expectedLiteral{"y", "y"})
+
+	if len(macro.Body.Statements) != 1 {
+		t.Fatalf("len(macro.Body.Statements returned wrong value: expected 1, but got %d\n", len(macro.Body.Statements))
+	}
+	stmt = macro.Body.Statements[0]
+	testExpressionStatement(t, stmt)
+	expStmt = stmt.(*ast.ExpressionStatement)
+	infix, ok := expStmt.Value.(*ast.Infix)
+	if !ok {
+		t.Fatalf("assertion faild: expected *ast.Infix, but got %T\n", expStmt.Value)
+	}
+	testInfix(t, infix, expectedInfix{expectedLiteral{"x", "x"}, "+", expectedLiteral{"y", "y"}})
+}
+
 func testParserHasNoErrors(t *testing.T, p *Parser) {
 	errs := p.Errors()
 	if len(errs) == 0 {
