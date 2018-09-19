@@ -24,6 +24,8 @@ func Modify(node Node, modifier modifier) Node {
 		return modifyFunction(node, modifier)
 	case *Array:
 		return modifyArray(node, modifier)
+	case *Hash:
+		return modifyHash(node, modifier)
 	case *Subscript:
 		return modifySubscript(node, modifier)
 	default:
@@ -101,6 +103,19 @@ func modifyArray(node *Array, modifier modifier) Node {
 	for i, elem := range node.Elements {
 		node.Elements[i], _ = Modify(elem, modifier).(Expression)
 	}
+
+	return node
+}
+
+func modifyHash(node *Hash, modifier modifier) Node {
+	values := make(map[Expression]Expression)
+	for key, value := range node.Values {
+		newKey, _ := Modify(key, modifier).(Expression)
+		newValue, _ := Modify(value, modifier).(Expression)
+		values[newKey] = newValue
+	}
+
+	node.Values = values
 
 	return node
 }
