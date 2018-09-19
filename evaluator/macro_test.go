@@ -122,8 +122,8 @@ func TestExpandMacro(t *testing.T) {
 		in     string
 		expect string
 	}{
-		{"let infix = macro() { return quote(1 + 2); }; infix();", "(1 + 2)"},
-		{"let minusReversely = macro(a, b) { return quote(unquote(b) - unquote(a)); }; minusReversely(2 + 2, 10 - 5)", "(10 - 5) - (2 + 2)"},
+		{"let infix = macro() { quote(1 + 2); }; infix();", "(1 + 2)"},
+		{"let minusReversely = macro(a, b) { quote(unquote(b) - unquote(a)); }; minusReversely(2 + 2, 10 - 5)", "((10 - 5) - (2 + 2))"},
 	}
 	for _, test := range tests {
 		parser := parser.New(lexer.New(test.in))
