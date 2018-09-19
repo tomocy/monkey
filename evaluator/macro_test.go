@@ -116,3 +116,23 @@ func TestDefineMacro(t *testing.T) {
 		t.Errorf("macro.Body.String() returned wront value: expected (x + y), but got %s\n", macro.Body.String())
 	}
 }
+
+func TestExpandMacro(t *testing.T) {
+	tests := []struct {
+		in     string
+		expect string
+	}{
+		{"let infix = macro() { return quote(1 + 2); }; infix();", "(1 + 2)"},
+		{"let minusReversely = macro(a, b) { return quote(unquote(b) - unquote(a)); }; minusReversely(2 + 2, 10 - 5)", "(10 - 5) - (2 + 2)"},
+	}
+	for _, test := range tests {
+		parser := parser.New(lexer.New(test.in))
+		program := parser.ParseProgram()
+		env := object.NewEnvironment()
+		DefineMacro(program, env)
+		got := ExpandMacros(program, env)
+		if got.String() != test.expect {
+			t.Errorf("got.String() returned wrong value: expected %s, but got %s\n", test.expect, got.String())
+		}
+	}
+}
