@@ -83,6 +83,10 @@ func TestModify(t *testing.T) {
 			},
 		},
 		{
+			&Array{Elements: []Expression{one(), one()}},
+			&Array{Elements: []Expression{two(), two()}},
+		},
+		{
 			&Subscript{LeftValue: one(), Index: one()},
 			&Subscript{LeftValue: two(), Index: two()},
 		},
