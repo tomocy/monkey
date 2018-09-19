@@ -287,6 +287,8 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 		return convertIntegerObjectToASTNode(obj)
 	case *object.BooleanObject:
 		return convertBooleanObjectToASTNode(obj)
+	case *object.QuoteObject:
+		return obj.Value
 	default:
 		return nil
 	}
