@@ -5,6 +5,7 @@ import (
 
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/object"
+	"github.com/tomocy/monkey/token"
 )
 
 var (
@@ -35,7 +36,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalFunction(node, env)
 	case *ast.FunctionCall:
 		if isQuoteCall(node) {
-			return evalQuote(node.Arguments[0])
+			return evalQuote(node.Arguments[0], env)
 		}
 		return evalFunctionCall(node, env)
 	case *ast.Identifier:
@@ -249,8 +250,54 @@ func isQuoteCall(node ast.Node) bool {
 	return funcCall.Function.TokenLiteral() == "quote"
 }
 
-func evalQuote(node ast.Node) object.Object {
-	return &object.QuoteObject{Value: node}
+func evalQuote(node ast.Node, env *object.Environment) object.Object {
+	return &object.QuoteObject{
+		Value: evalUnquotes(node, env),
+	}
+}
+
+func evalUnquotes(node ast.Node, env *object.Environment) ast.Node {
+	return ast.Modify(node, func(node ast.Node) ast.Node {
+		if !isUnquote(node) {
+			return node
+		}
+
+		unquote := node.(*ast.FunctionCall)
+		obj := Eval(unquote.Arguments[0], env)
+
+		return convertObjectToASTNode(obj)
+	})
+}
+
+func isUnquote(node ast.Node) bool {
+	funcCall, ok := node.(*ast.FunctionCall)
+	if !ok {
+		return false
+	}
+	if len(funcCall.Arguments) != 1 {
+		return false
+	}
+
+	return funcCall.Function.TokenLiteral() == "unquote"
+}
+
+func convertObjectToASTNode(obj object.Object) ast.Node {
+	switch obj := obj.(type) {
+	case *object.IntegerObject:
+		return convertIntegerObjectToASTNode(obj)
+	default:
+		return nil
+	}
+}
+
+func convertIntegerObjectToASTNode(obj *object.IntegerObject) ast.Node {
+	return &ast.Integer{
+		Token: token.Token{
+			Type:    token.Int,
+			Literal: fmt.Sprintf("%d", obj.Value),
+		},
+		Value: obj.Value,
+	}
 }
 
 func evalFunctionCall(node *ast.FunctionCall, env *object.Environment) object.Object {
