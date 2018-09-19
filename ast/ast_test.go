@@ -33,6 +33,10 @@ func TestModify(t *testing.T) {
 			},
 		},
 		{
+			&ReturnStatement{Value: one()},
+			&ReturnStatement{Value: two()},
+		},
+		{
 			&If{
 				Condition: one(),
 				Consequence: &BlockStatement{
