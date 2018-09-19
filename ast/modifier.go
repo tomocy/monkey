@@ -22,6 +22,8 @@ func Modify(node Node, modifier modifier) Node {
 		return modifyInfix(node, modifier)
 	case *Function:
 		return modifyFunction(node, modifier)
+	case *Array:
+		return modifyArray(node, modifier)
 	case *Subscript:
 		return modifySubscript(node, modifier)
 	default:
@@ -91,6 +93,14 @@ func modifyFunction(node *Function, modifier modifier) Node {
 		node.Parameters[i], _ = Modify(param, modifier).(*Identifier)
 	}
 	node.Body, _ = Modify(node.Body, modifier).(*BlockStatement)
+
+	return node
+}
+
+func modifyArray(node *Array, modifier modifier) Node {
+	for i, elem := range node.Elements {
+		node.Elements[i], _ = Modify(elem, modifier).(Expression)
+	}
 
 	return node
 }
