@@ -112,7 +112,7 @@ func TestDefineMacro(t *testing.T) {
 	if macro.Parameters[1].String() != "y" {
 		t.Errorf("macro.Parameters[1].String() returend wrong value: expected y, but got %s\n", macro.Parameters[1].String())
 	}
-	if macro.Body.String() != "(x + y)" {
+	if macro.Body.String() != "{ return (x + y); }" {
 		t.Errorf("macro.Body.String() returned wront value: expected (x + y), but got %s\n", macro.Body.String())
 	}
 }
