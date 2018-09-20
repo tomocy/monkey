@@ -23,7 +23,7 @@ func Start(in io.Reader, w io.Writer) {
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		sourceCode := scanner.Text()
-		fmt.Println(evaluatedProgramOrErrorMessages(sourceCode))
+		fmt.Print(evaluatedProgramOrErrorMessages(sourceCode))
 		fmt.Print(prompt)
 	}
 }
@@ -32,7 +32,7 @@ func evaluatedProgramOrErrorMessages(in string) string {
 	parser := parser.New(lexer.New(in))
 	program := parser.ParseProgram()
 	if len(parser.Errors()) != 0 {
-		return strings.Join(parser.Errors(), "\n")
+		return strings.Join(parser.Errors(), "\n") + "\n"
 	}
 
 	evaluator.DefineMacros(program, macroEnv)
@@ -43,5 +43,5 @@ func evaluatedProgramOrErrorMessages(in string) string {
 		return ""
 	}
 
-	return evaluatedProgram.Inspect()
+	return evaluatedProgram.Inspect() + "\n"
 }
