@@ -273,8 +273,7 @@ func (p *Parser) parseArrayElements() []ast.Expression {
 	if p.isCurrentToken(token.RBracket) {
 		return exps
 	}
-	// [1, 2]
-	// [1, 2]
+
 	exps = append(exps, p.parseExpression(Lowest))
 	for p.isPeekToken(token.Comma) {
 		p.nextToken()
