@@ -77,7 +77,7 @@ func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
 }) {
 	letStmt, ok := stmt.(*ast.LetStatement)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", letStmt)
+		t.Fatalf("assertion faild: expected *ast.LetStatement, but got %T\n", letStmt)
 	}
 	if stmt.TokenLiteral() != "let" {
 		t.Errorf("stmt.TokenLiteral return wrong value: expected let, but got %s\n", stmt.TokenLiteral())
@@ -113,7 +113,7 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
 }) {
 	returnStmt, ok := stmt.(*ast.ReturnStatement)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", returnStmt)
+		t.Fatalf("assertion faild: expected *ast.ReturnStatement, but got %T\n", returnStmt)
 	}
 	if returnStmt.TokenLiteral() != "return" {
 		t.Errorf("returnStmt returned wrong value: expected return, but got %s\n", returnStmt.TokenLiteral())
@@ -144,7 +144,7 @@ func TestIdentifier(t *testing.T) {
 func testIdentifier(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Fatalf("faild to assert: expected *ast.Identifier, but got %T\n", exp)
+		t.Fatalf("assertion faild: expected *ast.Identifier, but got %T\n", exp)
 	}
 	if ident.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("ident.TokenLiteral retuned wrong value: expected %s, but got %s\n", expect.tokenLiteral, ident.TokenLiteral())
@@ -323,7 +323,7 @@ func TestIfReturn(t *testing.T) {
 func testIfReturn(t *testing.T, exp ast.Expression, expect expectedIf) {
 	ifExp, ok := exp.(*ast.If)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", ifExp)
+		t.Fatalf("assertion faild: expected *ast.If, but got %T\n", ifExp)
 	}
 	testInfix(t, ifExp.Condition, expect.condition)
 	testLengthOfStatements(t, ifExp.Consequence.Statements, len(expect.consequence))
@@ -369,7 +369,7 @@ func TestIfElseReturn(t *testing.T) {
 func testIfElseReturn(t *testing.T, exp ast.Expression, expect expectedIfElse) {
 	ifExp, ok := exp.(*ast.If)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", ifExp)
+		t.Fatalf("assertion faild: expected *ast.If, but got %T\n", ifExp)
 	}
 	testIfReturn(t, ifExp, expect.expectedIf)
 	for i, alternativeStmt := range ifExp.Alternative.Statements {
@@ -440,7 +440,7 @@ func testFunction(t *testing.T, exp ast.Expression, expect struct {
 }) {
 	fn, ok := exp.(*ast.Function)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", fn)
+		t.Fatalf("assertion faild: expected *ast.Function, but got %T\n", fn)
 	}
 	if len(fn.Parameters) != len(expect.parameters) {
 		t.Errorf("len(fn.Parameters) returned wrong value: expected %d, but got %d\n", len(expect.parameters), len(fn.Parameters))
@@ -469,7 +469,7 @@ func testFunctionCallWithoutArguments(t *testing.T) {
 	expStmt := stmt.(*ast.ExpressionStatement)
 	funcCall, ok := expStmt.Value.(*ast.FunctionCall)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", funcCall)
+		t.Fatalf("assertion faild: expected *ast.FuntionCall, but got %T\n", funcCall)
 	}
 	testLiteral(t, funcCall.Function, expectedLiteral{"sayHello", "sayHello"})
 	if len(funcCall.Arguments) != 0 {
@@ -487,7 +487,7 @@ func TestFunctionCallWithArguments(t *testing.T) {
 	expStmt := stmt.(*ast.ExpressionStatement)
 	funcCall, ok := expStmt.Value.(*ast.FunctionCall)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", funcCall)
+		t.Fatalf("assertion faild: expected *ast.FunctionCall, but got %T\n", funcCall)
 	}
 	testLiteral(t, funcCall.Function, expectedLiteral{"add", "add"})
 	if len(funcCall.Arguments) != 3 {
@@ -744,14 +744,14 @@ func testLengthOfStatements(t *testing.T, stmts []ast.Statement, stmtLen int) {
 
 func testExpressionStatement(t *testing.T, stmt ast.Statement) {
 	if expStmt, ok := stmt.(*ast.ExpressionStatement); !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", expStmt)
+		t.Fatalf("assertion faild: expected *ast.ExpressionStatement, but got %T\n", expStmt)
 	}
 }
 
 func testInteger(t *testing.T, exp ast.Expression, expect expectedInteger) {
 	integer, ok := exp.(*ast.Integer)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", integer)
+		t.Fatalf("assertion faild: expected *ast.Integer, but got %T\n", integer)
 	}
 	if integer.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("integer.TokenLiteral() returned wrong value: expected %s, bot got %s\n", expect.tokenLiteral, integer.TokenLiteral())
@@ -764,7 +764,7 @@ func testInteger(t *testing.T, exp ast.Expression, expect expectedInteger) {
 func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 	boolean, ok := e.(*ast.Boolean)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", boolean)
+		t.Fatalf("assertion faild: expected *ast.Boolean, but got %T\n", boolean)
 	}
 	if boolean.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, boolean.TokenLiteral())
@@ -777,7 +777,7 @@ func testBoolean(t *testing.T, e ast.Expression, expect expectedBoolean) {
 func testString(t *testing.T, e ast.Expression, expect expectedString) {
 	str, ok := e.(*ast.String)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", e)
+		t.Fatalf("assertion faild: expected *ast.String, but got %T\n", e)
 	}
 	if str.TokenLiteral() != expect.tokenLiteral {
 		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, str.TokenLiteral())
@@ -790,7 +790,7 @@ func testString(t *testing.T, e ast.Expression, expect expectedString) {
 func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
 	prefix, ok := exp.(*ast.Prefix)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", prefix)
+		t.Fatalf("assertion faild: expected *ast.Prefix, but got %T\n", prefix)
 	}
 	if prefix.Operator != expect.operator {
 		t.Errorf("prefix.Operator was wrong: expected %s, but got %s\n", expect.operator, prefix.Operator)
@@ -801,7 +801,7 @@ func testPrefix(t *testing.T, exp ast.Expression, expect expectedPrefix) {
 func testInfix(t *testing.T, exp ast.Expression, expect expectedInfix) {
 	infix, ok := exp.(*ast.Infix)
 	if !ok {
-		t.Fatalf("faild to assert: expected , but got %T\n", infix)
+		t.Fatalf("assertion faild: expected *ast.Infix, but got %T\n", infix)
 	}
 	if infix.Operator != expect.operator {
 		t.Errorf("infix.Operator was wrong: expected %s, but got %s", expect.operator, infix.Operator)
