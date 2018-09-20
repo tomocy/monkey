@@ -329,7 +329,7 @@ func (s String) TokenLiteral() string {
 }
 
 func (s String) String() string {
-	return s.Value
+	return fmt.Sprintf(`"%s"`, s.Value)
 }
 
 type Array struct {

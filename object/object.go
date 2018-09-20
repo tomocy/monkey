@@ -122,7 +122,7 @@ func (s StringObject) Type() ObjectType {
 }
 
 func (s StringObject) Inspect() string {
-	return s.Value
+	return fmt.Sprintf(`"%s"`, s.Value)
 }
 
 type BuiltinFunctionObject struct {
