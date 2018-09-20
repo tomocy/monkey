@@ -52,7 +52,6 @@ func TestUnquote(t *testing.T) {
 		{"let quotedExp = quote(5 + 5); quote(unquote(5 + 5) + unquote(quotedExp))", "(10 + (5 + 5))"},
 		{`quote(unquote("string"));`, "string"},
 		{`quote(unquote([1,2,3,4]));`, "[1,2,3,4]"},
-		{`quote(unquote({1: 2, true: false, "a": "b"}));`, `{1:2,true:false,a:b}`},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -74,6 +73,36 @@ func TestUnquote(t *testing.T) {
 	}
 }
 
+func TestUnquoteHash(t *testing.T) {
+	in := `{1: 2, true: false, "a": "b"}`
+	expect := map[string]string{
+		"1":    "2",
+		"true": "false",
+		"a":    "b",
+	}
+	parser := parser.New(lexer.New(in))
+	program := parser.ParseProgram()
+	env := object.NewEnvironment()
+	got := Eval(program, env)
+	hash, ok := got.(*object.HashObject)
+	if !ok {
+		t.Fatalf("assertion faild: expected *object.HashObject, but got %T\n", got)
+	}
+loop:
+	for _, hashValue := range hash.Values {
+		for expectedKey, expectedValue := range expect {
+			if hashValue.Key.Inspect() == expectedKey {
+				if hashValue.Value.Inspect() != expectedValue {
+					t.Errorf("hashValue.Value returned wrong value: expected %s, but got %s\n", expectedValue, hashValue.Value.Inspect())
+				}
+
+				continue loop
+			}
+		}
+
+		t.Errorf("unexpected key: %s", hashValue.Key.Inspect())
+	}
+}
 func TestDefineMacro(t *testing.T) {
 	in := `
 	let num = 1;
