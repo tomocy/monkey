@@ -50,7 +50,7 @@ func TestUnquote(t *testing.T) {
 		{"quote(unquote(true == false))", "false"},
 		{"quote(unquote(quote(5 + 5)));", "(5 + 5)"},
 		{"let quotedExp = quote(5 + 5); quote(unquote(5 + 5) + unquote(quotedExp))", "(10 + (5 + 5))"},
-		{`quote(unquote("string"));`, "string"},
+		{`quote(unquote("string"));`, `"string"`},
 		{`quote(unquote([1,2,3,4]));`, "[1,2,3,4]"},
 	}
 	for _, test := range tests {
@@ -78,7 +78,7 @@ func TestUnquoteHash(t *testing.T) {
 	expect := map[string]string{
 		"1":    "2",
 		"true": "false",
-		"a":    "b",
+		`"a"`:  `"b"`,
 	}
 	parser := parser.New(lexer.New(in))
 	program := parser.ParseProgram()
@@ -169,7 +169,7 @@ func TestExpandMacro(t *testing.T) {
 			};
 			unless(5 < 10, puts("not greater??"), puts("yes, greater..."))
 			`,
-			`if ((!(5 < 10))) { puts(not greater??) } else { puts(yes, greater...) }`,
+			`if ((!(5 < 10))) { puts("not greater??") } else { puts("yes, greater...") }`,
 		},
 	}
 	for _, test := range tests {

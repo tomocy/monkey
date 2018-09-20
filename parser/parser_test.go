@@ -639,15 +639,15 @@ func TestParseHash(t *testing.T) {
 		{
 			`{"one": 1, "true": true, "three": "three"}`,
 			map[string]interface{}{
-				"one":   expectedLiteral{"one", 1},
-				"true":  expectedLiteral{"true", true},
-				"three": expectedString{"three", "three"},
+				`"one"`:   expectedLiteral{"one", 1},
+				`"true"`:  expectedLiteral{"true", true},
+				`"three"`: expectedString{"three", "three"},
 			},
 		},
 		{
 			`{"one + one": 1 + 1}`,
 			map[string]interface{}{
-				"one + one": expectedInfix{expectedLiteral{"1", 1}, "+", expectedLiteral{"1", 1}},
+				`"one + one"`: expectedInfix{expectedLiteral{"1", 1}, "+", expectedLiteral{"1", 1}},
 			},
 		},
 		{"{}", map[string]interface{}{}},
