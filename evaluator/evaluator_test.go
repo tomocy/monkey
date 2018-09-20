@@ -36,7 +36,7 @@ func TestEvalInteger(t *testing.T) {
 			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != test.expect {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
@@ -81,7 +81,7 @@ func TestEvalBoolean(t *testing.T) {
 			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", got)
 			}
 			if boolean.Value != test.expect {
 				t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
@@ -108,7 +108,7 @@ func TestBang(t *testing.T) {
 			got := Eval(program, env)
 			boolean, ok := got.(*object.BooleanObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", got)
 			}
 			if boolean.Value != test.expect {
 				t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", test.expect, boolean.Value)
@@ -141,7 +141,7 @@ func TestIf(t *testing.T) {
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != int64(expect) {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
@@ -169,7 +169,7 @@ func TestEvalReturnStatement(t *testing.T) {
 			expect := test.expect.(int)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != int64(expect) {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect, integer.Value)
@@ -209,7 +209,7 @@ func TestErrorHandling(t *testing.T) {
 			got := Eval(program, env)
 			errorObj, ok := got.(*object.ErrorObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.ErrorObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.ErrorObject, but got %T\n", got)
 			}
 			if errorObj.Message != test.expect {
 				t.Errorf("errorObj.Message was wrong: expected %s, but got %s\n", test.expect, errorObj.Message)
@@ -236,7 +236,7 @@ func TestEvalLetStatement(t *testing.T) {
 			got := Eval(program, env)
 			integer, ok := got.(*object.IntegerObject)
 			if !ok {
-				t.Fatalf("faild to assert got: expected *object.IntegerObject, but got %T\n", got)
+				t.Fatalf("assertion faild: expected *object.IntegerObject, but got %T\n", got)
 			}
 			if integer.Value != test.expect {
 				t.Errorf("integer.Value was wrong: expected %d, but got %d\n", test.expect, integer.Value)
@@ -279,7 +279,7 @@ func TestEvalFunctionCall(t *testing.T) {
 			if expectedInteger, ok := test.expect.(int); ok {
 				integer, ok := got.(*object.IntegerObject)
 				if !ok {
-					t.Fatalf("faild to assert got: expected *object.IntgerObject, but got %T\n", got)
+					t.Fatalf("assertion faild: expected *object.IntgerObject, but got %T\n", got)
 				}
 				if integer.Value != int64(expectedInteger) {
 					t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expectedInteger, integer.Value)
@@ -289,7 +289,7 @@ func TestEvalFunctionCall(t *testing.T) {
 			if expectedBoolean, ok := test.expect.(bool); ok {
 				boolean, ok := got.(*object.BooleanObject)
 				if !ok {
-					t.Fatalf("faild to assert got: expected *object.BooleanObject, but got %T\n", got)
+					t.Fatalf("assertion faild: expected *object.BooleanObject, but got %T\n", got)
 				}
 				if boolean.Value != expectedBoolean {
 					t.Errorf("boolean.Value was wrong: expected %t, but got %t\n", expectedBoolean, boolean.Value)
