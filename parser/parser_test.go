@@ -780,10 +780,10 @@ func testString(t *testing.T, e ast.Expression, expect expectedString) {
 		t.Fatalf("assertion faild: expected *ast.String, but got %T\n", e)
 	}
 	if str.TokenLiteral() != expect.tokenLiteral {
-		t.Errorf("boolean.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, str.TokenLiteral())
+		t.Errorf("str.TokenLiteral was wrong: expected %s, but got %s\n", expect.tokenLiteral, str.TokenLiteral())
 	}
 	if str.Value != expect.value {
-		t.Errorf("boolean.Value was wrong: expect %t, but got %t\n", expect.value, str.Value)
+		t.Errorf("str.Value was wrong: expect %s, but got %s\n", expect.value, str.Value)
 	}
 }
 
