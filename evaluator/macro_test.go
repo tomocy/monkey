@@ -50,6 +50,7 @@ func TestUnquote(t *testing.T) {
 		{"quote(unquote(true == false))", "false"},
 		{"quote(unquote(quote(5 + 5)));", "(5 + 5)"},
 		{"let quotedExp = quote(5 + 5); quote(unquote(5 + 5) + unquote(quotedExp))", "(10 + (5 + 5))"},
+		{`quote(unquote("string"));`, "string"},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
