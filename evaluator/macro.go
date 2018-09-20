@@ -61,6 +61,8 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 		return convertStringObjectToASTNode(obj)
 	case *object.ArrayObject:
 		return convertArrayObjectToASTNode(obj)
+	case *object.HashObject:
+		return convertHashObjectToASTNode(obj)
 	case *object.QuoteObject:
 		return obj.Value
 	default:
@@ -119,6 +121,22 @@ func convertArrayObjectToASTNode(obj *object.ArrayObject) ast.Node {
 			Literal: obj.Inspect(),
 		},
 		Elements: exps,
+	}
+}
+
+func convertHashObjectToASTNode(obj *object.HashObject) ast.Node {
+	values := make(map[ast.Expression]ast.Expression)
+	for _, hashValue := range obj.Values {
+		keyExp := convertObjectToASTNode(hashValue.Key).(ast.Expression)
+		valueExp := convertObjectToASTNode(hashValue.Value).(ast.Expression)
+		values[keyExp] = valueExp
+	}
+	return &ast.Hash{
+		Token: token.Token{
+			Type:    token.LBrace,
+			Literal: "{",
+		},
+		Values: values,
 	}
 }
 
