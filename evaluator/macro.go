@@ -57,6 +57,8 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 		return convertIntegerObjectToASTNode(obj)
 	case *object.BooleanObject:
 		return convertBooleanObjectToASTNode(obj)
+	case *object.StringObject:
+		return convertStringObjectToASTNode(obj)
 	case *object.QuoteObject:
 		return obj.Value
 	default:
@@ -90,6 +92,16 @@ func convertBooleanObjectToASTNode(obj *object.BooleanObject) ast.Node {
 
 	return &ast.Boolean{
 		Token: t,
+		Value: obj.Value,
+	}
+}
+
+func convertStringObjectToASTNode(obj *object.StringObject) ast.Node {
+	return &ast.String{
+		Token: token.Token{
+			Type:    token.String,
+			Literal: obj.Value,
+		},
 		Value: obj.Value,
 	}
 }
