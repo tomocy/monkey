@@ -59,6 +59,8 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 		return convertBooleanObjectToASTNode(obj)
 	case *object.StringObject:
 		return convertStringObjectToASTNode(obj)
+	case *object.ArrayObject:
+		return convertArrayObjectToASTNode(obj)
 	case *object.QuoteObject:
 		return obj.Value
 	default:
@@ -103,6 +105,20 @@ func convertStringObjectToASTNode(obj *object.StringObject) ast.Node {
 			Literal: obj.Value,
 		},
 		Value: obj.Value,
+	}
+}
+
+func convertArrayObjectToASTNode(obj *object.ArrayObject) ast.Node {
+	exps := make([]ast.Expression, len(obj.Elements))
+	for i, obj := range obj.Elements {
+		exps[i] = convertObjectToASTNode(obj).(ast.Expression)
+	}
+	return &ast.Array{
+		Token: token.Token{
+			Type:    token.LBracket,
+			Literal: obj.Inspect(),
+		},
+		Elements: exps,
 	}
 }
 
