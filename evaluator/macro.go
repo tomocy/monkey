@@ -1,9 +1,98 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/tomocy/monkey/ast"
 	"github.com/tomocy/monkey/object"
+	"github.com/tomocy/monkey/token"
 )
+
+func evalQuote(node ast.Node, env *object.Environment) object.Object {
+	return &object.QuoteObject{
+		Value: evalUnquotes(node, env),
+	}
+}
+
+func isQuote(node ast.Node) bool {
+	funcCall, ok := node.(*ast.FunctionCall)
+	if !ok {
+		return false
+	}
+	if len(funcCall.Arguments) != 1 {
+		return false
+	}
+
+	return funcCall.Function.TokenLiteral() == "quote"
+}
+
+func evalUnquotes(node ast.Node, env *object.Environment) ast.Node {
+	return ast.Modify(node, func(node ast.Node) ast.Node {
+		if !isUnquote(node) {
+			return node
+		}
+
+		unquote := node.(*ast.FunctionCall)
+		obj := Eval(unquote.Arguments[0], env)
+
+		return convertObjectToASTNode(obj)
+	})
+}
+
+func isUnquote(node ast.Node) bool {
+	funcCall, ok := node.(*ast.FunctionCall)
+	if !ok {
+		return false
+	}
+	if len(funcCall.Arguments) != 1 {
+		return false
+	}
+
+	return funcCall.Function.TokenLiteral() == "unquote"
+}
+
+func convertObjectToASTNode(obj object.Object) ast.Node {
+	switch obj := obj.(type) {
+	case *object.IntegerObject:
+		return convertIntegerObjectToASTNode(obj)
+	case *object.BooleanObject:
+		return convertBooleanObjectToASTNode(obj)
+	case *object.QuoteObject:
+		return obj.Value
+	default:
+		return nil
+	}
+}
+
+func convertIntegerObjectToASTNode(obj *object.IntegerObject) ast.Node {
+	return &ast.Integer{
+		Token: token.Token{
+			Type:    token.Int,
+			Literal: fmt.Sprintf("%d", obj.Value),
+		},
+		Value: obj.Value,
+	}
+}
+
+func convertBooleanObjectToASTNode(obj *object.BooleanObject) ast.Node {
+	var t token.Token
+	if obj.Value {
+		t = token.Token{
+			Type:    token.True,
+			Literal: "true",
+		}
+	} else {
+		t = token.Token{
+			Type:    token.False,
+			Literal: "false",
+		}
+	}
+
+	return &ast.Boolean{
+		Token: t,
+		Value: obj.Value,
+	}
+}
 
 func DefineMacros(program *ast.Program, env *object.Environment) {
 	setMacroDefinitionsInEnv(program, env)
