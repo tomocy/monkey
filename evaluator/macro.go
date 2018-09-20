@@ -80,22 +80,27 @@ func convertIntegerObjectToASTNode(obj *object.IntegerObject) ast.Node {
 	}
 }
 
+var (
+	trueToken = token.Token{
+		Type:    token.True,
+		Literal: "true",
+	}
+	falseToken = token.Token{
+		Type:    token.False,
+		Literal: "false",
+	}
+)
+
 func convertBooleanObjectToASTNode(obj *object.BooleanObject) ast.Node {
-	var t token.Token
 	if obj.Value {
-		t = token.Token{
-			Type:    token.True,
-			Literal: "true",
-		}
-	} else {
-		t = token.Token{
-			Type:    token.False,
-			Literal: "false",
+		return &ast.Boolean{
+			Token: trueToken,
+			Value: obj.Value,
 		}
 	}
 
 	return &ast.Boolean{
-		Token: t,
+		Token: falseToken,
 		Value: obj.Value,
 	}
 }
