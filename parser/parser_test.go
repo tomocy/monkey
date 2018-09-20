@@ -757,7 +757,7 @@ func testInteger(t *testing.T, exp ast.Expression, expect expectedInteger) {
 		t.Errorf("integer.TokenLiteral() returned wrong value: expected %s, bot got %s\n", expect.tokenLiteral, integer.TokenLiteral())
 	}
 	if integer.Value != expect.value {
-		t.Errorf("integer.Value was wrong: expect %d, but got %d\n", expect.value, integer.Value)
+		t.Errorf("integer.Value was wrong: expected %d, but got %d\n", expect.value, integer.Value)
 	}
 }
 
