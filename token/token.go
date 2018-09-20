@@ -37,7 +37,7 @@ const (
 	Return   = "Return"
 	True     = "True"
 	False    = "False"
-	Int      = "Int"
+	Integer  = "Int"
 	String   = "String"
 
 	Macro = "Macro"

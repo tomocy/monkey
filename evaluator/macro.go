@@ -73,7 +73,7 @@ func convertObjectToASTNode(obj object.Object) ast.Node {
 func convertIntegerObjectToASTNode(obj *object.IntegerObject) ast.Node {
 	return &ast.Integer{
 		Token: token.Token{
-			Type:    token.Int,
+			Type:    token.Integer,
 			Literal: fmt.Sprintf("%d", obj.Value),
 		},
 		Value: obj.Value,

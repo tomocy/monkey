@@ -25,8 +25,8 @@ func TestNextToken(t *testing.T) {
 			let result = add(five, ten);
 			`,
 			[]expect{
-				{token.Let, "let"}, {token.Ident, "five"}, {token.Assign, "="}, {token.Int, "5"}, {token.Semicolon, ";"},
-				{token.Let, "let"}, {token.Ident, "ten"}, {token.Assign, "="}, {token.Int, "10"}, {token.Semicolon, ";"},
+				{token.Let, "let"}, {token.Ident, "five"}, {token.Assign, "="}, {token.Integer, "5"}, {token.Semicolon, ";"},
+				{token.Let, "let"}, {token.Ident, "ten"}, {token.Assign, "="}, {token.Integer, "10"}, {token.Semicolon, ";"},
 				{token.Let, "let"}, {token.Ident, "add"}, {token.Assign, "="},
 				{token.Function, "fn"}, {token.LParen, "("}, {token.Ident, "x"}, {token.Comma, ","}, {token.Ident, "y"}, {token.RParen, ")"},
 				{token.LBrace, "{"}, {token.Ident, "x"}, {token.Plus, "+"}, {token.Ident, "y"}, {token.Semicolon, ";"}, {token.RBrace, "}"},
@@ -45,10 +45,10 @@ func TestNextToken(t *testing.T) {
 			10 != 10;
 			`,
 			[]expect{
-				{token.Bang, "!"}, {token.Minus, "-"}, {token.Slash, "/"}, {token.Asterrisk, "*"}, {token.Int, "5"}, {token.Semicolon, ";"},
-				{token.Int, "5"}, {token.LessThan, "<"}, {token.Int, "10"}, {token.GreaterThan, ">"}, {token.Int, "5"}, {token.Semicolon, ";"},
-				{token.Int, "10"}, {token.Equal, "=="}, {token.Int, "10"}, {token.Semicolon, ";"},
-				{token.Int, "10"}, {token.NotEqual, "!="}, {token.Int, "10"}, {token.Semicolon, ";"},
+				{token.Bang, "!"}, {token.Minus, "-"}, {token.Slash, "/"}, {token.Asterrisk, "*"}, {token.Integer, "5"}, {token.Semicolon, ";"},
+				{token.Integer, "5"}, {token.LessThan, "<"}, {token.Integer, "10"}, {token.GreaterThan, ">"}, {token.Integer, "5"}, {token.Semicolon, ";"},
+				{token.Integer, "10"}, {token.Equal, "=="}, {token.Integer, "10"}, {token.Semicolon, ";"},
+				{token.Integer, "10"}, {token.NotEqual, "!="}, {token.Integer, "10"}, {token.Semicolon, ";"},
 				{token.EOF, ""},
 			},
 		},
@@ -61,7 +61,7 @@ func TestNextToken(t *testing.T) {
 			}
 			`,
 			[]expect{
-				{token.If, "if"}, {token.LParen, "("}, {token.Int, "5"}, {token.LessThan, "<"}, {token.Int, "10"}, {token.RParen, ")"},
+				{token.If, "if"}, {token.LParen, "("}, {token.Integer, "5"}, {token.LessThan, "<"}, {token.Integer, "10"}, {token.RParen, ")"},
 				{token.LBrace, "{"}, {token.Return, "return"}, {token.True, "true"}, {token.Semicolon, ";"}, {token.RBrace, "}"},
 				{token.Else, "else"}, {token.LBrace, "{"}, {token.Return, "return"}, {token.False, "false"}, {token.Semicolon, ";"}, {token.RBrace, "}"},
 				{token.EOF, ""},
@@ -82,13 +82,13 @@ func TestNextToken(t *testing.T) {
 			$1;
 			`,
 			[]expect{
-				{token.Illegal, "$"}, {token.Int, "1"}, {token.Semicolon, ";"},
+				{token.Illegal, "$"}, {token.Integer, "1"}, {token.Semicolon, ";"},
 			},
 		},
 		{
 			"[1, 2];",
 			[]expect{
-				{token.LBracket, "["}, {token.Int, "1"}, {token.Comma, ","}, {token.Int, "2"}, {token.RBracket, "]"}, {token.Semicolon, ";"},
+				{token.LBracket, "["}, {token.Integer, "1"}, {token.Comma, ","}, {token.Integer, "2"}, {token.RBracket, "]"}, {token.Semicolon, ";"},
 			},
 		},
 		{

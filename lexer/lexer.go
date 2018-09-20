@@ -138,7 +138,7 @@ func isLetter(char byte) bool {
 
 func (l *Lexer) expressAsNumber() token.Token {
 	return token.Token{
-		Type:    token.Int,
+		Type:    token.Integer,
 		Literal: l.readNumber(),
 	}
 }
