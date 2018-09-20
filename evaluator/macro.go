@@ -116,17 +116,25 @@ func convertStringObjectToASTNode(obj *object.StringObject) ast.Node {
 }
 
 func convertArrayObjectToASTNode(obj *object.ArrayObject) ast.Node {
-	exps := make([]ast.Expression, len(obj.Elements))
-	for i, obj := range obj.Elements {
-		exps[i] = convertObjectToASTNode(obj).(ast.Expression)
-	}
 	return &ast.Array{
 		Token: token.Token{
 			Type:    token.LBracket,
-			Literal: obj.Inspect(),
+			Literal: "[",
 		},
-		Elements: exps,
+		Elements: convertObjectsToASTExpressions(obj.Elements),
 	}
+}
+
+func convertObjectsToASTExpressions(objs []object.Object) []ast.Expression {
+	exps := make([]ast.Expression, 0)
+	for _, obj := range objs {
+		node := convertObjectToASTNode(obj)
+		if exp, ok := node.(ast.Expression); ok {
+			exps = append(exps, exp)
+		}
+	}
+
+	return exps
 }
 
 func convertHashObjectToASTNode(obj *object.HashObject) ast.Node {
