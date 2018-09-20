@@ -128,8 +128,7 @@ func convertArrayObjectToASTNode(obj *object.ArrayObject) ast.Node {
 func convertObjectsToASTExpressions(objs []object.Object) []ast.Expression {
 	exps := make([]ast.Expression, 0)
 	for _, obj := range objs {
-		node := convertObjectToASTNode(obj)
-		if exp, ok := node.(ast.Expression); ok {
+		if exp, ok := convertObjectToASTExpression(obj); ok {
 			exps = append(exps, exp)
 		}
 	}
