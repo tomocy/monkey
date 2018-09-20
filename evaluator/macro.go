@@ -138,19 +138,38 @@ func convertObjectsToASTExpressions(objs []object.Object) []ast.Expression {
 }
 
 func convertHashObjectToASTNode(obj *object.HashObject) ast.Node {
-	values := make(map[ast.Expression]ast.Expression)
-	for _, hashValue := range obj.Values {
-		keyExp := convertObjectToASTNode(hashValue.Key).(ast.Expression)
-		valueExp := convertObjectToASTNode(hashValue.Value).(ast.Expression)
-		values[keyExp] = valueExp
-	}
 	return &ast.Hash{
 		Token: token.Token{
 			Type:    token.LBrace,
 			Literal: "{",
 		},
-		Values: values,
+		Values: convertHashMapToASTExpressionMap(obj),
 	}
+}
+
+func convertHashMapToASTExpressionMap(obj *object.HashObject) map[ast.Expression]ast.Expression {
+	values := make(map[ast.Expression]ast.Expression)
+	for _, hashValue := range obj.Values {
+		keyExp, ok := convertObjectToASTExpression(hashValue.Key)
+		if !ok {
+			continue
+		}
+		valueExp, ok := convertObjectToASTExpression(hashValue.Value)
+		if !ok {
+			continue
+		}
+
+		values[keyExp] = valueExp
+	}
+
+	return values
+}
+
+func convertObjectToASTExpression(obj object.Object) (ast.Expression, bool) {
+	node := convertObjectToASTNode(obj)
+	exp, ok := node.(ast.Expression)
+
+	return exp, ok
 }
 
 func DefineMacros(program *ast.Program, env *object.Environment) {
