@@ -48,7 +48,7 @@ type expectedIfElse struct {
 	alternative []expectedLiteral
 }
 
-func TestLetStatement(t *testing.T) {
+func TestParseLetStatement(t *testing.T) {
 	type expect struct {
 		ident expectedLiteral
 		value expectedLiteral
@@ -85,7 +85,7 @@ func testLetStatement(t *testing.T, stmt ast.Statement, expect struct {
 	testLiteral(t, letStmt.Ident, expect.ident)
 	testLiteral(t, letStmt.Value, expect.value)
 }
-func TestReturnStatement(t *testing.T) {
+func TestParseReturnStatement(t *testing.T) {
 	type expect struct {
 		value expectedLiteral
 	}
@@ -120,7 +120,7 @@ func testReturnStatement(t *testing.T, stmt ast.Statement, expect struct {
 	}
 	testLiteral(t, returnStmt.Value, expect.value)
 }
-func TestIdentifier(t *testing.T) {
+func TestParseIdentifier(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedLiteral
@@ -153,7 +153,7 @@ func testIdentifier(t *testing.T, exp ast.Expression, expect expectedLiteral) {
 		t.Errorf("ident.Value was wrong: expect %s, but got %s\n", expect.value, ident.TokenLiteral())
 	}
 }
-func TestInteger(t *testing.T) {
+func TestParseInteger(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedLiteral
@@ -174,7 +174,7 @@ func TestInteger(t *testing.T) {
 	}
 }
 
-func TestPrefix(t *testing.T) {
+func TestParsePrefix(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedPrefix
@@ -197,7 +197,7 @@ func TestPrefix(t *testing.T) {
 		})
 	}
 }
-func TestInfix(t *testing.T) {
+func TestParseInfix(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedInfix
@@ -272,7 +272,7 @@ func TestString(t *testing.T) {
 		})
 	}
 }
-func TestBoolean(t *testing.T) {
+func TestParseBoolean(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedLiteral
@@ -293,7 +293,7 @@ func TestBoolean(t *testing.T) {
 		})
 	}
 }
-func TestIfReturn(t *testing.T) {
+func TestParseIfReturn(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedIf
@@ -336,7 +336,7 @@ func testIfReturn(t *testing.T, exp ast.Expression, expect expectedIf) {
 		})
 	}
 }
-func TestIfElseReturn(t *testing.T) {
+func TestParseIfElseReturn(t *testing.T) {
 	tests := []struct {
 		in     string
 		expect expectedIfElse
@@ -381,7 +381,7 @@ func testIfElseReturn(t *testing.T, exp ast.Expression, expect expectedIfElse) {
 		})
 	}
 }
-func TestFunction(t *testing.T) {
+func TestParseFunction(t *testing.T) {
 	type expect struct {
 		parameters []expectedLiteral
 		body       []expectedInfix
@@ -476,7 +476,7 @@ func testFunctionCallWithoutArguments(t *testing.T) {
 		t.Errorf("len(funcCall.Arguments) returned wrong value: expected 0, but got %d\n", len(funcCall.Arguments))
 	}
 }
-func TestFunctionCallWithArguments(t *testing.T) {
+func TestParseFunctionCallWithArguments(t *testing.T) {
 	in := "add(1, 2 * 3, 4 + 5);"
 	parser := New(lexer.New(in))
 	program := parser.ParseProgram()
